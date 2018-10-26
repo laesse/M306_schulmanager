@@ -1,2 +1,4 @@
 # M306_schulmanager
-school manager to make the life of students easier.
+School manager to make the life of students easier. 
+
+Das ist ein Projekt für das Modul 306. 
