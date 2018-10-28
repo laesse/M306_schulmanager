@@ -10,20 +10,20 @@ ini_set('display_errors', 0);
 switch($_GET['status'])
 {
 	case 'checkSaveNote':
-       	checkSaveNote();   
-	break; 
+       	checkSaveNote();
+	break;
 	case 'checkAddNote':
-       	checkAddNote();   
+       	checkAddNote();
 	break;
 	case 'checkAddNotebook':
-       	checkAddNotebook();   
+       	checkAddNotebook();
 	break;
 	case 'deleteNotebook':
-       	deleteNotebook();   
-	break; 
+       	deleteNotebook();
+	break;
 	case 'deleteNote':
-       	deleteNote();   
-	break; 
+       	deleteNote();
+	break;
 	case 'jumpToHome':
 		jumpToHome();
 		break;
@@ -45,7 +45,7 @@ function showNote() {
 	<form action='?status=jumpToHome' method='post'>
 
 		<button type='submit' class='btnHome'>Home</button>
-		
+
 	</form>
 
 	<div class='container'>
@@ -53,11 +53,11 @@ function showNote() {
 	<p>Hier sind deine Notebooks.</p>
 	<hr>
 	";
-	
+
 	$servername = "localhost";
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -66,37 +66,37 @@ function showNote() {
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
-		
+
 	// prepare and bind
 	$stmt = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
 	$stmt->bind_param("i",$_SESSION["user"]);
-	
+
 	$stmt->execute();
-	
+
 	// bind result variable
     $stmt->bind_result($id, $name);
-		
-	// fetch value 
+
+	// fetch value
 	while ($stmt->fetch()) {
-		
+
 		$id_notebook = $id;
-		
+
 		echo "
-		
+
   			<div class='container notebook'>
 			<h2 style='display:inline;'>".$name." </h2>
 			<form style='display:inline;' action='?status=deleteNotebook' method='post'>
 					<button type='submit' class='btnDeleteNotebook'>Delete</button>
 					<input type='hidden' name='notebook' value='".$id_notebook."'>
 			</form>
-			
+
 			</div>
 		";
-			
+
 			$servername1 = "localhost";
-			$dbusername1 = "root";
-			$password1 = "";
-			$dbname1 = "schulmanager";
+			$dbusername1 = "id7650771_phpuser";
+			$password1 = "phpUser123#";
+			$dbname1 = "id7650771_schulmanager";
 
 			// Create connection
 			$conn1 = new mysqli($servername1, $dbusername1, $password1, $dbname1);
@@ -105,17 +105,17 @@ function showNote() {
 			if ($conn1->connect_error) {
 				die("Connection failed: ".$conn->connect_error);
 			}
-		
+
 			// prepare and bind
 			$stmt1 = $conn1->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
 			$stmt1->bind_param("i",$id_notebook);
-	
+
 			$stmt1->execute();
-	
+
 			// bind result variable
     		$stmt1->bind_result($id, $title, $notetext);
-		
-			// fetch value 
+
+			// fetch value
 			while ($stmt1->fetch()) {
 				echo "
   				<div class='container note'>
@@ -132,11 +132,11 @@ function showNote() {
 				</div>
 				";
 			}
-		
+
 			$stmt1->close();
 			$conn1->close();
-		
-		echo "		
+
+		echo "
   				<div class='container note'>
 				<form action='?status=checkAddNote' method='post'>
 					<label for='addNote'>Add Note</label><br>
@@ -147,12 +147,12 @@ function showNote() {
 				</div>
 				<br><hr>
 		";
-		
+
 	}
-			
+
 	$stmt->close();
 	$conn->close();
-		
+
 	echo"
 	</div>
 	<div class='container addNotebook'>
@@ -162,54 +162,54 @@ function showNote() {
 		<button type='submit' class='btnAddNotebook'>Add</button>
 	</form>
 	</div>
-	
+
 	</body>
 	</html>
 	";
-	
+
 }
 
 function checkSaveNote() {
-		
+
 	$success = true;
 	$notetxt = htmlspecialchars(trim($_POST['txtNote']));
-	
+
 	if (empty($notetxt)) {
-        $success = false; 
+        $success = false;
     }
-	
+
 	if ($success) {
-		updateNote();	
+		updateNote();
 	}else {
 		showNote();
 	}
-	
+
 }
 
 function updateNote(){
-		
-	$pdo = new PDO('mysql:host=localhost;dbname=schulmanager', 'root', '');
- 
+
+	$pdo = new PDO('mysql:host=localhost;dbname=id7650771_schulmanager', 'id7650771_phpuser', 'phpUser123#');
+
 	$statement = $pdo->prepare("UPDATE note SET notetext = ? WHERE id = ?");
 	$statement->execute(array(htmlspecialchars(trim($_POST['txtNote'])), $_POST['note']));
-	
+
 	showNote();
 }
 
 function checkAddNote() {
-	
+
 	$success = true;
 	$note = htmlspecialchars(trim($_POST['addNote']));
-		
+
 	if (empty($note)) {
-        $success = false; 
+        $success = false;
     }
-	
+
 	// Check Note already used
 	$servername = "localhost";
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -218,40 +218,40 @@ function checkAddNote() {
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
-	
+
 	// prepare and bind
 	$stmt = $conn->prepare("SELECT id FROM note WHERE title=? AND notebook_id_fk=?");
 	$stmt->bind_param("si", $note, $notebook_id_fk);
-	
+
 	$notebook_id_fk = htmlspecialchars(trim($_POST['notebook']));
-	
+
 	$stmt->execute();
 
 	// bind result variable
    	$stmt->bind_result($id);
-	
-	// fetch value 
+
+	// fetch value
 	if ($stmt->fetch()) {
 		$success = false;
 	}
-			
+
 	$stmt->close();
 	$conn->close();
-	
+
 	if ($success) {
-		insertNote();	
+		insertNote();
 	}else {
 		showNote();
 	}
-	
+
 }
 
 function insertNote(){
-	
+
 	$servername = "localhost";
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -260,36 +260,36 @@ function insertNote(){
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
-	
+
 	// prepare and bind
 	$stmt = $conn->prepare("INSERT INTO note (title, notetext, notebook_id_fk) VALUES (?, ?, ?)");
 	$stmt->bind_param("ssi", htmlspecialchars(trim($_POST['addNote'])), $notetext, htmlspecialchars(trim($_POST['notebook'])));
-	
+
 	// set parameters and execute
 	$notetext = "Schreibe deine Notiz";
-	
+
 	$stmt->execute();
-	
+
 	$stmt->close();
 	$conn->close();
-	
+
 	showNote();
 }
 
 function checkAddNotebook() {
-	
+
 	$success = true;
 	$notebook = htmlspecialchars(trim($_POST['addNotebook']));
-			 
+
 	if (empty($notebook)) {
-        $success = false; 
-    }	
-	
+        $success = false;
+    }
+
 	// Check Username already used
 	$servername = "localhost";
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -298,38 +298,38 @@ function checkAddNotebook() {
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
-	
+
 	// prepare and bind
 	$stmt = $conn->prepare("SELECT id FROM notebook WHERE user_id_fk=? AND name=?");
 	$stmt->bind_param("is",$_SESSION["user"],$notebook);
-	
+
 	$stmt->execute();
 
 	// bind result variable
    	$stmt->bind_result($id);
-	
-	// fetch value 
+
+	// fetch value
 	if ($stmt->fetch()) {
 		$success = false;
 	}
-			
+
 	$stmt->close();
 	$conn->close();
 
 	if ($success) {
-		insertNotebook();	
+		insertNotebook();
 	}else {
 		showNote();
 	}
-	
+
 }
-	
+
 function insertNotebook() {
-	
+
 	$servername = "localhost";
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -338,29 +338,29 @@ function insertNotebook() {
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
-	
+
 	// prepare and bind
 	$stmt = $conn->prepare("INSERT INTO notebook (name, user_id_fk) VALUES (?, ?)");
 	$stmt->bind_param("si", $name, $_SESSION["user"]);
-	
+
 	// set parameters and execute
 	$name = htmlspecialchars(trim($_POST['addNotebook']));
-	
+
 	$stmt->execute();
-	
+
 	$stmt->close();
 	$conn->close();
-	
+
 	showNote();
-	
+
 }
 
 function deleteNotebook(){
-	
+
 	$servername = "localhost";
-	$username 	= "root";
-	$password 	= "";
-	$dbname 	= "schulmanager";
+	$username 	= "id7650771_phpuser";
+	$password 	= "phpUser123#";
+	$dbname 	= "id7650771_schulmanager";
 
 	// Create connection
 	$conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -373,25 +373,25 @@ function deleteNotebook(){
 	$sql = "DELETE FROM note WHERE notebook_id_fk=".htmlspecialchars(trim($_POST['notebook']));
 
 	if (mysqli_query($conn, $sql)) {
-	} 
-	
+	}
+
 	// sql to delete a record
 	$sql = "DELETE FROM notebook WHERE id=".htmlspecialchars(trim($_POST['notebook']));
 
 	if (mysqli_query($conn, $sql)) {
-	} 
-	
+	}
+
 	mysqli_close($conn);
-	
+
 	showNote();
 }
 
 function deleteNote(){
-	
+
 	$servername = "localhost";
-	$username 	= "root";
-	$password 	= "";
-	$dbname 	= "schulmanager";
+	$username 	= "id7650771_phpuser";
+	$password 	= "phpUser123#";
+	$dbname 	= "id7650771_schulmanager";
 
 	// Create connection
 	$conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -402,19 +402,19 @@ function deleteNote(){
 
 	// sql to delete a record
 	$sql = "DELETE FROM note WHERE id=".htmlspecialchars(trim($_POST['note']));
-	
+
 	if (mysqli_query($conn, $sql)) {
-	} 
-	
+	}
+
 	mysqli_close($conn);
-	
+
 	showNote();
 }
 
 function jumpToHome() {
-	
-	header('Location: index.php'); 
-	
+
+	header('Location: index.php');
+
 }
 
 ?>
