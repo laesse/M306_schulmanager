@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 29. Sep 2018 um 20:41
+-- Erstellungszeit: 29. Okt 2018 um 19:56
 -- Server-Version: 10.1.36-MariaDB
 -- PHP-Version: 7.2.10
 
@@ -19,10 +19,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `schulmanager`
+-- Datenbank: `id7650771_schulmanager`
 --
-CREATE DATABASE IF NOT EXISTS `schulmanager` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `schulmanager`;
 
 -- --------------------------------------------------------
 
@@ -326,7 +324,7 @@ ALTER TABLE `mark`
 -- Constraints der Tabelle `note`
 --
 ALTER TABLE `note`
-  ADD CONSTRAINT `notebook_fk` FOREIGN KEY (`notebook_id_fk`) REFERENCES `notebook` (`id`);
+  ADD CONSTRAINT `notebook_fk` FOREIGN KEY (`notebook_id_fk`) REFERENCES `notebook` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `notebook`
