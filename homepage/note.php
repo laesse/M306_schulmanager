@@ -214,23 +214,20 @@ function updateNote(){
 }
 
 function checkAddNote() {
-
 	$success = true;
 	$note = htmlspecialchars(trim($_POST['addNote']));
 
 	if (empty($note)) {
-        $success = false;
-    }
+      $success = false;
+  }
 
-	// Check Note already used
-	$servername = "localhost";
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
+  /*
+  Check if Note with the same title already in the notbook
+	*/
 
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
-
+	// get connection
+	$conn = getConnection();
+	
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
@@ -265,13 +262,8 @@ function checkAddNote() {
 
 function insertNote(){
 
-	$servername = "localhost";
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	// get connection
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -298,18 +290,16 @@ function checkAddNotebook() {
 	$success = true;
 	$notebook = htmlspecialchars(trim($_POST['addNotebook']));
 
+	/*
+  Check if User already have a notebook with the same title
+	*/
+
 	if (empty($notebook)) {
         $success = false;
     }
 
-	// Check Username already used
-	$servername = "localhost";
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	// get connection
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -343,13 +333,8 @@ function checkAddNotebook() {
 
 function insertNotebook() {
 
-	$servername = "localhost";
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	// get connection
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -375,13 +360,8 @@ function insertNotebook() {
 
 function deleteNotebook(){
 
-	$servername = "localhost";
-	$username 	= "id7650771_phpuser";
-	$password 	= "phpUser123#";
-	$dbname 	= "id7650771_schulmanager";
-
-	// Create connection
-	$conn = new mysqli($servername, $username, $password, $dbname);
+	// get connection
+	$conn = getConnection();
 	// Check connection
 	if ($conn->connect_error) {
     	die("Connection failed: " . $conn->connect_error);
@@ -409,13 +389,10 @@ function deleteNotebook(){
 
 function deleteNote(){
 
-	$servername = "localhost";
-	$username 	= "id7650771_phpuser";
-	$password 	= "phpUser123#";
-	$dbname 	= "id7650771_schulmanager";
 
-	// Create connection
-	$conn = new mysqli($servername, $username, $password, $dbname);
+	// get connection
+	$conn = getConnection();
+
 	// Check connection
 	if ($conn->connect_error) {
     	die("Connection failed: " . $conn->connect_error);
