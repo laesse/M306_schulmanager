@@ -32,6 +32,17 @@ switch($_GET['status'])
 	break;
 }
 
+function getConnection(){
+	$servername = "localhost";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
+
+	// return new mysqli connection
+	return new mysqli($servername, $dbusername, $password, $dbname);
+}
+
+
 function showNote() {
 	echo "
 	<!DOCTYPE html>
@@ -345,12 +356,13 @@ function insertNotebook() {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
+	// set parameters and execute
+	$name = htmlspecialchars(trim($_POST['addNotebook']));
+
 	// prepare and bind
 	$stmt = $conn->prepare("INSERT INTO notebook (name, user_id_fk) VALUES (?, ?)");
 	$stmt->bind_param("si", $name, $_SESSION["user"]);
 
-	// set parameters and execute
-	$name = htmlspecialchars(trim($_POST['addNotebook']));
 
 	$stmt->execute();
 
@@ -369,10 +381,10 @@ function deleteNotebook(){
 	$dbname 	= "id7650771_schulmanager";
 
 	// Create connection
-	$conn = mysqli_connect($servername, $username, $password, $dbname);
+	$conn = new mysqli($servername, $username, $password, $dbname);
 	// Check connection
-	if (!$conn) {
-    	die("Connection failed: " . mysqli_connect_error());
+	if ($conn->connect_error) {
+    	die("Connection failed: " . $conn->connect_error);
 	}
 
 	// sql to delete a record
@@ -400,16 +412,18 @@ function deleteNote(){
 	$dbname 	= "id7650771_schulmanager";
 
 	// Create connection
-	$conn = mysqli_connect($servername, $username, $password, $dbname);
+	$conn = new mysqli($servername, $username, $password, $dbname);
 	// Check connection
-	if (!$conn) {
-    	die("Connection failed: " . mysqli_connect_error());
+	if ($conn->connect_error) {
+    	die("Connection failed: " . $conn->connect_error);
 	}
 
-	// sql to delete a record
-	$sql = "DELETE FROM note WHERE id=".htmlspecialchars(trim($_POST['note']));
+	$note = htmlspecialchars(trim($_POST['note']))
+	// stmt to delete the note
+	$stmt = $conn->prepare("DELETE FROM note WHERE id=?");
+  $stmt->bind_param("s", $note);
 
-	if (mysqli_query($conn, $sql)) {
+	if (£$stmt.execute()) {
 	}
 
 	mysqli_close($conn);
