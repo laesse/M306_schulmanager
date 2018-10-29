@@ -53,16 +53,14 @@ function showNote() {
 	</head>
 	<body>
 
-	<form action='?status=jumpToHome' method='post'>
+	  <form action='?status=jumpToHome' method='post'>
+		  <button type='submit' class='btnHome'>Home</button>
+	  </form>
 
-		<button type='submit' class='btnHome'>Home</button>
-
-	</form>
-
-	<div class='container'>
-	<h1>Add Notebook</h1>
-	<p>Hier sind deine Notebooks.</p>
-	<hr>
+	  <div class='container'>
+		  <h1>Add Notebook</h1>
+		  <p>Hier sind deine Notebooks.</p>
+		  <hr>
 	";
 
 	// get connection
@@ -77,72 +75,67 @@ function showNote() {
 	$notebooksFromAUser = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
 	$notebooksFromAUser->bind_param("i",$_SESSION["user"]);
 
-	$notebooksFromAUser->execute();
+	if(!$notebooksFromAUser->execute()){
+		// TODO: echo Error
+	}
 
-	// bind result variable
-  $notebooksFromAUser->bind_result($id, $name);
+  $notebooksFromAUser->bind_result($id_notebook, $name);
 
-	// fetch value
 	while ($notebooksFromAUser->fetch()) {
-
-		$id_notebook = $id;
-
 		echo "
-
-  			<div class='container notebook'>
-			<h2 style='display:inline;'>".$name." </h2>
-			<form style='display:inline;' action='?status=deleteNotebook' method='post'>
-					<button type='submit' class='btnDeleteNotebook'>Delete</button>
-					<input type='hidden' name='notebook' value='".$id_notebook."'>
-			</form>
-
+			<div class='container notebook'>
+				<h2 style='display:inline;'>$name</h2>
+					<form style='display:inline;' action='?status=deleteNotebook' method='post'>
+						<button type='submit' class='btnDeleteNotebook'>Delete</button>
+						<input type='hidden' name='notebook_id' value='$id_notebook'>
+					</form>
 			</div>
 		";
-			// prepare and bind
-			$notesInNotebook = $conn->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
-			$notesInNotebook->bind_param("i",$id_notebook);
 
-			$notesInNotebook->execute();
+		//get the notes out of the notebook
+		$notesInNotebook = $conn->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
+		$notesInNotebook->bind_param("i",$id_notebook);
+		if (!$notesInNotebook->execute()){
+			// TODO: echo Error
+		}
+		// bind result variable
+    $notesInNotebook->bind_result($note_id, $title, $notetext);
 
-			// bind result variable
-    		$notesInNotebook->bind_result($id, $title, $notetext);
-
-			// fetch value
-			while ($notesInNotebook->fetch()) {
-				echo "
-  			<div class='container note'>
-				  <p style='display:inline;'>".$title." </p>
-					<form style='display:inline;' action='?status=deleteNote' method='post'>
-						<button type='submit' class='btnDeleteNote'>Delete</button>
-						<input type='hidden' name='note' value='".$id."'>
-					</form>
-					<form action='?status=checkSaveNote' method='post'>
-				";
-					if ($notetext == "Schreibe deine Notiz") {
-						echo "<textarea name='txtNote' placeholder='".$notetext."' cols='128' rows='3'></textarea><br>";
-					}else {
-						echo "<textarea name='txtNote' placeholder='$notetext' cols='128' rows='3'>$notetext</textarea><br>";
-					}
-					echo "
-						<button type='submit' class='btnSaveNote'>Save</button>
-						<input type='hidden' name='note' value='".$id."'>
-					</form>
-				</div>
-				";
+		while ($notesInNotebook->fetch()) {
+			echo "
+  		<div class='container note'>
+			  <p style='display:inline;'>$title</p>
+				<form style='display:inline;' action='?status=deleteNote' method='post'>
+					<button type='submit' class='btnDeleteNote'>Delete</button>
+					<input type='hidden' name='note_id' value='$note_id'>
+				</form>
+				<form action='?status=checkSaveNote' method='post'>
+			    ";
+			// only fill placeholder with the notetext for the default value of $notetext
+			if ($notetext == "Schreibe deine Notiz") {
+			  echo "<textarea name='txtNote' placeholder='$notetext' cols='128' rows='3'></textarea><br>";
+			}else {
+				echo "<textarea name='txtNote' placeholder='$notetext' cols='128' rows='3'>$notetext</textarea><br>";
 			}
+			echo "
+			    <button type='submit' class='btnSaveNote'>Save</button>
+				  <input type='hidden' name='note_id' value='$note_id'>
+			  </form>
+			</div>";
+		}
 
-			$notesInNotebook->close();
+	  $notesInNotebook->close();
 
 		echo "
-  				<div class='container note'>
+  		<div class='container note'>
 				<form action='?status=checkAddNote' method='post'>
-					<label for='addNote'>Add Note</label><br>
-					<input type='text' name='addNote' required>
+					<label for='newNoteTitle'>Add Note</label><br>
+					<input type='text' name='newNoteTitle' required>
 					<button type='submit' class='btnAddNote'>Add</button>
-					<input type='hidden' name='notebook' value='".$id_notebook."'>
+					<input type='hidden' name='notebook_id' value='$id_notebook'>
 				</form>
-				</div>
-				<br><hr>
+			</div>
+		<br><hr>
 		";
 
 	}
@@ -152,22 +145,20 @@ function showNote() {
 
 	echo"
 	</div>
-	<div class='container addNotebook'>
-	<form action='?status=checkAddNotebook' method='post'>
-		<label for='addNotebook'>Add Notebook</label><br>
-		<input type='text' name='addNotebook' id='addNotebook' required>
-		<button type='submit' class='btnAddNotebook'>Add</button>
-	</form>
+		<div class='container addNotebook'>
+			<form action='?status=checkAddNotebook' method='post'>
+				<label for='addNotebook'>Add Notebook</label><br>
+				<input type='text' name='addNotebook' id='addNotebook' required>
+				<button type='submit' class='btnAddNotebook'>Add</button>
+			</form>
 	</div>
-
-	</body>
-	</html>
+</body>
+</html>
 	";
 
 }
 
 function checkSaveNote() {
-
 	$success = true;
 	$notetxt = htmlspecialchars(trim($_POST['txtNote']));
 
@@ -193,9 +184,10 @@ function updateNote(){
 	}
 
 	$updateNotetxt = $conn->prepare("UPDATE note SET notetext = ? WHERE id = ?");
-	$updateNotetxt->bind_param("si",htmlspecialchars(trim($_POST['txtNote'])), $_POST['note']);
+	$updateNotetxt->bind_param("si",htmlspecialchars(trim($_POST['txtNote'])), $_POST['note_id']);
 
-	if($updateNotetxt->execute()){
+	if(!$updateNotetxt->execute()){
+		// TODO: echo Error
 	}
 
 	$updateNotetxt->close();
@@ -206,16 +198,15 @@ function updateNote(){
 
 function checkAddNote() {
 	$success = true;
-	$note = htmlspecialchars(trim($_POST['addNote']));
+	$noteTitle = htmlspecialchars(trim($_POST['newNoteTitle']));
 
-	if (empty($note)) {
+	if (empty($noteTitle)) {
       $success = false;
   }
 
   /*
   Check if Note with the same title already in the notbook
 	*/
-
 	// get connection
 	$conn = getConnection();
 
@@ -224,13 +215,15 @@ function checkAddNote() {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// prepare and bind
+	// no result expectet otherwhise the notebook already have a note with the same title
 	$stmt = $conn->prepare("SELECT id FROM note WHERE title=? AND notebook_id_fk=?");
-	$stmt->bind_param("si", $note, $notebook_id_fk);
+	$stmt->bind_param("si", $noteTitle, $notebook_id_fk);
 
-	$notebook_id_fk = htmlspecialchars(trim($_POST['notebook']));
+	$notebook_id_fk = htmlspecialchars(trim($_POST['notebook_id']));
 
-	$stmt->execute();
+	if(!$stmt->execute()){
+		// TODO: echo Error
+	}
 
 	// bind result variable
   $stmt->bind_result($id);
@@ -261,14 +254,14 @@ function insertNote(){
 		die("Connection failed: ".$conn->connect_error);
 	}
 
+	$notetext = "Schreibe deine Notiz";
 	// prepare and bind
 	$stmt = $conn->prepare("INSERT INTO note (title, notetext, notebook_id_fk) VALUES (?, ?, ?)");
-	$stmt->bind_param("ssi", htmlspecialchars(trim($_POST['addNote'])), $notetext, htmlspecialchars(trim($_POST['notebook'])));
+	$stmt->bind_param("ssi", htmlspecialchars(trim($_POST['newNoteTitle'])), $notetext, htmlspecialchars(trim($_POST['notebook_id'])));
 
-	// set parameters and execute
-	$notetext = "Schreibe deine Notiz";
-
-	$stmt->execute();
+	if(!$stmt->execute()){
+		// TODO: echo Error
+	}
 
 	$stmt->close();
 	$conn->close();
@@ -286,8 +279,8 @@ function checkAddNotebook() {
 	*/
 
 	if (empty($notebook)) {
-        $success = false;
-    }
+    $success = false;
+  }
 
 	// get connection
 	$conn = getConnection();
@@ -301,12 +294,12 @@ function checkAddNotebook() {
 	$stmt = $conn->prepare("SELECT id FROM notebook WHERE user_id_fk=? AND name=?");
 	$stmt->bind_param("is",$_SESSION["user"],$notebook);
 
-	$stmt->execute();
+	if(!$stmt->execute()){
+	  // TODO: echo Error
+	}
 
-	// bind result variable
   $stmt->bind_result($id);
 
-	// fetch value
 	if ($stmt->fetch()) {
 		// got result test falied
 		$success = false;
@@ -318,6 +311,7 @@ function checkAddNotebook() {
 	if ($success) {
 		insertNotebook();
 	}else {
+		// TODO: echo Error
 		header("Location: note.php");
 	}
 
@@ -341,7 +335,9 @@ function insertNotebook() {
 	$insertIntoNotebook->bind_param("si", $name, $_SESSION["user"]);
 
 
-	$insertIntoNotebook->execute();
+	if(!$insertIntoNotebook->execute()){
+		// TODO: echo Error
+	}
 
 	$insertIntoNotebook->close();
 	$conn->close();
@@ -357,7 +353,7 @@ function deleteNotebook(){
 	if ($conn->connect_error) {
     	die("Connection failed: " . $conn->connect_error);
 	}
-	$notebook = htmlspecialchars(trim($_POST['notebook']));
+	$notebook = htmlspecialchars(trim($_POST['notebook_id']));
 
 	$delNotebook = $conn->prepare("DELETE FROM notebook WHERE id=?");
 	$delNotebook->bind_param("s", $notebook);
@@ -381,7 +377,7 @@ function deleteNote(){
     	die("Connection failed: " . $conn->connect_error);
 	}
 
-	$note = htmlspecialchars(trim($_POST['note']));
+	$note = htmlspecialchars(trim($_POST['note_id']));
 	// stmt to delete the note
 	$delNote = $conn->prepare("DELETE FROM note WHERE id=?");
   $delNote->bind_param("s", $note);
