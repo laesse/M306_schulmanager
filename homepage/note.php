@@ -33,27 +33,78 @@ switch($_GET['status'])
 }
 
 function showNote() {
+	
+	
+	
 	echo "
 	<!DOCTYPE html>
 	<html>
 	<head>
 		<title>Note</title>
-		<link href='note.css' rel='stylesheet'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+		<link rel='stylesheet' href='https://code.getmdl.io/1.3.0/material.indigo-red.min.css'>
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' type='text/css'>
+		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
 	</head>
 	<body>
-
-	<form action='?status=jumpToHome' method='post'>
-
-		<button type='submit' class='btnHome'>Home</button>
-
-	</form>
-
-	<div class='container'>
-	<h1>Add Notebook</h1>
-	<p>Hier sind deine Notebooks.</p>
-	<hr>
+		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
+		<div class='mdl-layout mdl-js-layout'>
+  			<header class='mdl-layout__header mdl-layout__header--scroll'>
+    			<div class='mdl-layout__header-row'>
+      				<!-- Title -->
+      				<span class='mdl-layout-title'>Schulmanager</span>
+      				<!-- Add spacer, to align navigation to the right -->
+      				<div class='mdl-layout-spacer'></div>
+      					<!-- Navigation -->
+      					<nav class='mdl-navigation'>
 	";
-
+	
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	}     
+		
+	echo "
+	  					</nav>
+    				</div>
+  				</header>
+				<div class='mdl-layout__drawer'>
+    				<span class='mdl-layout-title'>Schulmanager</span>
+    				<nav class='mdl-navigation'>
+    ";
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} 
+	
+	echo "
+					</nav>
+  				</div>
+  				<main class='mdl-layout__content'>
+    				<div class='page-content'>
+					
+					
+					
+						<div class='mdl-grid'>
+							<div class='mdl-layout-spacer'></div>
+    						<div class='mdl-cell mdl-cell--4-col'>
+							
+							
+	<h3>Notebooks</h3>
+	<p>These are your Notebooks.</p>
+	";				
+		
 	$servername = "localhost";
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
@@ -80,20 +131,32 @@ function showNote() {
 	while ($stmt->fetch()) {
 
 		$id_notebook = $id;
+	
+	echo "
+	
+	<!-- Square card -->
+	<style>
+	.demo-card-square.mdl-card {
+		width: 320px;
+		height: 320px;
+	}
+	.demo-card-square > .mdl-card__title {
+  		color: #fff;
+  		background: url('../assets/demos/dog.png') bottom right 15% no-repeat #46B6AC;
+	}
+	</style>
 
-		echo "
-
-  			<div class='container notebook'>
-			<h2 style='display:inline;'>".$name." </h2>
-			<form style='display:inline;' action='?status=deleteNotebook' method='post'>
-					<button type='submit' class='btnDeleteNotebook'>Delete</button>
-					<input type='hidden' name='notebook' value='".$id_notebook."'>
-			</form>
-
-			</div>
-		";
-
-			$servername1 = "localhost";
+	<div class='demo-card-square mdl-card mdl-shadow--2dp'>
+  		<div class='mdl-card__title mdl-card--expand'>
+			<h2 class='mdl-card__title-text'>".$name."</h2>
+  		</div>
+  		<div class='mdl-card__supporting-text'>
+    		DELETE?
+  		</div>
+  		<div class='mdl-card__actions mdl-card--border'>
+	";
+		
+    		$servername1 = "localhost";
 			$dbusername1 = "id7650771_phpuser";
 			$password1 = "phpUser123#";
 			$dbname1 = "id7650771_schulmanager";
@@ -117,37 +180,47 @@ function showNote() {
 
 			// fetch value
 			while ($stmt1->fetch()) {
-				echo "
-  				<div class='container note'>
-					<p style='display:inline;'>".$title." </p>
-					<form style='display:inline;' action='?status=deleteNote' method='post'>
-						<button type='submit' class='btnDeleteNote'>Delete</button>
-						<input type='hidden' name='note' value='".$id."'>
-					</form>
+			
+	echo "
+			<button id='show-dialog' type='button' class='mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>Show Note</button>
+  			<dialog class='mdl-dialog'>
+    			<h4 class='mdl-dialog__title'>Allow data collection?</h4>
+    			<div class='mdl-dialog__content'>
+      				
 					<form action='?status=checkSaveNote' method='post'>
 						<textarea name='txtNote'>".$notetext."</textarea><br>
 						<button type='submit' class='btnSaveNote'>Save</button>
-						<input type='hidden' name='note' value='".$id."'>
 					</form>
-				</div>
-				";
+					
+    			</div>
+    			<div class='mdl-dialog__actions'>
+      				<button type='button' class='mdl-button'>Agree</button>
+      				<button type='button' class='mdl-button close'>Disagree</button>
+    			</div>
+  			</dialog>
+  			<script>
+    			var dialog = document.querySelector('dialog');
+    			var showDialogButton = document.querySelector('#show-dialog');
+    			if (! dialog.showModal) {
+					dialogPolyfill.registerDialog(dialog);
+    			}
+    			showDialogButton.addEventListener('click', function() {
+      				dialog.showModal();
+    			});
+    			dialog.querySelector('.close').addEventListener('click', function() {
+					dialog.close();
+    			});
+  			</script>
+			
+			
+  		</div>
+	</div>
+	<br>
+	";
 			}
 
 			$stmt1->close();
 			$conn1->close();
-
-		echo "
-  				<div class='container note'>
-				<form action='?status=checkAddNote' method='post'>
-					<label for='addNote'>Add Note</label><br>
-					<input type='text' name='addNote' required>
-					<button type='submit' class='btnAddNote'>Add</button>
-					<input type='hidden' name='notebook' value='".$id_notebook."'>
-				</form>
-				</div>
-				<br><hr>
-		";
-
 	}
 
 	$stmt->close();
@@ -164,6 +237,29 @@ function showNote() {
 	</div>
 
 	</body>
+	</html>
+	";
+	
+	echo "
+							</div>
+    						<div class='mdl-layout-spacer'></div>
+						</div>
+					
+							
+					
+					</div>
+  				</main>
+				<footer class='mdl-mini-footer'>
+  				<div class='mdl-mini-footer__left-section'>
+    				<div class='mdl-logo'>TODO</div>
+    				<ul class='mdl-mini-footer__link-list'>
+      					<li><a href=''>Help</a></li>
+      					<li><a href=''>Privacy & Terms</a></li>
+    				</ul>
+  				</div>
+			</footer>
+			</div>
+		</body>
 	</html>
 	";
 
