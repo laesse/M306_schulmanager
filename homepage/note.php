@@ -337,13 +337,13 @@ function insertNotebook() {
 	$name = htmlspecialchars(trim($_POST['addNotebook']));
 
 	// prepare and bind
-	$stmt = $conn->prepare("INSERT INTO notebook (name, user_id_fk) VALUES (?, ?)");
-	$stmt->bind_param("si", $name, $_SESSION["user"]);
+	$insertIntoNotebook = $conn->prepare("INSERT INTO notebook (name, user_id_fk) VALUES (?, ?)");
+	$insertIntoNotebook->bind_param("si", $name, $_SESSION["user"]);
 
 
-	$stmt->execute();
+	$insertIntoNotebook->execute();
 
-	$stmt->close();
+	$insertIntoNotebook->close();
 	$conn->close();
 
 
@@ -351,26 +351,19 @@ function insertNotebook() {
 }
 
 function deleteNotebook(){
-
-	// get connection
 	$conn = getConnection();
+
 	// Check connection
 	if ($conn->connect_error) {
     	die("Connection failed: " . $conn->connect_error);
 	}
 	$notebook = htmlspecialchars(trim($_POST['notebook']));
 
-	$delNote = $conn->prepare("DELETE FROM note WHERE notebook_id_fk=?");
-  $delNote->bind_param("s", $notebook);
-
-	if ($delNote->execute()) {
-	}
-	$delNote->close();
-
 	$delNotebook = $conn->prepare("DELETE FROM notebook WHERE id=?");
 	$delNotebook->bind_param("s", $notebook);
 
-	if ($delNotebook->execute()) {
+	if (!$delNotebook->execute()) {
+		// TODO: echo Error
 	}
 
 	$delNotebook->close();
@@ -381,8 +374,6 @@ function deleteNotebook(){
 
 function deleteNote(){
 
-
-	// get connection
 	$conn = getConnection();
 
 	// Check connection
@@ -395,7 +386,8 @@ function deleteNote(){
 	$delNote = $conn->prepare("DELETE FROM note WHERE id=?");
   $delNote->bind_param("s", $note);
 
-	if ($delNote->execute()) {
+	if (!$delNote->execute()) {
+		// TODO: echo Error
 	}
 
 	$delNote->close();
