@@ -78,7 +78,6 @@ function showNote() {
 	if(!$notebooksFromAUser->execute()){
 		// TODO: echo Error
 	}
-
   $notebooksFromAUser->bind_result($id_notebook, $name);
 
 	while ($notebooksFromAUser->fetch()) {
@@ -92,8 +91,9 @@ function showNote() {
 			</div>
 		";
 
+		$conn2 = getConnection();
 		//get the notes out of the notebook
-		$notesInNotebook = $conn->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
+		$notesInNotebook = $conn2->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
 		$notesInNotebook->bind_param("i",$id_notebook);
 		if (!$notesInNotebook->execute()){
 			// TODO: echo Error
@@ -125,7 +125,7 @@ function showNote() {
 		}
 
 	  $notesInNotebook->close();
-
+		$conn2->close();
 		echo "
   		<div class='container note'>
 				<form action='?status=checkAddNote' method='post'>
