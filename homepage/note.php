@@ -118,14 +118,20 @@ function showNote() {
 			// fetch value
 			while ($stmt1->fetch()) {
 				echo "
-  				<div class='container note'>
-					<p style='display:inline;'>".$title." </p>
+  			<div class='container note'>
+				  <p style='display:inline;'>".$title." </p>
 					<form style='display:inline;' action='?status=deleteNote' method='post'>
 						<button type='submit' class='btnDeleteNote'>Delete</button>
 						<input type='hidden' name='note' value='".$id."'>
 					</form>
 					<form action='?status=checkSaveNote' method='post'>
-						<textarea name='txtNote'>".$notetext."</textarea><br>
+				";
+					if ($notetext == "Schreibe deine Notiz") {
+						echo "<textarea name='txtNote' placeholder='".$notetext."' cols='128' rows='3'></textarea><br>";
+					}else {
+						echo "<textarea name='txtNote' placeholder='$notetext' cols='128' rows='3'>$notetext</textarea><br>";
+					}
+					echo "
 						<button type='submit' class='btnSaveNote'>Save</button>
 						<input type='hidden' name='note' value='".$id."'>
 					</form>

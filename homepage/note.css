@@ -42,8 +42,18 @@ input[type=text]:focus {
     background-color: #ddd;
     outline: none;
 }
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+    border: none;
+    background-color: #f1f1f1;
+}
+textarea:focus {
+    background-color: #ddd;
+}
 
-/*.btnDeleteNotebook, .btnDeleteNote,*/
+
  .btnDeleteNotebook, .btnDeleteNote {
     background-color: #f1f1f1;
     color: red;
