@@ -65,13 +65,8 @@ function showNote() {
 	<hr>
 	";
 
-	$servername = "localhost";
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	// get connection
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -79,16 +74,16 @@ function showNote() {
 	}
 
 	// prepare and bind
-	$stmt = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
-	$stmt->bind_param("i",$_SESSION["user"]);
+	$notebooksFromAUser = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
+	$notebooksFromAUser->bind_param("i",$_SESSION["user"]);
 
-	$stmt->execute();
+	$notebooksFromAUser->execute();
 
 	// bind result variable
-    $stmt->bind_result($id, $name);
+  $notebooksFromAUser->bind_result($id, $name);
 
 	// fetch value
-	while ($stmt->fetch()) {
+	while ($notebooksFromAUser->fetch()) {
 
 		$id_notebook = $id;
 
@@ -103,31 +98,17 @@ function showNote() {
 
 			</div>
 		";
-
-			$servername1 = "localhost";
-			$dbusername1 = "id7650771_phpuser";
-			$password1 = "phpUser123#";
-			$dbname1 = "id7650771_schulmanager";
-
-			// Create connection
-			$conn1 = new mysqli($servername1, $dbusername1, $password1, $dbname1);
-
-			// Check connection
-			if ($conn1->connect_error) {
-				die("Connection failed: ".$conn->connect_error);
-			}
-
 			// prepare and bind
-			$stmt1 = $conn1->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
-			$stmt1->bind_param("i",$id_notebook);
+			$notesInNotebook = $conn->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
+			$notesInNotebook->bind_param("i",$id_notebook);
 
-			$stmt1->execute();
+			$notesInNotebook->execute();
 
 			// bind result variable
-    		$stmt1->bind_result($id, $title, $notetext);
+    		$notesInNotebook->bind_result($id, $title, $notetext);
 
 			// fetch value
-			while ($stmt1->fetch()) {
+			while ($notesInNotebook->fetch()) {
 				echo "
   			<div class='container note'>
 				  <p style='display:inline;'>".$title." </p>
@@ -150,8 +131,7 @@ function showNote() {
 				";
 			}
 
-			$stmt1->close();
-			$conn1->close();
+			$notesInNotebook->close();
 
 		echo "
   				<div class='container note'>
@@ -167,7 +147,7 @@ function showNote() {
 
 	}
 
-	$stmt->close();
+	$notebooksFromAUser->close();
 	$conn->close();
 
 	echo"
@@ -204,11 +184,22 @@ function checkSaveNote() {
 }
 
 function updateNote(){
+	// get connection
+	$conn = getConnection();
 
-	$pdo = new PDO('mysql:host=localhost;dbname=id7650771_schulmanager', 'id7650771_phpuser', 'phpUser123#');
+	// Check connection
+	if ($conn->connect_error) {
+		die("Connection failed: ".$conn->connect_error);
+	}
 
-	$statement = $pdo->prepare("UPDATE note SET notetext = ? WHERE id = ?");
-	$statement->execute(array(htmlspecialchars(trim($_POST['txtNote'])), $_POST['note']));
+	$updateNotetxt = $conn->prepare("UPDATE note SET notetext = ? WHERE id = ?");
+	$updateNotetxt->bind_param("si",htmlspecialchars(trim($_POST['txtNote'])), $_POST['note']);
+
+	if($updateNotetxt->execute()){
+	}
+
+	$updateNotetxt->close();
+	$conn->close();
 
 	header("Location: note.php");
 }
@@ -227,7 +218,7 @@ function checkAddNote() {
 
 	// get connection
 	$conn = getConnection();
-	
+
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
@@ -242,7 +233,7 @@ function checkAddNote() {
 	$stmt->execute();
 
 	// bind result variable
-   	$stmt->bind_result($id);
+  $stmt->bind_result($id);
 
 	// fetch value
 	if ($stmt->fetch()) {
@@ -306,17 +297,18 @@ function checkAddNotebook() {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// prepare and bind
+	// no result expectet because then the user have already a notebook with the same name...
 	$stmt = $conn->prepare("SELECT id FROM notebook WHERE user_id_fk=? AND name=?");
 	$stmt->bind_param("is",$_SESSION["user"],$notebook);
 
 	$stmt->execute();
 
 	// bind result variable
-   	$stmt->bind_result($id);
+  $stmt->bind_result($id);
 
 	// fetch value
 	if ($stmt->fetch()) {
+		// got result test falied
 		$success = false;
 	}
 
