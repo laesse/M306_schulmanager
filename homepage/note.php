@@ -175,7 +175,6 @@ function checkSaveNote() {
 }
 
 function updateNote(){
-	// get connection
 	$conn = getConnection();
 
 	// Check connection
@@ -215,8 +214,8 @@ function checkAddNote() {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// no result expectet otherwhise the notebook already have a note with the same title
-	$stmt = $conn->prepare("SELECT id FROM note WHERE title=? AND notebook_id_fk=?");
+	// if cnt is 1 there is alerady a note with the same title in this notebook
+	$stmt = $conn->prepare("SELECT count(*) cnt FROM note WHERE title=? AND notebook_id_fk=?");
 	$stmt->bind_param("si", $noteTitle, $notebook_id_fk);
 
 	$notebook_id_fk = htmlspecialchars(trim($_POST['notebook_id']));
@@ -226,11 +225,14 @@ function checkAddNote() {
 	}
 
 	// bind result variable
-  $stmt->bind_result($id);
+  $stmt->bind_result($cnt);
 
 	// fetch value
 	if ($stmt->fetch()) {
-		$success = false;
+		if ($cnt==1){
+			// note with the same title in this notebook
+			$success = false;
+		}
 	}
 
 	$stmt->close();
@@ -238,7 +240,8 @@ function checkAddNote() {
 
 	if ($success) {
 		insertNote();
-	}else {
+	} else {
+		// TODO: echo Error
 		header("Location: note.php");
 	}
 
@@ -290,19 +293,20 @@ function checkAddNotebook() {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// no result expectet because then the user have already a notebook with the same name...
-	$stmt = $conn->prepare("SELECT id FROM notebook WHERE user_id_fk=? AND name=?");
+	// if cnt is 1 there is alerady a notebook with the same name for this user
+	$stmt = $conn->prepare("SELECT count(*) cnt FROM notebook WHERE user_id_fk=? AND name=?");
 	$stmt->bind_param("is",$_SESSION["user"],$notebook);
 
 	if(!$stmt->execute()){
 	  // TODO: echo Error
 	}
 
-  $stmt->bind_result($id);
+  $stmt->bind_result($cnt);
 
 	if ($stmt->fetch()) {
-		// got result test falied
-		$success = false;
+		if($cnt == 1){
+			$success = false;
+		}
 	}
 
 	$stmt->close();
