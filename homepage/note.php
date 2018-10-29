@@ -192,13 +192,13 @@ function checkSaveNote() {
 	$notetxt = htmlspecialchars(trim($_POST['txtNote']));
 
 	if (empty($notetxt)) {
-        $success = false;
-    }
+     $success = false;
+  }
 
 	if ($success) {
 		updateNote();
 	}else {
-		showNote();
+		header("Location: note.php");
 	}
 
 }
@@ -210,7 +210,7 @@ function updateNote(){
 	$statement = $pdo->prepare("UPDATE note SET notetext = ? WHERE id = ?");
 	$statement->execute(array(htmlspecialchars(trim($_POST['txtNote'])), $_POST['note']));
 
-	showNote();
+	header("Location: note.php");
 }
 
 function checkAddNote() {
@@ -258,7 +258,7 @@ function checkAddNote() {
 	if ($success) {
 		insertNote();
 	}else {
-		showNote();
+		header("Location: note.php");
 	}
 
 }
@@ -290,7 +290,7 @@ function insertNote(){
 	$stmt->close();
 	$conn->close();
 
-	showNote();
+  header("Location: note.php");
 }
 
 function checkAddNotebook() {
@@ -336,7 +336,7 @@ function checkAddNotebook() {
 	if ($success) {
 		insertNotebook();
 	}else {
-		showNote();
+		header("Location: note.php");
 	}
 
 }
@@ -369,8 +369,8 @@ function insertNotebook() {
 	$stmt->close();
 	$conn->close();
 
-	showNote();
 
+	header('Location: note.php');
 }
 
 function deleteNotebook(){
@@ -386,22 +386,25 @@ function deleteNotebook(){
 	if ($conn->connect_error) {
     	die("Connection failed: " . $conn->connect_error);
 	}
+	$notebook = htmlspecialchars(trim($_POST['notebook']));
 
-	// sql to delete a record
-	$sql = "DELETE FROM note WHERE notebook_id_fk=".htmlspecialchars(trim($_POST['notebook']));
+	$delNote = $conn->prepare("DELETE FROM note WHERE notebook_id_fk=?");
+  $delNote->bind_param("s", $notebook);
 
-	if (mysqli_query($conn, $sql)) {
+	if ($delNote->execute()) {
+	}
+	$delNote->close();
+
+	$delNotebook = $conn->prepare("DELETE FROM notebook WHERE id=?");
+	$delNotebook->bind_param("s", $notebook);
+
+	if ($delNotebook->execute()) {
 	}
 
-	// sql to delete a record
-	$sql = "DELETE FROM notebook WHERE id=".htmlspecialchars(trim($_POST['notebook']));
+	$delNotebook->close();
+	$conn->close();
 
-	if (mysqli_query($conn, $sql)) {
-	}
-
-	mysqli_close($conn);
-
-	showNote();
+	header("Location: note.php");
 }
 
 function deleteNote(){
@@ -418,17 +421,18 @@ function deleteNote(){
     	die("Connection failed: " . $conn->connect_error);
 	}
 
-	$note = htmlspecialchars(trim($_POST['note']))
+	$note = htmlspecialchars(trim($_POST['note']));
 	// stmt to delete the note
-	$stmt = $conn->prepare("DELETE FROM note WHERE id=?");
-  $stmt->bind_param("s", $note);
+	$delNote = $conn->prepare("DELETE FROM note WHERE id=?");
+  $delNote->bind_param("s", $note);
 
-	if (£$stmt.execute()) {
+	if ($delNote->execute()) {
 	}
 
-	mysqli_close($conn);
+	$delNote->close();
+	$conn->close();
 
-	showNote();
+	header('Location: note.php');
 }
 
 function jumpToHome() {
