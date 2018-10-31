@@ -81,9 +81,20 @@ function showHome() {
   				</div>
   				<main class='mdl-layout__content'>
     				<div class='page-content'>	
+						
+						<div class='mdl-grid'>
+							<div class='mdl-layout-spacer'></div>
+    						<div class='mdl-cell mdl-cell--4-col'>
+							
+	<h3>Welcome</h3>
+	<p>Start your schoolmanagement today.</p>
+							
+							</div>
+    						<div class='mdl-layout-spacer'></div>
+						</div>
+													
 					</div>
   				</main>
-			</div>
 			<footer class='mdl-mini-footer'>
   				<div class='mdl-mini-footer__left-section'>
     				<div class='mdl-logo'>TODO</div>
@@ -93,6 +104,7 @@ function showHome() {
     				</ul>
   				</div>
 			</footer>
+			</div>
 		</body>
 	</html>
 	";
