@@ -63,6 +63,10 @@ function showLogin() {
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
 		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
 		";
+	} else {
+		echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
 	}     
 		
 	echo "
@@ -81,7 +85,11 @@ function showLogin() {
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
 		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
 		";
-	} 
+	} else {
+        echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
+	}
 	
 	echo "
 					</nav>
@@ -160,11 +168,18 @@ function checkLogin() {
 	if ($success){
 		$success = false;
 
+		
 		//IF FOUND $success = true;
 		$servername = "localhost";
+		/*
+		$dbusername = "root";
+		$password = "";
+		$dbname = "schulmanager";
+		*/
 		$dbusername = "id7650771_phpuser";
 		$password = "phpUser123#";
 		$dbname = "id7650771_schulmanager";
+		
 
 		// Create connection
 		$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -243,6 +258,10 @@ function showRegistration() {
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
 		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
 		";
+	} else {
+		echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
 	}     
 		
 	echo "
@@ -260,6 +279,10 @@ function showRegistration() {
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
 		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} else {
+		echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
 		";
 	} 
 	
@@ -367,9 +390,15 @@ function checkRegistration() {
 
 	// Check Username already used
 	$servername = "localhost";
+	/*
+	$dbusername = "root";
+	$password = "";
+	$dbname = "schulmanager";
+	*/
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
 	$dbname = "id7650771_schulmanager";
+	
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -399,9 +428,15 @@ function checkRegistration() {
 
 	// Check email already used
 	$servername = "localhost";
+	/*
+	$dbusername = "root";
+	$password = "";
+	$dbname = "schulmanager";
+	*/
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
 	$dbname = "id7650771_schulmanager";
+	
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -443,9 +478,15 @@ function checkRegistration() {
 function insertRegistration() {
 
 	$servername = "localhost";
+	/*
+	$dbusername = "root";
+	$password = "";
+	$dbname = "schulmanager";
+	*/
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
 	$dbname = "id7650771_schulmanager";
+	
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
