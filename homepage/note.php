@@ -12,21 +12,12 @@ switch($_GET['status'])
 	case 'checkSaveNote':
        	checkSaveNote();
 	break;
-	case 'checkAddNote':
-       	checkAddNote();
-	break;
 	case 'checkAddNotebook':
        	checkAddNotebook();
 	break;
 	case 'deleteNotebook':
        	deleteNotebook();
 	break;
-	case 'deleteNote':
-       	deleteNote();
-	break;
-	case 'jumpToHome':
-		jumpToHome();
-		break;
 	default:
 		showNote();
 	break;
@@ -44,28 +35,51 @@ function getConnection(){
 
 
 function showNote() {
+	
 	echo "
 	<!DOCTYPE html>
 	<html>
 	<head>
 		<title>Note</title>
-		<link href='note.css' rel='stylesheet'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+		<link rel='stylesheet' href='https://code.getmdl.io/1.3.0/material.indigo-red.min.css'>
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' type='text/css'>
+		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
 	</head>
 	<body>
 
-	  <form action='?status=jumpToHome' method='post'>
-		  <button type='submit' class='btnHome'>Home</button>
-	  </form>
-
-	  <div class='container'>
-		  <h1>Add Notebook</h1>
-		  <p>Hier sind deine Notebooks.</p>
-		  <hr>
+	<!-- Simple header with scrollable tabs. -->
+<div class='mdl-layout mdl-js-layout'>
+  <header class='mdl-layout__header mdl-layout__header--scroll'>
+    <div class='mdl-layout__header-row'>
+      <!-- Title -->
+      <span class='mdl-layout-title'>Schulmanager</span>
+	  <!-- Add spacer, to align navigation to the right -->
+      				<div class='mdl-layout-spacer'></div>
+      					<!-- Navigation -->
+      					<nav class='mdl-navigation'>
 	";
-
-	// get connection
+	
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	}     
+		
+	echo "
+	  					</nav>
+    				</div>
+					<!-- Tabs -->
+    				<div class='mdl-layout__tab-bar mdl-js-ripple-effect'>
+	";
+	
 	$conn = getConnection();
-
+  
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
@@ -78,83 +92,165 @@ function showNote() {
 	if(!$notebooksFromAUser->execute()){
 		// TODO: echo Error
 	}
+	// bind result variable
   $notebooksFromAUser->bind_result($id_notebook, $name);
 
+	echo "<a href='#scroll-tab-0' class='mdl-layout__tab is-active'>Add Notebook</a>";
+	// fetch value
 	while ($notebooksFromAUser->fetch()) {
-		echo "
-			<div class='container notebook'>
-				<h2 style='display:inline;'>$name</h2>
-					<form style='display:inline;' action='?status=deleteNotebook' method='post'>
-						<button type='submit' class='btnDeleteNotebook'>Delete</button>
-						<input type='hidden' name='notebook_id' value='$id_notebook'>
-					</form>
-			</div>
-		";
+	
+		echo "<a href='#scroll-tab-".$id_notebook."' class='mdl-layout__tab'>".$name."</a>";
+		
+	}
 
-		$conn2 = getConnection();
+	$notebooksFromAUser->close();
+	$conn->close();
+	
+	echo "
+    				</div>
+  				</header>
+				<div class='mdl-layout__drawer'>
+    				<span class='mdl-layout-title'>Schulmanager</span>
+    				<nav class='mdl-navigation'>
+    ";
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} 
+	
+	echo "
+					</nav>
+  				</div>				
+    
+  <main class='mdl-layout__content'>
+  
+    <section class='mdl-layout__tab-panel is-active' id='scroll-tab-0'>
+      <div class='page-content'>
+	  
+	  	<div class='mdl-grid'>
+			<div class='mdl-layout-spacer'></div>
+    		<div class='mdl-cell mdl-cell--4-col'>
+	  	
+		<h3>Add Notebook</h3>
+	
+		<form action='?status=checkAddNotebook' method='post'>
+	
+			<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    			<input class='mdl-textfield__input' type='text' id='sample3' name='addNotebook' >
+    			<label class='mdl-textfield__label' for='sample3'>Name</label>
+  			</div>
+			<!-- FAB button with ripple -->
+			<button class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect' type='submit'>
+  				<i class='material-icons'>add</i>
+			</button>		
+		</form>
+		
+			</div>
+			<div class='mdl-layout-spacer'></div>
+		</div>
+			
+	  </div>
+    </section>
+    ";
+		
+	// Create connection
+	$conn1 = getConnection();
+
+	// Check connection
+	if ($conn1->connect_error) {
+		die("Connection failed: ".$conn1->connect_error);
+	}
+
+  $notebooksFromAUser = $conn1->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
+	$notebooksFromAUser->bind_param("i",$_SESSION["user"]);
+
+	if(!$notebooksFromAUser->execute()){
+		// TODO: echo Error
+	}
+	// bind result variable
+  $notebooksFromAUser->bind_result($id_notebook, $name);
+	
+	// fetch value
+	while ($notebooksFromAUser->fetch()) {
+  echo "
+	<section class='mdl-layout__tab-panel' id='scroll-tab-".$id_notebook."'>
+      <div class='page-content'>
+	  
+	  <div class='mdl-grid'>
+			<div class='mdl-layout-spacer'></div>
+    		<div class='mdl-cell mdl-cell--4-col'>
+	"; 	
+    
+    $conn2 = getConnection();
 		//get the notes out of the notebook
 		$notesInNotebook = $conn2->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
 		$notesInNotebook->bind_param("i",$id_notebook);
 		if (!$notesInNotebook->execute()){
 			// TODO: echo Error
 		}
+
 		// bind result variable
-    $notesInNotebook->bind_result($note_id, $title, $notetext);
+    $notesInNotebook->bind_result($id, $notetext);
 
-		while ($notesInNotebook->fetch()) {
-			echo "
-  		<div class='container note'>
-			  <p style='display:inline;'>$title</p>
-				<form style='display:inline;' action='?status=deleteNote' method='post'>
-					<button type='submit' class='btnDeleteNote'>Delete</button>
-					<input type='hidden' name='note_id' value='$note_id'>
-				</form>
+		/ fetch value
+		if ($notesInNotebook->fetch()) {
+				echo "
+				<br>
 				<form action='?status=checkSaveNote' method='post'>
-			    ";
-			// only fill placeholder with the notetext for the default value of $notetext
-			if ($notetext == "Schreibe deine Notiz") {
-			  echo "<textarea name='txtNote' placeholder='$notetext' cols='128' rows='3'></textarea><br>";
-			}else {
-				echo "<textarea name='txtNote' placeholder='$notetext' cols='128' rows='3'>$notetext</textarea><br>";
-			}
-			echo "
-			    <button type='submit' class='btnSaveNote'>Save</button>
-				  <input type='hidden' name='note_id' value='$note_id'>
-			  </form>
-			</div>";
-		}
-
-	  $notesInNotebook->close();
-		$conn2->close();
-		echo "
-  		<div class='container note'>
-				<form action='?status=checkAddNote' method='post'>
-					<label for='newNoteTitle'>Add Note</label><br>
-					<input type='text' name='newNoteTitle' required>
-					<button type='submit' class='btnAddNote'>Add</button>
-					<input type='hidden' name='notebook_id' value='$id_notebook'>
+				<div class='mdl-textfield mdl-js-textfield'>
+					<textarea class='mdl-textfield__input' type='text' rows= '18' id='sample5' name='txtNote'>".$notetext."</textarea>
+    				<label class='mdl-textfield__label' for='sample5'>Your Note...</label>
+				</div>
+				<br>
+				<input type='hidden' name='note' value='".$id_notebook."'>
+				<button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' type='submit'>Save</button>
+    			</form>
+				<br>
+				<form action='?status=deleteNotebook' method='post'>
+				<input type='hidden' name='deleteNotebook' value='".$id_notebook."'>
+				<button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent' type='submit'>Delete</button>
 				</form>
-			</div>
-		<br><hr>
-		";
+				<br><br>
+				";
+			}
 
+			$notesInNotebook->close();
+			$conn2->close();
+	echo "
+			</div>
+			<div class='mdl-layout-spacer'></div>
+		</div>
+	  </div>
+    </section>
+    ";
+		
 	}
 
 	$notebooksFromAUser->close();
-	$conn->close();
-
-	echo"
-	</div>
-		<div class='container addNotebook'>
-			<form action='?status=checkAddNotebook' method='post'>
-				<label for='addNotebook'>Add Notebook</label><br>
-				<input type='text' name='addNotebook' id='addNotebook' required>
-				<button type='submit' class='btnAddNotebook'>Add</button>
-			</form>
-	</div>
+	$conn1->close();
+	
+	
+	echo "
+  </main>
+  <footer class='mdl-mini-footer'>
+  	<div class='mdl-mini-footer__left-section'>
+   		<div class='mdl-logo'>TODO</div>
+    		<ul class='mdl-mini-footer__link-list'>
+      			<li><a href=''>Help</a></li>
+      			<li><a href=''>Privacy & Terms</a></li>
+    		</ul>
+  	</div>
+  </footer>
+</div>
 </body>
 </html>
 	";
+	
 
 }
 
@@ -177,7 +273,7 @@ function checkSaveNote() {
 function updateNote(){
 	$conn = getConnection();
 
-	// Check connection
+  // Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
@@ -189,87 +285,63 @@ function updateNote(){
 		// TODO: echo Error
 	}
 
+
 	$updateNotetxt->close();
 	$conn->close();
 
 	header("Location: note.php");
 }
 
-function checkAddNote() {
-	$success = true;
-	$noteTitle = htmlspecialchars(trim($_POST['newNoteTitle']));
 
-	if (empty($noteTitle)) {
-      $success = false;
-  }
-
-  /*
-  Check if Note with the same title already in the notbook
-	*/
-	// get connection
-	$conn = getConnection();
+function insertNote(){
+	$notebook = htmlspecialchars(trim($_POST['addNotebook']));
+	
+  $conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// if cnt is 1 there is alerady a note with the same title in this notebook
-	$stmt = $conn->prepare("SELECT count(*) cnt FROM note WHERE title=? AND notebook_id_fk=?");
-	$stmt->bind_param("si", $noteTitle, $notebook_id_fk);
 
-	$notebook_id_fk = htmlspecialchars(trim($_POST['notebook_id']));
+	// prepare and bind
+	$stmt = $conn->prepare("SELECT id FROM notebook WHERE name=?");
+	$stmt->bind_param("s",$notebook);
 
 	if(!$stmt->execute()){
 		// TODO: echo Error
 	}
 
 	// bind result variable
-  $stmt->bind_result($cnt);
+  $stmt->bind_result($id);
 
 	// fetch value
-	if ($stmt->fetch()) {
-		if ($cnt==1){
-			// note with the same title in this notebook
-			$success = false;
+	if ($stmt->fetch()) {		
+		// Create connection
+		$conn1 = getConnection();
+
+		// Check connection
+		if ($conn1->connect_error) {
+			die("Connection failed: ".$conn1->connect_error);
 		}
+
+		// prepare and bind
+		$stmt1 = $conn1->prepare("INSERT INTO note (title, notetext, notebook_id_fk) VALUES (?, ?, ?)");
+		$stmt1->bind_param("ssi", $notetitle, $notetext, $id);
+
+		// set parameters and execute
+		$notetitle = "generatedNote";
+		$notetext = "Write your Note";
+
+		$stmt1->execute();
+
+		$stmt1->close();
+		$conn1->close();
+		
 	}
 
 	$stmt->close();
 	$conn->close();
-
-	if ($success) {
-		insertNote();
-	} else {
-		// TODO: echo Error
-		header("Location: note.php");
-	}
-
-}
-
-function insertNote(){
-
-	// get connection
-	$conn = getConnection();
-
-	// Check connection
-	if ($conn->connect_error) {
-		die("Connection failed: ".$conn->connect_error);
-	}
-
-	$notetext = "Schreibe deine Notiz";
-	// prepare and bind
-	$stmt = $conn->prepare("INSERT INTO note (title, notetext, notebook_id_fk) VALUES (?, ?, ?)");
-	$stmt->bind_param("ssi", htmlspecialchars(trim($_POST['newNoteTitle'])), $notetext, htmlspecialchars(trim($_POST['notebook_id'])));
-
-	if(!$stmt->execute()){
-		// TODO: echo Error
-	}
-
-	$stmt->close();
-	$conn->close();
-
-  header("Location: note.php");
 }
 
 function checkAddNotebook() {
@@ -280,14 +352,13 @@ function checkAddNotebook() {
 	/*
   Check if User already have a notebook with the same title
 	*/
-
 	if (empty($notebook)) {
     $success = false;
   }
 
 	// get connection
 	$conn = getConnection();
-
+  
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
@@ -314,6 +385,8 @@ function checkAddNotebook() {
 
 	if ($success) {
 		insertNotebook();
+		insertNote();
+		showNote();
 	}else {
 		// TODO: echo Error
 		header("Location: note.php");
@@ -322,8 +395,6 @@ function checkAddNotebook() {
 }
 
 function insertNotebook() {
-
-	// get connection
 	$conn = getConnection();
 
 	// Check connection
@@ -345,9 +416,6 @@ function insertNotebook() {
 
 	$insertIntoNotebook->close();
 	$conn->close();
-
-
-	header('Location: note.php');
 }
 
 function deleteNotebook(){
@@ -356,6 +424,7 @@ function deleteNotebook(){
 	// Check connection
 	if ($conn->connect_error) {
     	die("Connection failed: " . $conn->connect_error);
+
 	}
 	$notebook = htmlspecialchars(trim($_POST['notebook_id']));
 
@@ -369,37 +438,8 @@ function deleteNotebook(){
 	$delNotebook->close();
 	$conn->close();
 
-	header("Location: note.php");
+	showNote();
 }
 
-function deleteNote(){
-
-	$conn = getConnection();
-
-	// Check connection
-	if ($conn->connect_error) {
-    	die("Connection failed: " . $conn->connect_error);
-	}
-
-	$note = htmlspecialchars(trim($_POST['note_id']));
-	// stmt to delete the note
-	$delNote = $conn->prepare("DELETE FROM note WHERE id=?");
-  $delNote->bind_param("s", $note);
-
-	if (!$delNote->execute()) {
-		// TODO: echo Error
-	}
-
-	$delNote->close();
-	$conn->close();
-
-	header('Location: note.php');
-}
-
-function jumpToHome() {
-
-	header('Location: index.php');
-
-}
 
 ?>

@@ -9,6 +9,9 @@ ini_set('display_errors', 0);
 
 switch($_GET['status'])
 {
+	case 'logout':
+       	logout();
+	break;
 	case 'checkLogin':
        	checkLogin();
 	break;
@@ -21,55 +24,125 @@ switch($_GET['status'])
 	case 'showRegistration':
 		showRegistration();
 	break;
-	case 'jumpToHome':
-		jumpToHome();
-		break;
 	default:
 		showLogin();
 	break;
 }
 
 function showLogin() {
-
+	
 	echo "
 	<!DOCTYPE html>
 	<html>
 	<head>
 		<title>Login</title>
-		<link href='user.css' rel='stylesheet'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+		<link rel='stylesheet' href='https://code.getmdl.io/1.3.0/material.indigo-red.min.css'>
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' type='text/css'>
+		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
 	</head>
 	<body>
-
-	<form action='?status=jumpToHome' method='post'>
-
-		<button type='submit' class='btnHome'>Home</button>
-
-	</form>
-
+		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
+		<div class='mdl-layout mdl-js-layout'>
+  			<header class='mdl-layout__header mdl-layout__header--scroll'>
+    			<div class='mdl-layout__header-row'>
+      				<!-- Title -->
+      				<span class='mdl-layout-title'>Schulmanager</span>
+      				<!-- Add spacer, to align navigation to the right -->
+      				<div class='mdl-layout-spacer'></div>
+      					<!-- Navigation -->
+      					<nav class='mdl-navigation'>
+	";
+	
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} else {
+		echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
+	}     
+		
+	echo "
+	  					</nav>
+    				</div>
+  				</header>
+				<div class='mdl-layout__drawer'>
+    				<span class='mdl-layout-title'>Schulmanager</span>
+    				<nav class='mdl-navigation'>
+    ";
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} else {
+        echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
+	}
+	
+	echo "
+					</nav>
+  				</div>
+  				<main class='mdl-layout__content'>
+    				<div class='page-content'>
+					
+					
+					
+						<div class='mdl-grid'>
+							<div class='mdl-layout-spacer'></div>
+    						<div class='mdl-cell mdl-cell--4-col'>
+							
+							
+	<h3>Login</h3>
+	<p>Welcome back! Login to manage your work.</p>
+	<p>Don't have an account yet? <a href='?status=showRegistration'>Register here</a></p>
+					
+	<!-- Textfield with Floating Label -->
 	<form action='?status=checkLogin' method='post'>
-
-	<div class='container'>
-
-		<h1>Login</h1>
-		<p>Schön bisch da.</p>
-		<hr>
-
-		<label for='username'>Benutzernamä</label><br>
-		<input type='text' placeholder='Wie heissisch du?' name='username' value='".htmlspecialchars($_POST['username'])."' required><br><br>
-
-		<label for='password'>Passwort</label><br>
-		<input type='password' placeholder='No rasch s Passwort.' name='password' value='".htmlspecialchars($_POST['password'])."' required><br><br>
-
-		<button type='submit' class='btnLogin'>Amälde</button>
-		</div>
-
-	<div class='container register'>
-		<p>Du häsch no kein Account? Dänn chasch di da no <a href='?status=showRegistration'>registrierä</p>
-	</div>
-
-	</form>
-
-	</body>
+  		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    		<input class='mdl-textfield__input' type='text' id='sample3' name='username' value='".htmlspecialchars($_POST['username'])."'>
+    		<label class='mdl-textfield__label' for='sample3'>Username</label>
+  		</div>
+		<br>
+		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    		<input class='mdl-textfield__input' type='password' id='sample3' name='password' value='".htmlspecialchars($_POST['password'])."'>
+    		<label class='mdl-textfield__label' for='sample3'>Password</label>
+  		</div>
+		<br>
+		<!-- TODO: SNACKBAR / Accent-colored raised button with ripple -->
+		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Login</button>
+	</form>			
+					
+							</div>
+    						<div class='mdl-layout-spacer'></div>
+						</div>
+					
+							
+					
+					</div>
+  				</main>
+				<footer class='mdl-mini-footer'>
+  				<div class='mdl-mini-footer__left-section'>
+    				<div class='mdl-logo'>TODO</div>
+    				<ul class='mdl-mini-footer__link-list'>
+      					<li><a href=''>Help</a></li>
+      					<li><a href=''>Privacy & Terms</a></li>
+    				</ul>
+  				</div>
+			</footer>
+			</div>
+		</body>
 	</html>
 	";
 
@@ -77,6 +150,7 @@ function showLogin() {
 
 function checkLogin() {
 
+	
 	$success = true;
 
 	$username = htmlspecialchars(trim($_POST['username']));
@@ -94,11 +168,18 @@ function checkLogin() {
 	if ($success){
 		$success = false;
 
+		
 		//IF FOUND $success = true;
 		$servername = "localhost";
+		/*
+		$dbusername = "root";
+		$password = "";
+		$dbname = "schulmanager";
+		*/
 		$dbusername = "id7650771_phpuser";
 		$password = "phpUser123#";
 		$dbname = "id7650771_schulmanager";
+		
 
 		// Create connection
 		$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -136,7 +217,7 @@ function checkLogin() {
 	}
 
 	if ($success) {
-		welcome();
+		header('Location: index.php');
 	}else {
 		showLogin();
 	}
@@ -149,41 +230,124 @@ function showRegistration() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Registeration</title>
-		<link href='user.css' rel='stylesheet'>
-		</head>
-		<body>
-
+		<title>Register</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+		<link rel='stylesheet' href='https://code.getmdl.io/1.3.0/material.indigo-red.min.css'>
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' type='text/css'>
+		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
+	</head>
+	<body>
+		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
+		<div class='mdl-layout mdl-js-layout'>
+  			<header class='mdl-layout__header mdl-layout__header--scroll'>
+    			<div class='mdl-layout__header-row'>
+      				<!-- Title -->
+      				<span class='mdl-layout-title'>Schulmanager</span>
+      				<!-- Add spacer, to align navigation to the right -->
+      				<div class='mdl-layout-spacer'></div>
+      					<!-- Navigation -->
+      					<nav class='mdl-navigation'>
+	";
+	
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} else {
+		echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
+	}     
+		
+	echo "
+	  					</nav>
+    				</div>
+  				</header>
+				<div class='mdl-layout__drawer'>
+    				<span class='mdl-layout-title'>Schulmanager</span>
+    				<nav class='mdl-navigation'>
+    ";
+	
+	if (isset($_SESSION['user'])) {
+		echo "
+        <a class='mdl-navigation__link' href='index.php'>Home</a>
+        <a class='mdl-navigation__link' href='note.php'>Note</a>
+		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		";
+	} else {
+		echo "
+		<a class='mdl-navigation__link' href='index.php'>Home</a>
+		";
+	} 
+	
+	echo "
+					</nav>
+  				</div>
+  				<main class='mdl-layout__content'>
+    				<div class='page-content'>
+					
+					
+					
+						<div class='mdl-grid'>
+							<div class='mdl-layout-spacer'></div>
+    						<div class='mdl-cell mdl-cell--4-col'>
+							
+							
+	<h3>Register</h3>
+	<p>Welcome! Register to manage your work.</p>
+	<p>Already have an account? <a href='?status=showLogin'>Login here</a></p>
+					
+	<!-- Textfield with Floating Label -->
 	<form action='?status=checkRegistration' method='post'>
-
-	<div class='container'>
-
-		<h1>Registration</h1>
-		<p>Findi mega, dass di bi eus ahmäldisch. Das isch de ersti Schritt zu dinere neue Schuelorganisation.</p>
-		<hr>
-
-		<label for='username'>Benutzernamä</label><br>
-		<input type='text' placeholder='Wie heissisch denn du?' name='username' value='".htmlspecialchars($_POST['username'])."' required><br><br>
-
-		<label for='email'>Mail</label><br>
-		<input type='email' placeholder='Unter wellere Adresse chömmer di am eifachste kontaktiere?' name='email' value='".htmlspecialchars($_POST['email'])."' required><br><br>
-
-		<label for='password'>Passwort</label><br>
-		<input type='password' placeholder='Diin Sicherheitsschlüssel für die Siite' name='password' value='".htmlspecialchars($_POST['password'])."' required><br><br>
-
-		<label for='password-repeat'>Repeat Password</label><br>
-		<input type='password' placeholder='Sorry, muesches nomale ihgeh. Sicherheit isch wichtig.' name='password-repeat' value='".htmlspecialchars($_POST['password-repeat'])."' required><br><br>
-
-		<button type='submit' class='btnRegister'>Registriärä</button>
-		</div>
-
-	<div class='container login'>
-		<p>Du häsch doch scho en Account? Denn chasch di da <a href='?status=showLogin'>amälde</p>
-	</div>
-
-	</form>
-
-	</body>
+  		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    		<input class='mdl-textfield__input' type='text' id='sample3' name='username' value='".htmlspecialchars($_POST['username'])."'>
+    		<label class='mdl-textfield__label' for='sample3'>Username</label>
+  		</div>
+		<br>
+		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    		<input class='mdl-textfield__input' type='email' id='sample3' name='email' value='".htmlspecialchars($_POST['email'])."'>
+    		<label class='mdl-textfield__label' for='sample3'>Mail</label>
+  		</div>
+		<br>
+		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    		<input class='mdl-textfield__input' type='password' id='sample3' name='password' value='".htmlspecialchars($_POST['password'])."'>
+    		<label class='mdl-textfield__label' for='sample3'>Password</label>
+  		</div>
+		<br>
+		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+    		<input class='mdl-textfield__input' type='password' id='sample3' name='password-repeat' value='".htmlspecialchars($_POST['password-repeat'])."'>
+    		<label class='mdl-textfield__label' for='sample3'>Repeate Password</label>
+  		</div>
+		<br>
+		<!-- TODO: SNACKBAR / Accent-colored raised button with ripple -->
+		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Register</button>
+	</form>			
+					
+							</div>
+    						<div class='mdl-layout-spacer'></div>
+						</div>
+					
+							
+					
+					</div>
+  				</main>
+				<footer class='mdl-mini-footer'>
+  				<div class='mdl-mini-footer__left-section'>
+    				<div class='mdl-logo'>TODO</div>
+    				<ul class='mdl-mini-footer__link-list'>
+      					<li><a href=''>Help</a></li>
+      					<li><a href=''>Privacy & Terms</a></li>
+    				</ul>
+  				</div>
+			</footer>
+			</div>
+		</body>
 	</html>
 	";
 
@@ -226,9 +390,15 @@ function checkRegistration() {
 
 	// Check Username already used
 	$servername = "localhost";
+	/*
+	$dbusername = "root";
+	$password = "";
+	$dbname = "schulmanager";
+	*/
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
 	$dbname = "id7650771_schulmanager";
+	
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -258,9 +428,15 @@ function checkRegistration() {
 
 	// Check email already used
 	$servername = "localhost";
+	/*
+	$dbusername = "root";
+	$password = "";
+	$dbname = "schulmanager";
+	*/
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
 	$dbname = "id7650771_schulmanager";
+	
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -302,9 +478,15 @@ function checkRegistration() {
 function insertRegistration() {
 
 	$servername = "localhost";
+	/*
+	$dbusername = "root";
+	$password = "";
+	$dbname = "schulmanager";
+	*/
 	$dbusername = "id7650771_phpuser";
 	$password = "phpUser123#";
 	$dbname = "id7650771_schulmanager";
+	
 
 	// Create connection
 	$conn = new mysqli($servername, $dbusername, $password, $dbname);
@@ -332,16 +514,11 @@ function insertRegistration() {
 
 }
 
-function welcome() {
-
+function logout() {
+	
+	unset($_SESSION['user']);
+	session_destroy();
 	header('Location: index.php');
-
+	
 }
-
-function jumpToHome() {
-
-	header('Location: index.php');
-
-}
-
 ?>
