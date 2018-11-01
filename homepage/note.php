@@ -197,7 +197,7 @@ function showNote() {
 		// bind result variable
     $notesInNotebook->bind_result($id, $notetext);
 
-		/ fetch value
+		// fetch value
 		if ($notesInNotebook->fetch()) {
 				echo "
 				<br>
