@@ -188,7 +188,7 @@ function showNote() {
 
     $conn2 = getConnection();
 		//get the notes out of the notebook
-		$notesInNotebook = $conn2->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
+		$notesInNotebook = $conn2->prepare("SELECT id, notetext FROM note WHERE notebook_id_fk=?");
 		$notesInNotebook->bind_param("i",$id_notebook);
 		if (!$notesInNotebook->execute()){
 			// TODO: echo Error
