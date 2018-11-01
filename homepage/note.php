@@ -35,7 +35,7 @@ function getConnection(){
 
 
 function showNote() {
-	
+
 	echo "
 	<!DOCTYPE html>
 	<html>
@@ -60,26 +60,26 @@ function showNote() {
       					<!-- Navigation -->
       					<nav class='mdl-navigation'>
 	";
-	
-	
+
+
 	if (isset($_SESSION['user'])) {
 		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
 		";
-	}     
-		
+	}
+
 	echo "
 	  					</nav>
     				</div>
 					<!-- Tabs -->
     				<div class='mdl-layout__tab-bar mdl-js-ripple-effect'>
 	";
-	
+
 	$conn = getConnection();
-  
+
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
@@ -98,14 +98,14 @@ function showNote() {
 	echo "<a href='#scroll-tab-0' class='mdl-layout__tab is-active'>Add Notebook</a>";
 	// fetch value
 	while ($notebooksFromAUser->fetch()) {
-	
+
 		echo "<a href='#scroll-tab-".$id_notebook."' class='mdl-layout__tab'>".$name."</a>";
-		
+
 	}
 
 	$notebooksFromAUser->close();
 	$conn->close();
-	
+
 	echo "
     				</div>
   				</header>
@@ -113,33 +113,33 @@ function showNote() {
     				<span class='mdl-layout-title'>Schulmanager</span>
     				<nav class='mdl-navigation'>
     ";
-	
+
 	if (isset($_SESSION['user'])) {
 		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
 		";
-	} 
-	
+	}
+
 	echo "
 					</nav>
-  				</div>				
-    
+  				</div>
+
   <main class='mdl-layout__content'>
-  
+
     <section class='mdl-layout__tab-panel is-active' id='scroll-tab-0'>
       <div class='page-content'>
-	  
+
 	  	<div class='mdl-grid'>
 			<div class='mdl-layout-spacer'></div>
     		<div class='mdl-cell mdl-cell--4-col'>
-	  	
+
 		<h3>Add Notebook</h3>
-	
+
 		<form action='?status=checkAddNotebook' method='post'>
-	
+
 			<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
     			<input class='mdl-textfield__input' type='text' id='sample3' name='addNotebook' >
     			<label class='mdl-textfield__label' for='sample3'>Name</label>
@@ -147,17 +147,17 @@ function showNote() {
 			<!-- FAB button with ripple -->
 			<button class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect' type='submit'>
   				<i class='material-icons'>add</i>
-			</button>		
+			</button>
 		</form>
-		
+
 			</div>
 			<div class='mdl-layout-spacer'></div>
 		</div>
-			
+
 	  </div>
     </section>
     ";
-		
+
 	// Create connection
 	$conn1 = getConnection();
 
@@ -174,18 +174,18 @@ function showNote() {
 	}
 	// bind result variable
   $notebooksFromAUser->bind_result($id_notebook, $name);
-	
+
 	// fetch value
 	while ($notebooksFromAUser->fetch()) {
   echo "
 	<section class='mdl-layout__tab-panel' id='scroll-tab-".$id_notebook."'>
       <div class='page-content'>
-	  
+
 	  <div class='mdl-grid'>
 			<div class='mdl-layout-spacer'></div>
     		<div class='mdl-cell mdl-cell--4-col'>
-	"; 	
-    
+	";
+
     $conn2 = getConnection();
 		//get the notes out of the notebook
 		$notesInNotebook = $conn2->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
@@ -207,7 +207,7 @@ function showNote() {
     				<label class='mdl-textfield__label' for='sample5'>Your Note...</label>
 				</div>
 				<br>
-				<input type='hidden' name='note' value='".$id_notebook."'>
+				<input type='hidden' name='note' value='".$id."'>
 				<button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' type='submit'>Save</button>
     			</form>
 				<br>
@@ -228,13 +228,13 @@ function showNote() {
 	  </div>
     </section>
     ";
-		
+
 	}
 
 	$notebooksFromAUser->close();
 	$conn1->close();
-	
-	
+
+
 	echo "
   </main>
   <footer class='mdl-mini-footer'>
@@ -250,7 +250,7 @@ function showNote() {
 </body>
 </html>
 	";
-	
+
 
 }
 
@@ -295,7 +295,7 @@ function updateNote(){
 
 function insertNote(){
 	$notebook = htmlspecialchars(trim($_POST['addNotebook']));
-	
+
   $conn = getConnection();
 
 	// Check connection
@@ -316,7 +316,7 @@ function insertNote(){
   $stmt->bind_result($id);
 
 	// fetch value
-	if ($stmt->fetch()) {		
+	if ($stmt->fetch()) {
 		// Create connection
 		$conn1 = getConnection();
 
@@ -337,7 +337,7 @@ function insertNote(){
 
 		$stmt1->close();
 		$conn1->close();
-		
+
 	}
 
 	$stmt->close();
@@ -358,7 +358,7 @@ function checkAddNotebook() {
 
 	// get connection
 	$conn = getConnection();
-  
+
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
