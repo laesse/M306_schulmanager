@@ -23,6 +23,17 @@ switch($_GET['status'])
 	break;
 }
 
+function getConnection(){
+	$servername = "localhost";
+	$dbusername = "id7650771_phpuser";
+	$password = "phpUser123#";
+	$dbname = "id7650771_schulmanager";
+
+	// return new mysqli connection
+	return new mysqli($servername, $dbusername, $password, $dbname);
+}
+
+
 function showNote() {
 	
 	echo "
@@ -37,10 +48,7 @@ function showNote() {
 		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
 	</head>
 	<body>
-	
-		
-	
-	
+
 	<!-- Simple header with scrollable tabs. -->
 <div class='mdl-layout mdl-js-layout'>
   <header class='mdl-layout__header mdl-layout__header--scroll'>
@@ -70,43 +78,32 @@ function showNote() {
     				<div class='mdl-layout__tab-bar mdl-js-ripple-effect'>
 	";
 	
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-	
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
-
+	$conn = getConnection();
+  
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
 	// prepare and bind
-	$stmt = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
-	$stmt->bind_param("i",$_SESSION["user"]);
+	$notebooksFromAUser = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
+	$notebooksFromAUser->bind_param("i",$_SESSION["user"]);
 
-	$stmt->execute();
-
+	if(!$notebooksFromAUser->execute()){
+		// TODO: echo Error
+	}
 	// bind result variable
-    $stmt->bind_result($id, $name);
+  $notebooksFromAUser->bind_result($id_notebook, $name);
 
 	echo "<a href='#scroll-tab-0' class='mdl-layout__tab is-active'>Add Notebook</a>";
 	// fetch value
-	while ($stmt->fetch()) {
+	while ($notebooksFromAUser->fetch()) {
 	
-		echo "<a href='#scroll-tab-".$id."' class='mdl-layout__tab'>".$name."</a>";
+		echo "<a href='#scroll-tab-".$id_notebook."' class='mdl-layout__tab'>".$name."</a>";
 		
 	}
 
-	$stmt->close();
+	$notebooksFromAUser->close();
 	$conn->close();
 	
 	echo "
@@ -160,84 +157,48 @@ function showNote() {
 	  </div>
     </section>
     ";
-	
-	$servername1 = "localhost";
-	/*
-	$dbusername1 = "root";
-	$password1 = "";
-	$dbname1 = "schulmanager";
-	*/
-	$dbusername1 = "id7650771_phpuser";
-	$password1 = "phpUser123#";
-	$dbname1 = "id7650771_schulmanager";
-	
 		
 	// Create connection
-	$conn1 = new mysqli($servername1, $dbusername1, $password1, $dbname1);
+	$conn1 = getConnection();
 
 	// Check connection
 	if ($conn1->connect_error) {
 		die("Connection failed: ".$conn1->connect_error);
 	}
 
-	// prepare and bind
-	$stmt1 = $conn1->prepare("SELECT id FROM notebook WHERE user_id_fk=?");
-	$stmt1->bind_param("i",$_SESSION["user"]);
+  $notebooksFromAUser = $conn1->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
+	$notebooksFromAUser->bind_param("i",$_SESSION["user"]);
 
-	$stmt1->execute();
-
+	if(!$notebooksFromAUser->execute()){
+		// TODO: echo Error
+	}
 	// bind result variable
-    $stmt1->bind_result($id);
+  $notebooksFromAUser->bind_result($id_notebook, $name);
 	
 	// fetch value
-	while ($stmt1->fetch()) {
-
-		$id_notebook = $id;
-		
-	echo "
-	<section class='mdl-layout__tab-panel' id='scroll-tab-".$id."'>
+	while ($notebooksFromAUser->fetch()) {
+  echo "
+	<section class='mdl-layout__tab-panel' id='scroll-tab-".$id_notebook."'>
       <div class='page-content'>
 	  
 	  <div class='mdl-grid'>
 			<div class='mdl-layout-spacer'></div>
     		<div class='mdl-cell mdl-cell--4-col'>
 	"; 	
-		
-		
-		
-		
-		
-    		$servername2 = "localhost";
-			/*
-			$dbusername2 = "root";
-			$password2 = "";
-			$dbname2 = "schulmanager";
-			*/
-			$dbusername2 = "id7650771_phpuser";
-			$password2 = "phpUser123#";
-			$dbname2 = "id7650771_schulmanager";
-			
-			
-			// Create connection
-			$conn2 = new mysqli($servername2, $dbusername2, $password2, $dbname2);
+    
+    $conn2 = getConnection();
+		//get the notes out of the notebook
+		$notesInNotebook = $conn2->prepare("SELECT id, title, notetext FROM note WHERE notebook_id_fk=?");
+		$notesInNotebook->bind_param("i",$id_notebook);
+		if (!$notesInNotebook->execute()){
+			// TODO: echo Error
+		}
 
-			// Check connection
-			if ($conn2->connect_error) {
-				die("Connection failed: ".$conn2->connect_error);
-			}
+		// bind result variable
+    $notesInNotebook->bind_result($id, $notetext);
 
-			// prepare and bind
-			$stmt2 = $conn2->prepare("SELECT id, notetext FROM note WHERE notebook_id_fk=?");
-			$stmt2->bind_param("i",$id_notebook);
-
-			$stmt2->execute();
-
-			// bind result variable
-    		$stmt2->bind_result($id, $notetext);
-
-			// fetch value
-			if ($stmt2->fetch()) {
-				
+		/ fetch value
+		if ($notesInNotebook->fetch()) {
 				echo "
 				<br>
 				<form action='?status=checkSaveNote' method='post'>
@@ -246,7 +207,7 @@ function showNote() {
     				<label class='mdl-textfield__label' for='sample5'>Your Note...</label>
 				</div>
 				<br>
-				<input type='hidden' name='note' value='".$id."'>
+				<input type='hidden' name='note' value='".$id_notebook."'>
 				<button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' type='submit'>Save</button>
     			</form>
 				<br>
@@ -258,7 +219,7 @@ function showNote() {
 				";
 			}
 
-			$stmt2->close();
+			$notesInNotebook->close();
 			$conn2->close();
 	echo "
 			</div>
@@ -270,7 +231,7 @@ function showNote() {
 		
 	}
 
-	$stmt1->close();
+	$notebooksFromAUser->close();
 	$conn1->close();
 	
 	
@@ -286,91 +247,78 @@ function showNote() {
   	</div>
   </footer>
 </div>
-
-	</body>
-	</html>
+</body>
+</html>
 	";
 	
 
 }
 
 function checkSaveNote() {
-
 	$success = true;
 	$notetxt = htmlspecialchars(trim($_POST['txtNote']));
 
 	if (empty($notetxt)) {
-        $success = false;
-    }
+     $success = false;
+  }
 
 	if ($success) {
 		updateNote();
 	}else {
-		showNote();
+		header("Location: note.php");
 	}
 
 }
 
 function updateNote(){
+	$conn = getConnection();
 
-	//$pdo = new PDO('mysql:host=localhost;dbname=schulmanager', 'root', '');
-	$pdo = new PDO('mysql:host=localhost;dbname=id7650771_schulmanager', 'id7650771_phpuser', 'phpUser123#');
+  // Check connection
+	if ($conn->connect_error) {
+		die("Connection failed: ".$conn->connect_error);
+	}
 
-	$statement = $pdo->prepare("UPDATE note SET notetext = ? WHERE id = ?");
-	$statement->execute(array(htmlspecialchars(trim($_POST['txtNote'])), $_POST['note']));
+	$updateNotetxt = $conn->prepare("UPDATE note SET notetext = ? WHERE id = ?");
+	$updateNotetxt->bind_param("si",htmlspecialchars(trim($_POST['txtNote'])), $_POST['note_id']);
 
-	showNote();
+	if(!$updateNotetxt->execute()){
+		// TODO: echo Error
+	}
+
+
+	$updateNotetxt->close();
+	$conn->close();
+
+	header("Location: note.php");
 }
 
-function insertNote(){
 
+function insertNote(){
 	$notebook = htmlspecialchars(trim($_POST['addNotebook']));
 	
-	// Check Username already used
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-	
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+  $conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
+
 	// prepare and bind
 	$stmt = $conn->prepare("SELECT id FROM notebook WHERE name=?");
 	$stmt->bind_param("s",$notebook);
 
-	$stmt->execute();
+	if(!$stmt->execute()){
+		// TODO: echo Error
+	}
 
 	// bind result variable
-   	$stmt->bind_result($id);
+  $stmt->bind_result($id);
 
 	// fetch value
-	if ($stmt->fetch()) {
-		
-		$servername1 = "localhost";
-		/*
-		$dbusername1 = "root";
-		$password1 = "";
-		$dbname1 = "schulmanager";
-		*/
-		$dbusername1 = "id7650771_phpuser";
-		$password1 = "phpUser123#";
-		$dbname1 = "id7650771_schulmanager";
-		
-	
+	if ($stmt->fetch()) {		
 		// Create connection
-		$conn1 = new mysqli($servername1, $dbusername1, $password1, $dbname1);
+		$conn1 = getConnection();
 
 		// Check connection
 		if ($conn1->connect_error) {
@@ -394,7 +342,6 @@ function insertNote(){
 
 	$stmt->close();
 	$conn->close();
-	
 }
 
 function checkAddNotebook() {
@@ -402,42 +349,35 @@ function checkAddNotebook() {
 	$success = true;
 	$notebook = htmlspecialchars(trim($_POST['addNotebook']));
 
-	if (empty($notebook)) {
-        $success = false;
-    }
-
-	// Check Username already used
-	$servername = "localhost";
 	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
+  Check if User already have a notebook with the same title
 	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-	
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	if (empty($notebook)) {
+    $success = false;
+  }
 
+	// get connection
+	$conn = getConnection();
+  
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// prepare and bind
-	$stmt = $conn->prepare("SELECT id FROM notebook WHERE user_id_fk=? AND name=?");
+	// if cnt is 1 there is alerady a notebook with the same name for this user
+	$stmt = $conn->prepare("SELECT count(*) cnt FROM notebook WHERE user_id_fk=? AND name=?");
 	$stmt->bind_param("is",$_SESSION["user"],$notebook);
 
-	$stmt->execute();
+	if(!$stmt->execute()){
+	  // TODO: echo Error
+	}
 
-	// bind result variable
-   	$stmt->bind_result($id);
+  $stmt->bind_result($cnt);
 
-	// fetch value
 	if ($stmt->fetch()) {
-		$success = false;
+		if($cnt == 1){
+			$success = false;
+		}
 	}
 
 	$stmt->close();
@@ -448,112 +388,58 @@ function checkAddNotebook() {
 		insertNote();
 		showNote();
 	}else {
-		showNote();
+		// TODO: echo Error
+		header("Location: note.php");
 	}
 
 }
 
 function insertNotebook() {
-
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-	
-	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
-	// prepare and bind
-	$stmt = $conn->prepare("INSERT INTO notebook (name, user_id_fk) VALUES (?, ?)");
-	$stmt->bind_param("si", $name, $_SESSION["user"]);
-
 	// set parameters and execute
 	$name = htmlspecialchars(trim($_POST['addNotebook']));
 
-	$stmt->execute();
+	// prepare and bind
+	$insertIntoNotebook = $conn->prepare("INSERT INTO notebook (name, user_id_fk) VALUES (?, ?)");
+	$insertIntoNotebook->bind_param("si", $name, $_SESSION["user"]);
 
-	$stmt->close();
+
+	if(!$insertIntoNotebook->execute()){
+		// TODO: echo Error
+	}
+
+	$insertIntoNotebook->close();
 	$conn->close();
-
 }
 
 function deleteNotebook(){
+	$conn = getConnection();
 
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-	
-	// Create connection
-	$conn = mysqli_connect($servername, $dbusername, $password, $dbname);
 	// Check connection
-	if (!$conn) {
-    	die("Connection failed: " . mysqli_connect_error());
+	if ($conn->connect_error) {
+    	die("Connection failed: " . $conn->connect_error);
+
+	}
+	$notebook = htmlspecialchars(trim($_POST['notebook_id']));
+
+	$delNotebook = $conn->prepare("DELETE FROM notebook WHERE id=?");
+	$delNotebook->bind_param("s", $notebook);
+
+	if (!$delNotebook->execute()) {
+		// TODO: echo Error
 	}
 
-	// sql to delete a record
-	$sql = "DELETE FROM note WHERE notebook_id_fk=".htmlspecialchars(trim($_POST['deleteNotebook']));
+	$delNotebook->close();
+	$conn->close();
 
-	if (mysqli_query($conn, $sql)) {
-	}
-
-	// sql to delete a record
-	$sql = "DELETE FROM notebook WHERE id=".htmlspecialchars(trim($_POST['deleteNotebook']));
-
-	if (mysqli_query($conn, $sql)) {
-	}
-
-	mysqli_close($conn);
-
-	deleteNote();
 	showNote();
 }
 
-function deleteNote(){
-
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-	
-	// Create connection
-	$conn = mysqli_connect($servername, $dbusername, $password, $dbname);
-	// Check connection
-	if (!$conn) {
-    	die("Connection failed: " . mysqli_connect_error());
-	}
-
-	// sql to delete a record
-	$sql = "DELETE FROM note WHERE notebook_id_fk=".htmlspecialchars(trim($_POST['deleteNotebook']));
-
-	if (mysqli_query($conn, $sql)) {
-	}
-
-	mysqli_close($conn);
-	
-}
 
 ?>
