@@ -265,7 +265,7 @@ function checkSaveNote() {
 	if ($success) {
 		updateNote();
 	}else {
-		header("Location: note.php");
+		showNote();
 	}
 
 }
@@ -288,8 +288,7 @@ function updateNote(){
 
 	$updateNotetxt->close();
 	$conn->close();
-
-	header("Location: note.php");
+showNote();
 }
 
 
@@ -389,7 +388,7 @@ function checkAddNotebook() {
 		showNote();
 	}else {
 		// TODO: echo Error
-		header("Location: note.php");
+		showNote();
 	}
 
 }
