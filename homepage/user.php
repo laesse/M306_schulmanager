@@ -4,8 +4,8 @@
 session_start();
 
 // hide errors
-//error_reporting(0);
-//ini_set('display_errors', 0);
+error_reporting(0);
+ini_set('display_errors', 0);
 
 switch($_GET['status'])
 {
@@ -30,13 +30,14 @@ switch($_GET['status'])
 }
 
 function getConnection(){
-	$servername = "localhost";
-		$dbusername = "id7650771_phpuser";
-		$password = "phpUser123#";
-		$dbname = "id7650771_schulmanager";
-		// return new mysqli connection
-		return new mysqli($servername, $dbusername, $password, $dbname);
-//	include 'connection.php';
+	$ini = parse_ini_file('../config/db.ini');
+
+	$servername = $ini["servername"];
+	$dbusername = $ini["db_name"];
+	$password = $ini["db_user"];
+	$dbname = $ini["db_password"];
+	// return new mysqli connection
+	return new mysqli($servername, $dbusername, $password, $dbname);
 }
 
 function showLogin() {

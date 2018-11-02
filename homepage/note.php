@@ -24,11 +24,12 @@ switch($_GET['status'])
 }
 
 function getConnection(){
+		$ini = parse_ini_file('../config/db.ini');
 
-	$servername = "localhost";
-	$dbusername = "u144372704_yrew";
-	$password = "phpUser123#";
-	$dbname = "u144372704_yrew";
+		$servername = $ini["servername"];
+		$dbusername = $ini["db_name"];
+		$password = $ini["db_user"];
+		$dbname = $ini["db_password"];
 
 	// return new mysqli connection
 	return new mysqli($servername, $dbusername, $password, $dbname);
