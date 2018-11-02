@@ -23,9 +23,7 @@ switch($_GET['status'])
 	break;
 }
 
-function getConnection(){
 	include 'connection.php';
-}
 
 
 function showNote() {
@@ -36,9 +34,9 @@ function showNote() {
 	<head>
 		<title>Note</title>
 	";
-	
+
 	include 'head.php';
-	
+
 	echo "
 	</head>
 	<body>
