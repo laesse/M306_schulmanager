@@ -23,7 +23,16 @@ switch($_GET['status'])
 	break;
 }
 
-	include 'connection.php';
+function getConnection(){
+
+	$servername = "localhost";
+	$dbusername = "u144372704_yrew";
+	$password = "phpUser123#";
+	$dbname = "u144372704_yrew";
+
+	// return new mysqli connection
+	return new mysqli($servername, $dbusername, $password, $dbname);
+}
 
 
 function showNote() {

@@ -4,8 +4,8 @@
 session_start();
 
 // hide errors
-error_reporting(0);
-ini_set('display_errors', 0);
+//error_reporting(0);
+//ini_set('display_errors', 0);
 
 switch($_GET['status'])
 {
@@ -29,7 +29,15 @@ switch($_GET['status'])
 	break;
 }
 
-	include 'connection.php';
+function getConnection(){
+	$servername = "localhost";
+		$dbusername = "id7650771_phpuser";
+		$password = "phpUser123#";
+		$dbname = "id7650771_schulmanager";
+		// return new mysqli connection
+		return new mysqli($servername, $dbusername, $password, $dbname);
+//	include 'connection.php';
+}
 
 function showLogin() {
 
@@ -130,7 +138,7 @@ function checkLogin() {
 		$conn = getConnection();
 
 		// Check connection
-		if ($conn->connect_error) {
+		if ($conn->connect_errno) {
 			die("Connection failed: ".$conn->connect_error);
 		}
 
@@ -145,7 +153,7 @@ function checkLogin() {
 
 		// fetch value
 		if ($stmt->fetch()) {
-				if ( hash('sha256', $password_input) == $password){
+				if ( strtoupper(hash("sha256", $password_input)) == strtoupper($password)){
 				$success = true;
 				$_SESSION["user"] = $id;
 				$_SESSION["username"] = $username;
