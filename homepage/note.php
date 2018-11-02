@@ -24,7 +24,7 @@ switch($_GET['status'])
 }
 
 function getConnection(){
-	include 'navigation.php';
+	include 'connection.php';
 }
 
 
