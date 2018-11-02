@@ -24,13 +24,7 @@ switch($_GET['status'])
 }
 
 function getConnection(){
-	$servername = "localhost";
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-
-	// return new mysqli connection
-	return new mysqli($servername, $dbusername, $password, $dbname);
+	include 'navigation.php';
 }
 
 
