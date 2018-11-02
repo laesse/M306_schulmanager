@@ -372,7 +372,7 @@ function insertRegistration() {
 	// set parameters and execute
 	$username = htmlspecialchars(trim($_POST['username']));
 	$email = htmlspecialchars(trim($_POST['email']));
-	$password_hash =hash('sha256', htmlspecialchars(trim($_POST['password']))));
+	$password_hash =hash('sha256', htmlspecialchars(trim($_POST['password'])));
 
 	$stmt->execute();
 
