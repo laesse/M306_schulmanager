@@ -9,9 +9,9 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 $servername = "localhost";
-$dbusername = "id7650771_phpuser";
+$dbusername = "u144372704_yrew";
 $password = "phpUser123#";
-$dbname = "id7650771_schulmanager";
+$dbname = "u144372704_yrew";
 
 // return new mysqli connection
 return new mysqli($servername, $dbusername, $password, $dbname);
