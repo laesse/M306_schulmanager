@@ -23,7 +23,7 @@ function showHome() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Home</title>
+		<title>Schulmanager: Home</title>
 	";
 	
 	include 'head.php';

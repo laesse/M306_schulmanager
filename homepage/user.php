@@ -35,7 +35,7 @@ function showLogin() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Login</title>
+		<title>Schulmanager: Login</title>
 	";
 
 	include 'head.php';
@@ -174,7 +174,7 @@ function showRegistration() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Register</title>
+		<title>Schulmanager: Register</title>
 	";
 
 	include 'head.php';

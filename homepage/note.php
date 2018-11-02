@@ -32,7 +32,7 @@ function showNote() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Note</title>
+		<title>Schulmanager: Note</title>
 	";
 
 	include 'head.php';

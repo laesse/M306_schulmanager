@@ -26,7 +26,7 @@ function showTimetable() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Timetable</title>
+		<title>Schulmanager: Timetable</title>
 	";
 	
 	include 'head.php';
