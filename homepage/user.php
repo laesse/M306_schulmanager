@@ -36,11 +36,11 @@ function showLogin() {
 	<html>
 	<head>
 		<title>Login</title>
-		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-		<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
-		<link rel='stylesheet' href='https://code.getmdl.io/1.3.0/material.indigo-red.min.css'>
-		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' type='text/css'>
-		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
+	";
+	
+	include 'head.php';
+	
+	echo "
 	</head>
 	<body>
 		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
@@ -188,11 +188,11 @@ function showRegistration() {
 	<html>
 	<head>
 		<title>Register</title>
-		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-		<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
-		<link rel='stylesheet' href='https://code.getmdl.io/1.3.0/material.indigo-red.min.css'>
-		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' type='text/css'>
-		<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>
+	";
+	
+	include 'head.php';
+	
+	echo "
 	</head>
 	<body>
 		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->

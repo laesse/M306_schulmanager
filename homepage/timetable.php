@@ -24,7 +24,14 @@ function showTimetable() {
 	
 	echo "
 	<!DOCTYPE html>
-		<link href='timetable.css' rel='stylesheet'>
+	<html>
+	<head>
+		<title>Timetable</title>
+	";
+	
+	include 'head.php';
+	
+	echo "
 	</head>
 	<body>
 	
