@@ -29,6 +29,8 @@ switch($_GET['status'])
 	break;
 }
 
+	include 'connection.php';
+
 function showLogin() {
 
 	echo "
@@ -185,9 +187,9 @@ function showRegistration() {
 		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
 		<div class='mdl-layout mdl-js-layout'>
   	";
-	
+
 	include 'navigation.php';
-	
+
 	echo "
   				<main class='mdl-layout__content'>
     				<div class='page-content'>
