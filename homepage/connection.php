@@ -1,4 +1,6 @@
 <?php
+function getConnection(){
+
 // start session
 session_start();
 
@@ -14,4 +16,5 @@ $dbname = "id7650771_schulmanager";
 // return new mysqli connection
 return new mysqli($servername, $dbusername, $password, $dbname);
 
+}
 ?>

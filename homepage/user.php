@@ -30,40 +30,40 @@ switch($_GET['status'])
 }
 
 function showLogin() {
-	
+
 	echo "
 	<!DOCTYPE html>
 	<html>
 	<head>
 		<title>Login</title>
 	";
-	
+
 	include 'head.php';
-	
+
 	echo "
 	</head>
 	<body>
 		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
 		<div class='mdl-layout mdl-js-layout'>
   	";
-	
+
 	include 'navigation.php';
-	
+
 	echo "
   				<main class='mdl-layout__content'>
     				<div class='page-content'>
-					
-					
-					
+
+
+
 						<div class='mdl-grid'>
 							<div class='mdl-layout-spacer'></div>
     						<div class='mdl-cell mdl-cell--4-col'>
-							
-							
+
+
 	<h3>Login</h3>
 	<p>Welcome back! Login to manage your work.</p>
 	<p>Don't have an account yet? <a href='?status=showRegistration'>Register here</a></p>
-					
+
 	<!-- Textfield with Floating Label -->
 	<form action='?status=checkLogin' method='post'>
   		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
@@ -78,14 +78,14 @@ function showLogin() {
 		<br>
 		<!-- TODO: SNACKBAR / Accent-colored raised button with ripple -->
 		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Login</button>
-	</form>			
-					
+	</form>
+
 							</div>
     						<div class='mdl-layout-spacer'></div>
 						</div>
-					
-							
-					
+
+
+
 					</div>
   				</main>
 				<footer class='mdl-mini-footer'>
@@ -106,7 +106,7 @@ function showLogin() {
 
 function checkLogin() {
 
-	
+
 	$success = true;
 
 	$username = htmlspecialchars(trim($_POST['username']));
@@ -114,31 +114,18 @@ function checkLogin() {
 
 	if (empty($username)) {
 		unset($_POST['username']);
-        $success = false;
-    }
+    $success = false;
+  }
 	if (empty($password_input)) {
 		unset($_POST['password']);
-        $success = false;
-    }
+    $success = false;
+  }
 
 	if ($success){
 		$success = false;
 
-		
-		//IF FOUND $success = true;
-		$servername = "localhost";
-		/*
-		$dbusername = "root";
-		$password = "";
-		$dbname = "schulmanager";
-		*/
-		$dbusername = "id7650771_phpuser";
-		$password = "phpUser123#";
-		$dbname = "id7650771_schulmanager";
-		
-
 		// Create connection
-		$conn = new mysqli($servername, $dbusername, $password, $dbname);
+		$conn = getConnection();
 
 		// Check connection
 		if ($conn->connect_error) {
@@ -152,11 +139,11 @@ function checkLogin() {
 		$stmt->execute();
 
 		// bind result variable
-    	$stmt->bind_result($id, $password);
+    $stmt->bind_result($id, $password);
 
 		// fetch value
 		if ($stmt->fetch()) {
-			if ($password_input == $password){
+			if (SAH256($password_input) == $password){
 				$success = true;
 				$_SESSION["user"] = $id;
 				$_SESSION["username"] = $username;
@@ -189,9 +176,9 @@ function showRegistration() {
 	<head>
 		<title>Register</title>
 	";
-	
+
 	include 'head.php';
-	
+
 	echo "
 	</head>
 	<body>
@@ -206,21 +193,21 @@ function showRegistration() {
       					<!-- Navigation -->
       					<nav class='mdl-navigation'>
 	";
-	
-	
+
+
 	if (isset($_SESSION['user'])) {
 		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
 		";
 	} else {
 		echo "
 		<a class='mdl-navigation__link' href='index.php'>Home</a>
 		";
-	}     
-		
+	}
+
 	echo "
 	  					</nav>
     				</div>
@@ -229,37 +216,37 @@ function showRegistration() {
     				<span class='mdl-layout-title'>Schulmanager</span>
     				<nav class='mdl-navigation'>
     ";
-	
+
 	if (isset($_SESSION['user'])) {
 		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>	
+		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
 		";
 	} else {
 		echo "
 		<a class='mdl-navigation__link' href='index.php'>Home</a>
 		";
-	} 
-	
+	}
+
 	echo "
 					</nav>
   				</div>
   				<main class='mdl-layout__content'>
     				<div class='page-content'>
-					
-					
-					
+
+
+
 						<div class='mdl-grid'>
 							<div class='mdl-layout-spacer'></div>
     						<div class='mdl-cell mdl-cell--4-col'>
-							
-							
+
+
 	<h3>Register</h3>
 	<p>Welcome! Register to manage your work.</p>
 	<p>Already have an account? <a href='?status=showLogin'>Login here</a></p>
-					
+
 	<!-- Textfield with Floating Label -->
 	<form action='?status=checkRegistration' method='post'>
   		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
@@ -284,14 +271,14 @@ function showRegistration() {
 		<br>
 		<!-- TODO: SNACKBAR / Accent-colored raised button with ripple -->
 		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Register</button>
-	</form>			
-					
+	</form>
+
 							</div>
     						<div class='mdl-layout-spacer'></div>
 						</div>
-					
-							
-					
+
+
+
 					</div>
   				</main>
 				<footer class='mdl-mini-footer'>
@@ -345,20 +332,8 @@ function checkRegistration() {
     }
 
 
-	// Check Username already used
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
-
 	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -383,20 +358,9 @@ function checkRegistration() {
 	$stmt->close();
 	$conn->close();
 
-	// Check email already used
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
 
 	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -434,19 +398,9 @@ function checkRegistration() {
 
 function insertRegistration() {
 
-	$servername = "localhost";
-	/*
-	$dbusername = "root";
-	$password = "";
-	$dbname = "schulmanager";
-	*/
-	$dbusername = "id7650771_phpuser";
-	$password = "phpUser123#";
-	$dbname = "id7650771_schulmanager";
-	
 
 	// Create connection
-	$conn = new mysqli($servername, $dbusername, $password, $dbname);
+	$conn = getConnection();
 
 	// Check connection
 	if ($conn->connect_error) {
@@ -460,7 +414,7 @@ function insertRegistration() {
 	// set parameters and execute
 	$username = htmlspecialchars(trim($_POST['username']));
 	$email = htmlspecialchars(trim($_POST['email']));
-	$password_hash = htmlspecialchars(trim($_POST['password']));
+	$password_hash = SAH256(htmlspecialchars(trim($_POST['password'])));
 
 	$stmt->execute();
 
@@ -472,10 +426,10 @@ function insertRegistration() {
 }
 
 function logout() {
-	
+
 	unset($_SESSION['user']);
 	session_destroy();
 	header('Location: index.php');
-	
+
 }
 ?>
