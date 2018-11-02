@@ -29,6 +29,17 @@ switch($_GET['status'])
 	break;
 }
 
+function getConnection(){
+	$ini = parse_ini_file('../config/db.ini');
+
+	$servername = $ini["servername"];
+	$dbusername = $ini["db_name"];
+	$password = $ini["db_user"];
+	$dbname = $ini["db_password"];
+	// return new mysqli connection
+	return new mysqli($servername, $dbusername, $password, $dbname);
+}
+
 function showLogin() {
 
 	echo "
@@ -128,7 +139,7 @@ function checkLogin() {
 		$conn = getConnection();
 
 		// Check connection
-		if ($conn->connect_error) {
+		if ($conn->connect_errno) {
 			die("Connection failed: ".$conn->connect_error);
 		}
 
@@ -143,7 +154,7 @@ function checkLogin() {
 
 		// fetch value
 		if ($stmt->fetch()) {
-			if (SAH256($password_input) == $password){
+				if ( strtoupper(hash("sha256", $password_input)) == strtoupper($password)){
 				$success = true;
 				$_SESSION["user"] = $id;
 				$_SESSION["username"] = $username;
@@ -185,9 +196,9 @@ function showRegistration() {
 		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
 		<div class='mdl-layout mdl-js-layout'>
   	";
-	
+
 	include 'navigation.php';
-	
+
 	echo "
   				<main class='mdl-layout__content'>
     				<div class='page-content'>
@@ -370,7 +381,7 @@ function insertRegistration() {
 	// set parameters and execute
 	$username = htmlspecialchars(trim($_POST['username']));
 	$email = htmlspecialchars(trim($_POST['email']));
-	$password_hash = SAH256(htmlspecialchars(trim($_POST['password'])));
+	$password_hash =hash('sha256', htmlspecialchars(trim($_POST['password'])));
 
 	$stmt->execute();
 

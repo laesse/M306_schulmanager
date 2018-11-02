@@ -23,7 +23,17 @@ switch($_GET['status'])
 	break;
 }
 
-	include 'connection.php';
+function getConnection(){
+		$ini = parse_ini_file('../config/db.ini');
+
+		$servername = $ini["servername"];
+		$dbusername = $ini["db_name"];
+		$password = $ini["db_user"];
+		$dbname = $ini["db_password"];
+
+	// return new mysqli connection
+	return new mysqli($servername, $dbusername, $password, $dbname);
+}
 
 
 function showNote() {

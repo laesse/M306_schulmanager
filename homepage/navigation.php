@@ -1,10 +1,5 @@
 <?php
-// start session
-session_start();
 
-// hide errors
-error_reporting(0);
-ini_set('display_errors', 0);
 
 echo "
 <header class='mdl-layout__header mdl-layout__header--scroll'>
@@ -16,8 +11,8 @@ echo "
       					<!-- Navigation -->
       					<nav class='mdl-navigation'>
 	";
-	
-	
+
+
 	if (isset($_SESSION['user'])) {
 		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
@@ -36,8 +31,8 @@ echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
 		<a class='mdl-navigation__link' href='user.php'>Login</a>
 		";
-	}      
-		
+	}
+
 	echo "
 	  					</nav>
     				</div>
@@ -46,7 +41,7 @@ echo "
     				<span class='mdl-layout-title'>Schulmanager</span>
     				<nav class='mdl-navigation'>
     ";
-	
+
 	if (isset($_SESSION['user'])) {
 		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
@@ -58,15 +53,15 @@ echo "
     			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
     			<span class='mdl-chip__text'>Logout</span>
 			</span>
-		</a>	
+		</a>
 		";
 	} else {
    		echo "
         <a class='mdl-navigation__link' href='index.php'>Home</a>
 		<a class='mdl-navigation__link' href='user.php'>Login</a>
 		";
-	} 
-	
+	}
+
 	echo "
 					</nav>
   				</div>
