@@ -159,6 +159,7 @@ function checkLogin() {
 			if ($password_input == $password){
 				$success = true;
 				$_SESSION["user"] = $id;
+				$_SESSION["username"] = $username;
 			}else {
 				unset($_POST['password']);
 			}
