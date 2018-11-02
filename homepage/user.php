@@ -145,7 +145,6 @@ function checkLogin() {
 
 		// fetch value
 		if ($stmt->fetch()) {
-			//if (SAH256($password_input) == $password){
 				if ( hash('sha256', $password_input) == $password){
 				$success = true;
 				$_SESSION["user"] = $id;
