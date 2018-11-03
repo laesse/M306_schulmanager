@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 03. Nov 2018 um 14:11
+-- Erstellungszeit: 03. Nov 2018 um 14:17
 -- Server-Version: 10.1.36-MariaDB
 -- PHP-Version: 7.2.10
 
@@ -58,7 +58,8 @@ CREATE TABLE `learning_goal` (
 CREATE TABLE `mark` (
   `id` int(11) NOT NULL,
   `mark` double NOT NULL,
-  `test_id_fk` int(11) DEFAULT NULL
+  `test_id_fk` int(11) DEFAULT NULL,
+  `mark_groop_id_fk` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -71,7 +72,6 @@ CREATE TABLE `mark_groop` (
   `id` int(11) NOT NULL,
   `semester_start` date NOT NULL,
   `semester_end` date DEFAULT NULL,
-  `mark_id_fk` int(11) NOT NULL,
   `subject_id_fk` int(11) NOT NULL,
   `semester_name` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -193,15 +193,15 @@ ALTER TABLE `learning_goal`
 --
 ALTER TABLE `mark`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `test_id_fk` (`test_id_fk`);
+  ADD KEY `test_id_fk` (`test_id_fk`),
+  ADD KEY `mark_groop_id_fk` (`mark_groop_id_fk`);
 
 --
 -- Indizes für die Tabelle `mark_groop`
 --
 ALTER TABLE `mark_groop`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `subject_id_fk` (`subject_id_fk`),
-  ADD KEY `mark_id_fk` (`mark_id_fk`);
+  ADD KEY `subject_id_fk` (`subject_id_fk`);
 
 --
 -- Indizes für die Tabelle `note`
@@ -344,13 +344,13 @@ ALTER TABLE `learning_goal`
 -- Constraints der Tabelle `mark`
 --
 ALTER TABLE `mark`
+  ADD CONSTRAINT `mark_mark_groop_fk` FOREIGN KEY (`mark_groop_id_fk`) REFERENCES `mark_groop` (`id`),
   ADD CONSTRAINT `mark_test_fk` FOREIGN KEY (`test_id_fk`) REFERENCES `test` (`id`);
 
 --
 -- Constraints der Tabelle `mark_groop`
 --
 ALTER TABLE `mark_groop`
-  ADD CONSTRAINT `mark_id_fk` FOREIGN KEY (`mark_id_fk`) REFERENCES `mark` (`id`),
   ADD CONSTRAINT `subject_id_fk` FOREIGN KEY (`subject_id_fk`) REFERENCES `subject` (`id`);
 
 --
