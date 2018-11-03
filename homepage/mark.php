@@ -85,24 +85,25 @@ function showMarks() {
     die("Connection failed: ".$conn->connect_error);
   }
 
-  $sql
-
   // prepare and bind
-  $semestersFromAUser = $conn->prepare("SELECT id, COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name) as semester_name FROM semester WHERE user_id_fk=?");
+  $semestersFromAUser = $conn->prepare("SELECT id,semester_start,semester_end, COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name) as semester_name FROM semester WHERE user_id_fk=?");
   $semestersFromAUser->bind_param("i",$_SESSION["user"]);
 
   if(!$semestersFromAUser->execute()){
     // TODO: echo Error
   }
   // bind result variable
-  $semestersFromAUser->bind_result($id_semester, $semester_name);
+  $semestersFromAUser->bind_result($id_semester,$semester_start,$semester_end, $semester_name);
 
-  echo "<a href='#scroll-tab-0' class='mdl-layout__tab is-active'>Add Notebook</a>
-            ";
   // fetch value
   while ($semestersFromAUser->fetch()) {
 
-    echo "<a href='#scroll-tab-".$id_semester."' class='mdl-layout__tab'>".$semester_name."</a>
+    echo "<a href='#scroll-tab-".$id_semester."' class='mdl-layout__tab ";
+    //activate current semester
+    if ($semester_start<date("Y-m-d") && date("Y-m-d")<=$semester_end ){
+      echo "is-active";
+    }
+    echo "'>".$semester_name."</a>
             ";
 
   }
