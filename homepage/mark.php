@@ -79,28 +79,37 @@ function showMarks() {
             ";
 
   $conn = getConnection();
-
   // Check connection
   if ($conn->connect_error) {
     die("Connection failed: ".$conn->connect_error);
   }
 
   // prepare and bind
-  $semestersFromAUser = $conn->prepare("SELECT id,semester_start,semester_end, COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name) as semester_name FROM semester WHERE user_id_fk=?");
+  $semestersFromAUser = $conn->prepare("SELECT
+        id
+      , semester_start
+      , semester_end
+      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
+          AS semester_name
+      , CASE
+          WHEN semester_start < SYSDATE() AND SYSDATE() <= semester_end THEN 1
+          ELSE 0
+        END AS is_current_semester
+        FROM SEMESTER
+        WHERE user_id_fk=?");
   $semestersFromAUser->bind_param("i",$_SESSION["user"]);
 
   if(!$semestersFromAUser->execute()){
     // TODO: echo Error
   }
   // bind result variable
-  $semestersFromAUser->bind_result($id_semester,$semester_start,$semester_end, $semester_name);
+  $semestersFromAUser->bind_result($id_semester,$semester_start,$semester_end, $semester_name, $is_current_semester);
 
   // fetch value
   while ($semestersFromAUser->fetch()) {
-
     echo "<a href='#scroll-tab-".$id_semester."' class='mdl-layout__tab ";
     //activate current semester
-    if ($semester_start<date("Y-m-d") && date("Y-m-d")<=$semester_end ){
+    if ($is_current_semester == 1){
       echo "is-active";
     }
     echo "'>".$semester_name."</a>
@@ -135,13 +144,54 @@ function showMarks() {
 
   echo "
           </nav>
-        </div>";
+        </div>
+        <main class='mdl-layout__content'>";
+
+  $conn = getConnection();
+
+  if ($conn->connect_error){
+      die("Connection failed: ".$conn->connect_error);
+  }
+
+  $semestersFromAUser = $conn->prepare("SELECT
+      id
+    , semester_name
+    , semester_start
+    , semester_end
+    , CASE
+        WHEN semester_start < SYSDATE() AND SYSDATE() <= semester_end THEN 1
+        ELSE 0
+      END AS is_current_semester
+    FROM semester
+    WHERE user_id_fk = ?");
+  $semestersFromAUser->bind_param("i",$_SESSION["user"]);
+
+  if($semestersFromAUser->execute()){
+    //TODO write error
+  }
+
+  $semestersFromAUser->bind_result($id_semester, $semester_name, $semester_start, $semester_end, $is_current_semester);
+
+  while($semestersFromAUser->fetch()){
+    echo "
+          <section class='mdl-layout__tab-panel ";
+          if ($is_current_semester == 1){
+            echo "is-active";
+          }
+    echo"' id='scroll-tab-$id_semester'>
+            <div class='page-content'>";
+
+
+
+    echo"
+            </div>
+          </section>";
+  }
+  $semestersFromAUser->close();
+  $conn->close();
+
 
   echo "
-        <main class='mdl-layout__content'>
-          <div class='page-content'>
-
-          </div>
         </main>
         <footer class='mdl-mini-footer'>
           <div class='mdl-mini-footer__left-section'>
