@@ -33,9 +33,10 @@ function getConnection(){
 	$ini = parse_ini_file('../config/db.ini');
 
 	$servername = $ini["servername"];
-	$dbusername = $ini["db_name"];
-	$password = $ini["db_user"];
-	$dbname = $ini["db_password"];
+	$dbusername = $ini["db_user"];
+	$password = $ini["db_password"];
+	$dbname = $ini["db_name"];
+
 	// return new mysqli connection
 	return new mysqli($servername, $dbusername, $password, $dbname);
 }

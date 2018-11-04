@@ -24,12 +24,12 @@ switch($_GET['status'])
 }
 
 function getConnection(){
-		$ini = parse_ini_file('../config/db.ini');
+	$ini = parse_ini_file('../config/db.ini');
 
-		$servername = $ini["servername"];
-		$dbusername = $ini["db_name"];
-		$password = $ini["db_user"];
-		$dbname = $ini["db_password"];
+	$servername = $ini["servername"];
+	$dbusername = $ini["db_user"];
+	$password = $ini["db_password"];
+	$dbname = $ini["db_name"];
 
 	// return new mysqli connection
 	return new mysqli($servername, $dbusername, $password, $dbname);
@@ -52,7 +52,7 @@ function showNote() {
 	<body>
 
 	<!-- Simple header with scrollable tabs. -->
-<div class='mdl-layout mdl-js-layout'>
+<div class='mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs'>
   <header class='mdl-layout__header mdl-layout__header--scroll'>
     <div class='mdl-layout__header-row'>
       <!-- Title -->
@@ -69,7 +69,13 @@ function showNote() {
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>
+			<!-- Contact Chip -->
+			<span class='mdl-chip mdl-chip--contact'>
+    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
+    			<span class='mdl-chip__text'>Logout</span>
+			</span>
+		</a>
 		";
 	}
 
@@ -121,7 +127,13 @@ function showNote() {
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>
+			<!-- Contact Chip -->
+			<span class='mdl-chip mdl-chip--contact'>
+    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
+    			<span class='mdl-chip__text'>Logout</span>
+			</span>
+		</a>
 		";
 	}
 
