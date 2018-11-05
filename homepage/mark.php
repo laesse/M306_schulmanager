@@ -225,30 +225,62 @@ function showMarks() {
             echo "is-active";
           }
     echo"' id='scroll-tab-$id_semester'>
-            <div class='page-content'>";
+            <div class='page-content'>
+              <div class='mdl-layout-spacer'></div>
+                <div class='mdl-cell mdl-cell--6-col'>
+            ";
+
+
             $conn2 = getConnection();
 
             if ($conn2->connect_error){
                 die("Connection failed: ".$conn2->connect_error);
             }
-
-
-            $avgMark = $conn2->prepare("SELECT sub.name,avg(m.mark), m.subject_id_fk
-                                          FROM mark m JOIN subject sub
-                                            ON m.subject_id_fk = sub.id
-                                         WHERE m.semester_id_fk = ?
-                                         GROUP BY sub.name");
-            $avgMark->bind_param("i",$id_semester);
-            if($avgMark->execute()){
+            $marks = $conn2->prepare("SELECT  m.mark
+                                            , sub.name
+                                            , m.subject_id_fk
+                                            , COALESCE(tt.date,m.added_at) AS MARK_DATE
+                                            , mavg.avg_mark
+                                        FROM  mark m
+                                        JOIN  subject sub
+                                          ON  (m.subject_id_fk  = sub.id)
+                                        LEFT  OUTER JOIN  (
+                                                            SELECT DISTINCT tt.test_id_fk, tt.`Date`
+                                                              FROM test_time tt
+                                                          ) AS tt
+                                          ON  (m.test_id_fk     = tt.test_id_fk)
+                                        JOIN  (
+                                                SELECT  avg(m.mark) as avg_mark
+                                                      , m.subject_id_fk
+                                                  FROM  mark m
+                                                 WHERE  m.semester_id_fk = ?
+                                                 GROUP  BY m.subject_id_fk
+                                              ) AS mavg
+                                          ON  (m.subject_id_fk  = mavg.subject_id_fk)
+                                       WHERE  m.semester_id_fk = ?
+                                         ");
+            $marks->bind_param("ii", $id_semester, $id_semester);
+            if($marks->execute()){
               //TODO write error
             }
-            $avgMark->bind_result($subjectName, $Avg_mark, $subject_id);
-            while($avgMark->fetch()){
+            $marks->bind_result($mark, $subjectName, $subject_id, $mark_date, $avg_mark);
 
+            // gruppenbruch für subject_id_fk
+            $noch_daten_da = $marks->fetch(); // "vorlesen"
+            while($noch_daten_da){
+              $current_subject_id = $subject_id;
+
+              while ($noch_daten_da && $subject_id == $current_subject_id) {
+                echo"
+                ";
+                $noch_daten_da = $marks->fetch(); // "nachlesen"
+              }
             }
-            $avgMark->close();
+            $marks->close();
             $conn2->close();
     echo"
+              </div>
+              <div class='mdl-layout-spacer'></div>
             </div>
           </section>";
   }
