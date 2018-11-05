@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `mark` (
   `test_id_fk` int(11) DEFAULT NULL,
   `semester_id_fk` int(11) NOT NULL,
   `subject_id_fk` int(11) NOT NULL,
+  `added_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `test_id_fk` (`test_id_fk`),
   KEY `mark_groop_id_fk` (`semester_id_fk`),
