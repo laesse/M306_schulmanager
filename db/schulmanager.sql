@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 03. Nov 2018 um 14:17
+-- Erstellungszeit: 05. Nov 2018 um 20:46
 -- Server-Version: 10.1.36-MariaDB
 -- PHP-Version: 7.2.10
 
@@ -28,12 +28,14 @@ SET time_zone = "+00:00";
 -- Tabellenstruktur für Tabelle `homework`
 --
 
-CREATE TABLE `homework` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `homework` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `due_date` date NOT NULL,
   `timetable_id_fk` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `desciption` text NOT NULL
+  `desciption` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `timetable_id_fk` (`timetable_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -42,11 +44,13 @@ CREATE TABLE `homework` (
 -- Tabellenstruktur für Tabelle `learning_goal`
 --
 
-CREATE TABLE `learning_goal` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `learning_goal` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `test_id_fk` int(11) NOT NULL,
   `goal` text NOT NULL,
-  `reached` datetime DEFAULT NULL
+  `reached` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `test_id_fk` (`test_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -55,25 +59,16 @@ CREATE TABLE `learning_goal` (
 -- Tabellenstruktur für Tabelle `mark`
 --
 
-CREATE TABLE `mark` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `mark` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `mark` double NOT NULL,
   `test_id_fk` int(11) DEFAULT NULL,
-  `mark_groop_id_fk` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `mark_groop`
---
-
-CREATE TABLE `mark_groop` (
-  `id` int(11) NOT NULL,
-  `semester_start` date NOT NULL,
-  `semester_end` date DEFAULT NULL,
+  `semester_id_fk` int(11) NOT NULL,
   `subject_id_fk` int(11) NOT NULL,
-  `semester_name` varchar(50) DEFAULT NULL
+  PRIMARY KEY (`id`),
+  KEY `test_id_fk` (`test_id_fk`),
+  KEY `mark_groop_id_fk` (`semester_id_fk`),
+  KEY `subject_id_fk` (`subject_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -82,12 +77,14 @@ CREATE TABLE `mark_groop` (
 -- Tabellenstruktur für Tabelle `note`
 --
 
-CREATE TABLE `note` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `note` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `notetext` text NOT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `notebook_id_fk` int(11) NOT NULL
+  `notebook_id_fk` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notebook_id_fk` (`notebook_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -96,10 +93,29 @@ CREATE TABLE `note` (
 -- Tabellenstruktur für Tabelle `notebook`
 --
 
-CREATE TABLE `notebook` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `notebook` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
-  `user_id_fk` int(11) NOT NULL
+  `user_id_fk` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_fk` (`user_id_fk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `semester`
+--
+
+CREATE TABLE IF NOT EXISTS `semester` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `semester_start` date NOT NULL,
+  `semester_end` date DEFAULT NULL,
+  `semester_name` varchar(50) DEFAULT NULL,
+  `user_id_fk` int(11) NOT NULL,
+  `definitiv` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `user_id_fk` (`user_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -108,10 +124,12 @@ CREATE TABLE `notebook` (
 -- Tabellenstruktur für Tabelle `subject`
 --
 
-CREATE TABLE `subject` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `subject` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `user_id_fk` int(11) NOT NULL
+  `user_id_fk` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id_fk` (`user_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -120,12 +138,15 @@ CREATE TABLE `subject` (
 -- Tabellenstruktur für Tabelle `test`
 --
 
-CREATE TABLE `test` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `mark_goal` double NOT NULL,
   `subject_id_fk` int(11) NOT NULL,
   `user_id_fk` int(11) NOT NULL,
-  `topic` varchar(255) NOT NULL
+  `topic` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `subject_id_fk` (`subject_id_fk`),
+  KEY `user_id_fk` (`user_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -134,11 +155,14 @@ CREATE TABLE `test` (
 -- Tabellenstruktur für Tabelle `test_time`
 --
 
-CREATE TABLE `test_time` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `test_time` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `test_id_fk` int(11) NOT NULL,
   `timetable_id_fk` int(11) NOT NULL,
-  `date` date NOT NULL
+  `date` date NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `test_id_fk` (`test_id_fk`),
+  KEY `timetable_id_fk` (`timetable_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -147,14 +171,17 @@ CREATE TABLE `test_time` (
 -- Tabellenstruktur für Tabelle `timetable`
 --
 
-CREATE TABLE `timetable` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `timetable` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id_fk` int(11) NOT NULL,
   `subject_id_fk` int(11) NOT NULL,
   `day_of_week` char(2) NOT NULL,
   `start_at` time NOT NULL,
   `end_at` time NOT NULL,
-  `teacher_name` varchar(100) DEFAULT NULL
+  `teacher_name` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id_fk` (`user_id_fk`),
+  KEY `subject_id_fk` (`subject_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -163,166 +190,13 @@ CREATE TABLE `timetable` (
 -- Tabellenstruktur für Tabelle `user`
 --
 
-CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password_hash` char(64) NOT NULL
+  `password_hash` char(64) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Indizes der exportierten Tabellen
---
-
---
--- Indizes für die Tabelle `homework`
---
-ALTER TABLE `homework`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `timetable_id_fk` (`timetable_id_fk`);
-
---
--- Indizes für die Tabelle `learning_goal`
---
-ALTER TABLE `learning_goal`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `test_id_fk` (`test_id_fk`);
-
---
--- Indizes für die Tabelle `mark`
---
-ALTER TABLE `mark`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `test_id_fk` (`test_id_fk`),
-  ADD KEY `mark_groop_id_fk` (`mark_groop_id_fk`);
-
---
--- Indizes für die Tabelle `mark_groop`
---
-ALTER TABLE `mark_groop`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `subject_id_fk` (`subject_id_fk`);
-
---
--- Indizes für die Tabelle `note`
---
-ALTER TABLE `note`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `notebook_id_fk` (`notebook_id_fk`);
-
---
--- Indizes für die Tabelle `notebook`
---
-ALTER TABLE `notebook`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_fk` (`user_id_fk`);
-
---
--- Indizes für die Tabelle `subject`
---
-ALTER TABLE `subject`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id_fk` (`user_id_fk`);
-
---
--- Indizes für die Tabelle `test`
---
-ALTER TABLE `test`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `subject_id_fk` (`subject_id_fk`),
-  ADD KEY `user_id_fk` (`user_id_fk`);
-
---
--- Indizes für die Tabelle `test_time`
---
-ALTER TABLE `test_time`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `test_id_fk` (`test_id_fk`),
-  ADD KEY `timetable_id_fk` (`timetable_id_fk`);
-
---
--- Indizes für die Tabelle `timetable`
---
-ALTER TABLE `timetable`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id_fk` (`user_id_fk`),
-  ADD KEY `subject_id_fk` (`subject_id_fk`);
-
---
--- Indizes für die Tabelle `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT für exportierte Tabellen
---
-
---
--- AUTO_INCREMENT für Tabelle `homework`
---
-ALTER TABLE `homework`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `learning_goal`
---
-ALTER TABLE `learning_goal`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `mark`
---
-ALTER TABLE `mark`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `mark_groop`
---
-ALTER TABLE `mark_groop`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `note`
---
-ALTER TABLE `note`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `notebook`
---
-ALTER TABLE `notebook`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `subject`
---
-ALTER TABLE `subject`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `test`
---
-ALTER TABLE `test`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `test_time`
---
-ALTER TABLE `test_time`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `timetable`
---
-ALTER TABLE `timetable`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `user`
---
-ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints der exportierten Tabellen
@@ -344,13 +218,8 @@ ALTER TABLE `learning_goal`
 -- Constraints der Tabelle `mark`
 --
 ALTER TABLE `mark`
-  ADD CONSTRAINT `mark_mark_groop_fk` FOREIGN KEY (`mark_groop_id_fk`) REFERENCES `mark_groop` (`id`),
-  ADD CONSTRAINT `mark_test_fk` FOREIGN KEY (`test_id_fk`) REFERENCES `test` (`id`);
-
---
--- Constraints der Tabelle `mark_groop`
---
-ALTER TABLE `mark_groop`
+  ADD CONSTRAINT `mark_test_fk` FOREIGN KEY (`test_id_fk`) REFERENCES `test` (`id`),
+  ADD CONSTRAINT `semester_id_fk` FOREIGN KEY (`semester_id_fk`) REFERENCES `semester` (`id`),
   ADD CONSTRAINT `subject_id_fk` FOREIGN KEY (`subject_id_fk`) REFERENCES `subject` (`id`);
 
 --
@@ -364,6 +233,12 @@ ALTER TABLE `note`
 --
 ALTER TABLE `notebook`
   ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id_fk`) REFERENCES `user` (`id`);
+
+--
+-- Constraints der Tabelle `semester`
+--
+ALTER TABLE `semester`
+  ADD CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id_fk`) REFERENCES `user` (`id`);
 
 --
 -- Constraints der Tabelle `subject`
