@@ -84,26 +84,47 @@ function showMarks() {
     die("Connection failed: ".$conn->connect_error);
   }
 
-  // prepare and bind
-  $semestersFromAUser = $conn->prepare("SELECT
+  // semesters from the current user for the Tab name
+  $semestersFromAUser = $conn->prepare(
+    "SELECT
         id
-      , semester_start
-      , semester_end
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
           AS semester_name
       , CASE
-          WHEN semester_start < SYSDATE() AND SYSDATE() <= semester_end THEN 1
-          ELSE 0
-        END AS is_current_semester
+          WHEN semester_start < SYSDATE()
+           AND semester_end  >= SYSDATE()
+              THEN 1
+              ELSE 0
+        END
+          AS is_current_semester -- is current SYSDATE in the range of the semester
         FROM SEMESTER
-        WHERE user_id_fk=?");
-  $semestersFromAUser->bind_param("i",$_SESSION["user"]);
+        WHERE user_id_fk = ?
+          AND definitiv = 0
+        UNION ALL
+		 SELECT
+        id
+      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
+          AS semester_name
+      , CASE
+          WHEN semester_start < SYSDATE()
+           AND semester_end  >= SYSDATE()
+              THEN 1
+              ELSE 0
+        END
+          AS is_current_semester
+        FROM SEMESTER
+        WHERE user_id_fk = ?
+          AND definitiv = 1
+		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1) -- Last semester with defininitv = 1
+        ORDER BY semester_start
+        ");
+  $semestersFromAUser->bind_param("ii",$_SESSION["user"], $_SESSION["user"]);
 
   if(!$semestersFromAUser->execute()){
     // TODO: echo Error
   }
   // bind result variable
-  $semestersFromAUser->bind_result($id_semester,$semester_start,$semester_end, $semester_name, $is_current_semester);
+  $semestersFromAUser->bind_result($id_semester, $semester_name, $is_current_semester);
 
   // fetch value
   while ($semestersFromAUser->fetch()) {
@@ -153,24 +174,49 @@ function showMarks() {
       die("Connection failed: ".$conn->connect_error);
   }
 
-  $semestersFromAUser = $conn->prepare("SELECT
-      id
-    , semester_name
-    , semester_start
-    , semester_end
-    , CASE
-        WHEN semester_start < SYSDATE() AND SYSDATE() <= semester_end THEN 1
-        ELSE 0
-      END AS is_current_semester
-    FROM semester
-    WHERE user_id_fk = ?");
-  $semestersFromAUser->bind_param("i",$_SESSION["user"]);
+
+  $semestersFromAUser = $conn->prepare(
+    "SELECT
+        id
+      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
+          AS semester_name
+      , CASE
+          WHEN semester_start < SYSDATE()
+           AND semester_end  >= SYSDATE()
+              THEN 1
+              ELSE 0
+        END
+          AS is_current_semester -- is current SYSDATE in the range of the semester
+      , definitiv
+        FROM SEMESTER
+        WHERE user_id_fk = ?
+          AND definitiv = 0
+        UNION ALL
+		 SELECT
+        id
+      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
+          AS semester_name
+      , CASE
+          WHEN semester_start < SYSDATE()
+           AND semester_end  >= SYSDATE()
+              THEN 1
+              ELSE 0
+        END
+          AS is_current_semester
+      , definitiv
+        FROM SEMESTER
+        WHERE user_id_fk = ?
+          AND definitiv = 1
+		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1) -- Last semester with defininitv = 1
+        ORDER BY semester_start
+        ");
+  $semestersFromAUser->bind_param("ii",$_SESSION["user"], $_SESSION["user"]);
 
   if($semestersFromAUser->execute()){
     //TODO write error
   }
 
-  $semestersFromAUser->bind_result($id_semester, $semester_name, $semester_start, $semester_end, $is_current_semester);
+  $semestersFromAUser->bind_result($id_semester, $semester_name, $is_current_semester, $definitiv);
 
   while($semestersFromAUser->fetch()){
     echo "
@@ -180,9 +226,28 @@ function showMarks() {
           }
     echo"' id='scroll-tab-$id_semester'>
             <div class='page-content'>";
+            $conn2 = getConnection();
+
+            if ($conn2->connect_error){
+                die("Connection failed: ".$conn2->connect_error);
+            }
 
 
+            $avgMark = $conn2->prepare("SELECT sub.name,avg(m.mark), m.subject_id_fk
+                                          FROM mark m JOIN subject sub
+                                            ON m.subject_id_fk = sub.id
+                                         WHERE m.semester_id_fk = ?
+                                         GROUP BY sub.name");
+            $avgMark->bind_param("i",$id_semester);
+            if($avgMark->execute()){
+              //TODO write error
+            }
+            $avgMark->bind_result($subjectName, $Avg_mark, $subject_id);
+            while($avgMark->fetch()){
 
+            }
+            $avgMark->close();
+            $conn2->close();
     echo"
             </div>
           </section>";
