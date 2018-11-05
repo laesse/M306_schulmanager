@@ -88,6 +88,7 @@ function showMarks() {
   $semestersFromAUser = $conn->prepare(
     "SELECT
         id
+      , semester_start
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
           AS semester_name
       , CASE
@@ -96,13 +97,14 @@ function showMarks() {
               THEN 1
               ELSE 0
         END
-          AS is_current_semester -- is current SYSDATE in the range of the semester
+          AS is_current_semester
         FROM SEMESTER
         WHERE user_id_fk = ?
           AND definitiv = 0
         UNION ALL
 		 SELECT
         id
+      , semester_start
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
           AS semester_name
       , CASE
@@ -115,7 +117,7 @@ function showMarks() {
         FROM SEMESTER
         WHERE user_id_fk = ?
           AND definitiv = 1
-		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1) -- Last semester with defininitv = 1
+		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1)
         ORDER BY semester_start
         ");
   $semestersFromAUser->bind_param("ii",$_SESSION["user"], $_SESSION["user"]);
@@ -124,7 +126,7 @@ function showMarks() {
     // TODO: echo Error
   }
   // bind result variable
-  $semestersFromAUser->bind_result($id_semester, $semester_name, $is_current_semester);
+  $semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester);
 
   // fetch value
   while ($semestersFromAUser->fetch()) {
@@ -178,6 +180,7 @@ function showMarks() {
   $semestersFromAUser = $conn->prepare(
     "SELECT
         id
+      , semester_start
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
           AS semester_name
       , CASE
@@ -194,6 +197,7 @@ function showMarks() {
         UNION ALL
 		 SELECT
         id
+      , semester_start
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
           AS semester_name
       , CASE
@@ -216,7 +220,7 @@ function showMarks() {
     //TODO write error
   }
 
-  $semestersFromAUser->bind_result($id_semester, $semester_name, $is_current_semester, $definitiv);
+  $semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester, $definitiv);
 
   while($semestersFromAUser->fetch()){
     echo "
@@ -228,7 +232,12 @@ function showMarks() {
             <div class='page-content'>
               <div class='mdl-layout-spacer'></div>
                 <div class='mdl-cell mdl-cell--6-col'>
-            ";
+                  <h3>Your Marks in Semester: $semester_name</h3>
+                  <table class='mdl-data-table mdl-js-data-table'>
+                    <thead>
+                      <tr>
+                        <th class='mdl-data-table__cell--non-numeric'>Subject</th>";
+
 
 
             $conn2 = getConnection();
@@ -236,6 +245,31 @@ function showMarks() {
             if ($conn2->connect_error){
                 die("Connection failed: ".$conn2->connect_error);
             }
+            $max_mark_cnt = $conn2->prepare("SELECT  max(m.cnt) cnt
+                                        FROM  (
+                                                SELECT  m.subject_id_fk, COUNT(1) cnt
+                                                  FROM  mark m
+                                                 WHERE  m.semester_id_fk = ?
+                                                 GROUP  BY m.subject_id_fk
+                                              ) m"
+                                            );
+            $max_mark_cnt->bind_param("i", $id_semester);
+            if($max_mark_cnt->execute()){
+              //TODO write error
+            }
+            $max_mark_cnt->bind_result($cnt);
+            if($max_mark_cnt->fetch()){
+                for ($i = 1; $i <= intval($cnt); $i++) {
+                    echo "
+                        <th>Mark $i</th>";
+                }
+            }
+            echo "      <th>Avarage Mark</th>
+                      </tr>
+                    </thead>
+                    <tbody>";
+            $max_mark_cnt->close();
+
             $marks = $conn2->prepare("SELECT  m.mark
                                             , sub.name
                                             , m.subject_id_fk
@@ -263,19 +297,33 @@ function showMarks() {
             if($marks->execute()){
               //TODO write error
             }
-            $marks->bind_result($mark, $subjectName, $subject_id, $mark_date, $avg_mark);
+            $marks->bind_result($mark, $subject_name, $subject_id, $mark_date, $avg_mark);
 
             // gruppenbruch für subject_id_fk
             $noch_daten_da = $marks->fetch(); // "vorlesen"
             while($noch_daten_da){
               $current_subject_id = $subject_id;
-
+              echo "<tr>
+                      <td class='mdl-data-table__cell--non-numeric'>$subject_name</td>";
+              $i = 0;
+              $zw_avg_mark = $avg_mark;
               while ($noch_daten_da && $subject_id == $current_subject_id) {
                 echo"
-                ";
+                      <td>$mark</td>";
+                $i += 1;
                 $noch_daten_da = $marks->fetch(); // "nachlesen"
               }
+              while ($i < intval($cnt)){
+                echo"
+                      <td></td>";
+                $i += 1;
+              }
+              echo "  <td>$zw_avg_mark</td>
+                    </tr>";
             }
+            echo "
+                  </tbody>
+                </table>";
             $marks->close();
             $conn2->close();
     echo"
