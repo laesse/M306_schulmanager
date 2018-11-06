@@ -21,9 +21,9 @@ function getConnection(){
   $ini = parse_ini_file('../config/db.ini');
 
   $servername = $ini["servername"];
-  $dbusername = $ini["db_name"];
-  $password = $ini["db_user"];
-  $dbname = $ini["db_password"];
+  $dbname = $ini["db_name"];
+  $dbusername = $ini["db_user"];
+  $password = $ini["db_password"];
   // return new mysqli connection
   return new mysqli($servername, $dbusername, $password, $dbname);
 }
@@ -98,7 +98,7 @@ function showMarks() {
               ELSE 0
         END
           AS is_current_semester
-        FROM SEMESTER
+        FROM semester
         WHERE user_id_fk = ?
           AND definitiv = 0
         UNION ALL
@@ -114,7 +114,7 @@ function showMarks() {
               ELSE 0
         END
           AS is_current_semester
-        FROM SEMESTER
+        FROM semester
         WHERE user_id_fk = ?
           AND definitiv = 1
 		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1)
@@ -192,7 +192,7 @@ function showMarks() {
           AS is_current_semester -- is current SYSDATE in the range of the semester
       , definitiv
       , semester_name
-        FROM SEMESTER
+        FROM semester
         WHERE user_id_fk = ?
           AND definitiv = 0
         UNION ALL
@@ -210,7 +210,7 @@ function showMarks() {
           AS is_current_semester
       , definitiv
       , semester_name
-        FROM SEMESTER
+        FROM semester
         WHERE user_id_fk = ?
           AND definitiv = 1
 		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1) -- Last semester with defininitv = 1
