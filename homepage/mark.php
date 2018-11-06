@@ -182,7 +182,7 @@ function showMarks() {
         id
       , semester_start
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
-          AS semester_name
+          AS semester_name_fake
       , CASE
           WHEN semester_start < SYSDATE()
            AND semester_end  >= SYSDATE()
@@ -191,6 +191,7 @@ function showMarks() {
         END
           AS is_current_semester -- is current SYSDATE in the range of the semester
       , definitiv
+      , semester_name
         FROM SEMESTER
         WHERE user_id_fk = ?
           AND definitiv = 0
@@ -199,7 +200,7 @@ function showMarks() {
         id
       , semester_start
       , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
-          AS semester_name
+          AS semester_name_fake
       , CASE
           WHEN semester_start < SYSDATE()
            AND semester_end  >= SYSDATE()
@@ -208,6 +209,7 @@ function showMarks() {
         END
           AS is_current_semester
       , definitiv
+      , semester_name
         FROM SEMESTER
         WHERE user_id_fk = ?
           AND definitiv = 1
@@ -220,117 +222,145 @@ function showMarks() {
     //TODO write error
   }
 
-  $semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester, $definitiv);
+  $semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester, $definitiv,$semester_name_orig);
 
   while($semestersFromAUser->fetch()){
     echo "
           <section class='mdl-layout__tab-panel ";
-          if ($is_current_semester == 1){
-            echo "is-active";
-          }
+    if ($is_current_semester == 1){
+      echo "is-active";
+    }
     echo"' id='scroll-tab-$id_semester'>
             <div class='page-content'>
-              <div class='mdl-layout-spacer'></div>
-                <div class='mdl-cell mdl-cell--6-col'>
-                  <h3>Your Marks in Semester: $semester_name</h3>
+            <div class='mdl-grid'>
+              <div class='mdl-cell mdl-cell--2-col'></div>
+                <div class='mdl-cell mdl-cell--8-col'>";
+
+
+
+    $conn2 = getConnection();
+    if ($conn2->connect_error){
+      die("Connection failed: ".$conn2->connect_error);
+    }
+    $max_mark_cnt = $conn2->prepare("SELECT  max(m.cnt) cnt
+                                      FROM  (
+                                       SELECT  m.subject_id_fk, COUNT(1) cnt
+                                        FROM   mark m
+                                        WHERE  m.semester_id_fk = ?
+                                        GROUP  BY m.subject_id_fk
+                                            )  m"
+                                        );
+    $max_mark_cnt->bind_param("i", $id_semester);
+    if($max_mark_cnt->execute()){
+      //TODO write error
+    }
+    $max_mark_cnt->bind_result($cnt);
+    if($max_mark_cnt->fetch()){
+      if($cnt > 0){
+        echo "
+                  <h3>Your Marks in Semester: \"$semester_name_orig\"</h3>
                   <table class='mdl-data-table mdl-js-data-table'>
                     <thead>
                       <tr>
                         <th class='mdl-data-table__cell--non-numeric'>Subject</th>";
 
-
-
-            $conn2 = getConnection();
-
-            if ($conn2->connect_error){
-                die("Connection failed: ".$conn2->connect_error);
-            }
-            $max_mark_cnt = $conn2->prepare("SELECT  max(m.cnt) cnt
-                                        FROM  (
-                                                SELECT  m.subject_id_fk, COUNT(1) cnt
-                                                  FROM  mark m
-                                                 WHERE  m.semester_id_fk = ?
-                                                 GROUP  BY m.subject_id_fk
-                                              ) m"
-                                            );
-            $max_mark_cnt->bind_param("i", $id_semester);
-            if($max_mark_cnt->execute()){
-              //TODO write error
-            }
-            $max_mark_cnt->bind_result($cnt);
-            if($max_mark_cnt->fetch()){
-                for ($i = 1; $i <= intval($cnt); $i++) {
-                    echo "
+        for ($i = 1; $i <= intval($cnt); $i++) {
+          echo "
                         <th>Mark $i</th>";
-                }
-            }
-            echo "      <th>Avarage Mark</th>
+        }
+        echo "
+                        <th class='mdl-data-table__cell--non-numeric'>Avarage Mark</th>
+                        <th class='mdl-data-table__cell--non-numeric'>Edit Subject</th>
                       </tr>
                     </thead>
                     <tbody>";
-            $max_mark_cnt->close();
+      }
+    }else{
+      echo "
+                <h4>no marks in this semester yet...</h4>";
+      $cnt = 0;
+    }
 
-            $marks = $conn2->prepare("SELECT  m.mark
-                                            , sub.name
-                                            , m.subject_id_fk
-                                            , COALESCE(tt.date,m.added_at) AS MARK_DATE
-                                            , mavg.avg_mark
-                                        FROM  mark m
-                                        JOIN  subject sub
-                                          ON  (m.subject_id_fk  = sub.id)
-                                        LEFT  OUTER JOIN  (
-                                                            SELECT DISTINCT tt.test_id_fk, tt.`Date`
-                                                              FROM test_time tt
-                                                          ) AS tt
-                                          ON  (m.test_id_fk     = tt.test_id_fk)
-                                        JOIN  (
-                                                SELECT  avg(m.mark) as avg_mark
-                                                      , m.subject_id_fk
-                                                  FROM  mark m
-                                                 WHERE  m.semester_id_fk = ?
-                                                 GROUP  BY m.subject_id_fk
-                                              ) AS mavg
-                                          ON  (m.subject_id_fk  = mavg.subject_id_fk)
-                                       WHERE  m.semester_id_fk = ?
-                                         ");
-            $marks->bind_param("ii", $id_semester, $id_semester);
-            if($marks->execute()){
-              //TODO write error
-            }
-            $marks->bind_result($mark, $subject_name, $subject_id, $mark_date, $avg_mark);
+    $max_mark_cnt->close();
 
-            // gruppenbruch für subject_id_fk
-            $noch_daten_da = $marks->fetch(); // "vorlesen"
-            while($noch_daten_da){
-              $current_subject_id = $subject_id;
-              echo "<tr>
-                      <td class='mdl-data-table__cell--non-numeric'>$subject_name</td>";
-              $i = 0;
-              $zw_avg_mark = $avg_mark;
-              while ($noch_daten_da && $subject_id == $current_subject_id) {
-                echo"
-                      <td>$mark</td>";
-                $i += 1;
-                $noch_daten_da = $marks->fetch(); // "nachlesen"
-              }
-              while ($i < intval($cnt)){
-                echo"
+    // weiter machen wenn semester Noten hat sonst nichts tun
+    if ($cnt > 0){
+      $marks = $conn2->prepare("SELECT  m.mark
+                                      , sub.name
+                                      , m.subject_id_fk
+                                      , COALESCE(tt.date,m.added_at) AS MARK_DATE
+                                      , mavg.avg_mark
+                                  FROM  mark m
+                                  JOIN  subject sub
+                                    ON  (m.subject_id_fk  = sub.id)
+                                  LEFT  OUTER JOIN  (
+                                                      SELECT DISTINCT tt.test_id_fk, tt.`Date`
+                                                        FROM test_time tt
+                                                    ) AS tt
+                                    ON  (m.test_id_fk     = tt.test_id_fk)
+                                  JOIN  (
+                                          SELECT  avg(m.mark) as avg_mark
+                                                , m.subject_id_fk
+                                            FROM  mark m
+                                           WHERE  m.semester_id_fk = ?
+                                           GROUP  BY m.subject_id_fk
+                                        ) AS mavg
+                                    ON  (m.subject_id_fk  = mavg.subject_id_fk)
+                                 WHERE  m.semester_id_fk = ?
+                                           ");
+      $marks->bind_param("ii", $id_semester, $id_semester);
+      if($marks->execute()){
+        //TODO write error
+      }
+      $marks->bind_result($mark, $subject_name, $subject_id, $mark_date, $avg_mark);
+
+      // gruppenbruch für subject_id_fk
+      $noch_daten_da = $marks->fetch(); // "vorlesen"
+      while($noch_daten_da){
+        $current_subject_id = $subject_id;
+        echo "
+                     <tr>
+                       <td class='mdl-data-table__cell--non-numeric'>$subject_name</td>";
+        $i = 0;
+        $zw_avg_mark = $avg_mark;
+        $zw_subject_id = $subject_id;
+        //gruppenbruch Stufe Subject
+        while ($noch_daten_da && $subject_id == $current_subject_id) {
+          echo"
+                        <td>$mark</td>";
+          $i += 1;
+          $noch_daten_da = $marks->fetch(); // "nachlesen"
+        }
+        while ($i < intval($cnt)){
+          // Restliche Tabellenfelder ausgeben für Fächer die weniger Noten haben als welches mit den meisten noten im Semester
+          echo"
                       <td></td>";
-                $i += 1;
-              }
-              echo "  <td>$zw_avg_mark</td>
+          $i += 1;
+        }
+        echo "
+                      <td>$zw_avg_mark</td>
+                      <td class='mdl-data-table__cell--non-numeric'>
+                        <form method='post' action='?status=editMark'>
+                          <input type='hidden' value='$zw_subject_id' name='subject_id'/>
+                          <button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' type='submit'>Edit</button>
+                        </from>
+                      </td>
                     </tr>";
-            }
-            echo "
+      }
+      echo "
                   </tbody>
                 </table>";
-            $marks->close();
-            $conn2->close();
+      $marks->close();
+    }
+
+    $conn2->close();
     echo"
               </div>
-              <div class='mdl-layout-spacer'></div>
+              <div class='mdl-cell mdl-cell--2-col'></div>
             </div>
+          </div>
           </section>";
+
   }
   $semestersFromAUser->close();
   $conn->close();
