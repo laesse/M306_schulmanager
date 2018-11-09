@@ -82,28 +82,29 @@ function showTimetable() {
     		<label class='mdl-textfield__label' for='sample3'>TeacherName</label>
   		</div>
 		
-		<br>
-		<br>
-		
-		<label for='addSubjectDayOfWeek'>DayOfWeek</label><br>
-		<select name='dayOfWeek' id='addSubjectDayOfWeek'>
-			<option></option>
-			<option value='mo'>Monday</option>
-    		<option value='tu'>Tuesday</option>
-    		<option value='we'>Wednesday</option>
-    		<option value='th'>Thursday</option>
-    		<option value='fr'>Friday</option>
-    		<option value='sa'>Saturday</option>
-    		<option value='su'>Sunday</option>
-  		</select><br>
-		
-		<label for='addSubjectStartAt'>StartAt</label><br>
-		<input type='time' name='startAt' id='addSubjectStartAt' value='".htmlspecialchars($_POST['startAt'])."'><br>
-		
-		<label for='addSubjectEndAt'>EndAt</label><br>
-		<input type='time' name='endAt' id='addSubjectEndAt' value='".htmlspecialchars($_POST['endAt'])."'><br>
-		
-		<br>
+		<div class='mdl-grid'>
+  			<div class='mdl-cell mdl-cell--3-col'>				
+				<label for='addSubjectDayOfWeek'>DayOfWeek</label><br>
+				<select name='dayOfWeek' id='addSubjectDayOfWeek'>
+					<option></option>
+					<option value='mo'>Monday</option>
+    				<option value='tu'>Tuesday</option>
+    				<option value='we'>Wednesday</option>
+    				<option value='th'>Thursday</option>
+    				<option value='fr'>Friday</option>
+    				<option value='sa'>Saturday</option>
+    				<option value='su'>Sunday</option>
+  				</select>				
+			</div>
+  			<div class='mdl-cell mdl-cell--3-col'>
+				<label for='addSubjectStartAt'>StartAt</label><br>
+				<input type='time' name='startAt' id='addSubjectStartAt' value='".htmlspecialchars($_POST['startAt'])."'>
+			</div>
+  			<div class='mdl-cell mdl-cell--3-col'>
+				<label for='addSubjectEndAt'>EndAt</label><br>
+				<input type='time' name='endAt' id='addSubjectEndAt' value='".htmlspecialchars($_POST['endAt'])."'>
+			</div>
+  		</div>
 		
 		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Add</button>
 		
