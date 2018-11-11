@@ -10,7 +10,13 @@ ini_set('display_errors', 0);
 switch($_GET['status'])
 {
   case 'logout':
-         logout();
+    logout();
+  break;
+  case 'editMark':
+    editMark();
+  break;
+  case 'addMark':
+    addMark();
   break;
   default:
     showMarks();
@@ -355,8 +361,21 @@ function showMarks() {
 
     $conn2->close();
     echo"
+
               </div>
               <div class='mdl-cell mdl-cell--2-col'></div>
+            </div>
+            <div class='mdl-grid'>
+              <div class='mdl-cell mdl-cell--4-col'></div>
+              <div class='mdl-cell mdl-cell--4-col'>
+                <form method='post' action='?status=addMark'>
+                  <input type='hidden' value='$id_semester' name='semester_id'/>
+                  <button class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored' type='submit'>
+                    <i class='material-icons'>add</i>
+                  </button>
+                </from>
+              </div>
+              <div class='mdl-cell mdl-cell--4-col'></div>
             </div>
           </div>
           </section>";
@@ -382,6 +401,13 @@ function showMarks() {
   </html>
           ";
 
+}
+
+function addMark(){
+
+}
+function editMark(){
+  
 }
 
 function logout() {
