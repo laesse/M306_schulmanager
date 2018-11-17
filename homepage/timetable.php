@@ -82,20 +82,23 @@ function showTimetable() {
     		<label class='mdl-textfield__label' for='sample3'>TeacherName</label>
   		</div>
 		
+		<br><br>
+		
+		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+			<select class='mdl-textfield__input' name='dayOfWeek' id='addSubjectDayOfWeek'>
+				<option></option>
+				<option value='mo'>Monday</option>
+    			<option value='tu'>Tuesday</option>
+    			<option value='we'>Wednesday</option>
+    			<option value='th'>Thursday</option>
+    			<option value='fr'>Friday</option>
+    			<option value='sa'>Saturday</option>
+    			<option value='su'>Sunday</option>
+  			</select>	
+			<label class='mdl-textfield__label' for='addSubjectDayOfWeek'>DayOfWeek</label>
+		</div>
+		
 		<div class='mdl-grid'>
-  			<div class='mdl-cell mdl-cell--3-col'>				
-				<label for='addSubjectDayOfWeek'>DayOfWeek</label><br>
-				<select name='dayOfWeek' id='addSubjectDayOfWeek'>
-					<option></option>
-					<option value='mo'>Monday</option>
-    				<option value='tu'>Tuesday</option>
-    				<option value='we'>Wednesday</option>
-    				<option value='th'>Thursday</option>
-    				<option value='fr'>Friday</option>
-    				<option value='sa'>Saturday</option>
-    				<option value='su'>Sunday</option>
-  				</select>				
-			</div>
   			<div class='mdl-cell mdl-cell--3-col'>
 				<label for='addSubjectStartAt'>StartAt</label><br>
 				<input type='time' name='startAt' id='addSubjectStartAt' value='".htmlspecialchars($_POST['startAt'])."'>
@@ -104,17 +107,14 @@ function showTimetable() {
 				<label for='addSubjectEndAt'>EndAt</label><br>
 				<input type='time' name='endAt' id='addSubjectEndAt' value='".htmlspecialchars($_POST['endAt'])."'>
 			</div>
+			<div class='mdl-cell mdl-cell--3-col'>
+				<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Add</button>
+			</div>
   		</div>
 		
-		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Add</button>
-		
-		<br><br><br>
+		<br>
 		
 	</form>
-	
-	
-	
-
 
 	<div class='mdl-tabs mdl-js-tabs mdl-js-ripple-effect'>
   <div class='mdl-tabs__tab-bar'>
