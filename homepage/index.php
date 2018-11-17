@@ -109,18 +109,33 @@ function showHome() {
 							<h3>Welcome</h3>
 							<p>Start your schoolmanagement today.</p>		
 							
+	";
+	
+	
+	if (!isset($_SESSION['user'])) {
+	
+	echo "
 							<form action='user.php' method='post'>
 								<button class='mdl-button mdl-js-button mdl-button--raised mdl-button--colored' type='submit'>Login</button>
 							</form>
 							<form action='user.php?status=showRegistration' method='post'>
 								<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Register</button>
 							</form>
+							
+							<br>
 								
+								
+	";
+	
+	}
+	
+	
+	echo "
 								</div>
 								<div class='mdl-layout-spacer'></div>
   							</div>
-							
-							<br><br><br>
+	
+							<br>
 							
 							<!-- Square card -->
 							<style>
