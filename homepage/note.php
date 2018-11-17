@@ -4,9 +4,10 @@
 session_start();
 
 // hide errors
+/*
 error_reporting(0);
 ini_set('display_errors', 0);
-
+*/
 switch($_GET['status'])
 {
 	case 'checkSaveNote':
@@ -209,7 +210,7 @@ function showNote() {
 		}
 
 		// bind result variable
-    $notesInNotebook->bind_result($id, $notetext);
+		$notesInNotebook->bind_result($id, $notetext);
 
 		// fetch value
 		if ($notesInNotebook->fetch()) {
@@ -276,15 +277,17 @@ function checkSaveNote() {
 }
 
 function updateNote(){
+	
 	$conn = getConnection();
-
-  // Check connection
+	$txtNote = htmlspecialchars(trim($_POST['txtNote']));
+	
+  	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
 	$updateNotetxt = $conn->prepare("UPDATE note SET notetext = ? WHERE id = ?");
-	$updateNotetxt->bind_param("si",htmlspecialchars(trim($_POST['txtNote'])), $_POST['note_id']);
+	$updateNotetxt->bind_param("si", $txtNote, $_POST['note']);
 
 	if(!$updateNotetxt->execute()){
 		// TODO: echo Error
@@ -293,7 +296,8 @@ function updateNote(){
 
 	$updateNotetxt->close();
 	$conn->close();
-showNote();
+	showNote();
+	
 }
 
 
@@ -423,6 +427,7 @@ function insertNotebook() {
 }
 
 function deleteNotebook(){
+	
 	$conn = getConnection();
 
 	// Check connection
@@ -430,17 +435,40 @@ function deleteNotebook(){
     	die("Connection failed: " . $conn->connect_error);
 
 	}
-	$notebook = htmlspecialchars(trim($_POST['notebook_id']));
-
-	$delNotebook = $conn->prepare("DELETE FROM notebook WHERE id=?");
-	$delNotebook->bind_param("s", $notebook);
+	
+	$note = $_POST['deleteNotebook'];
+	
+	$delNotebook = $conn->prepare("DELETE FROM note WHERE notebook_id_fk=?");
+	$delNotebook->bind_param("i", $note);
 
 	if (!$delNotebook->execute()) {
-		// TODO: echo Error
+		//ECHO FAIL
 	}
 
 	$delNotebook->close();
 	$conn->close();
+
+	
+		
+	$conn1 = getConnection();
+
+	// Check connection
+	if ($conn1->connect_error) {
+    	die("Connection failed: " . $conn1->connect_error);
+
+	}
+	
+	$notebook = $_POST['deleteNotebook'];
+	
+	$delNotebook = $conn1->prepare("DELETE FROM notebook WHERE id=?");
+	$delNotebook->bind_param("i", $notebook);
+
+	if (!$delNotebook->execute()) {
+		//ECHO FAIL
+	}
+
+	$delNotebook->close();
+	$conn1->close();
 
 	showNote();
 }
