@@ -12,6 +12,9 @@ switch($_GET['status'])
 	case 'checkAddSubject':
 		checkAddSubject();
 	break;
+	case 'deleteTimetable':
+		deleteTimetable();
+	break;
 	case 'jumpToHome':
 		jumpToHome();
 	break;
@@ -378,6 +381,32 @@ function getSubjectId() {
 	
 }
 
+function deleteTimetable(){
+		
+	$conn = getConnection();
+
+	// Check connection
+	if ($conn->connect_error) {
+    	die("Connection failed: " . $conn->connect_error);
+
+	}
+	
+	$subjectfk = htmlspecialchars(trim($_POST['deleteButton']));
+	
+	$delTimetable = $conn->prepare("DELETE FROM timetable WHERE user_id_fk=? AND subject_id_fk=?");
+	$delTimetable->bind_param("ii", $_SESSION["user"], $subjectfk);
+
+	if (!$delTimetable->execute()) {
+		//ECHO FAIL
+	}
+
+	$delTimetable->close();
+	$conn->close();
+	
+	showTimetable();
+	
+}
+
 function showDay($day_of_week) {
 	
 	// Create connection
@@ -422,6 +451,7 @@ function showDay($day_of_week) {
 		$stmt1->close();
 		$conn1->close();
 		
+		
 		echo "<br>";
 		echo $name;
 		echo " - ";
@@ -430,6 +460,13 @@ function showDay($day_of_week) {
 		echo substr($start_at, 0, 5);
 		echo "<br>";
 		echo substr($end_at, 0, 5);
+		echo "<form action='?status=deleteTimetable' method='post'>
+				<!-- Accent-colored flat button -->
+			  	<button name='deleteButton' value='".$subject_id_fk."' class='mdl-button mdl-js-button mdl-button--accent'>
+  					Delete
+			  	</button>
+			  </form>
+		";
 		echo "<hr>";
 	}
 	
