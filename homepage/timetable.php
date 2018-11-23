@@ -229,8 +229,8 @@ function checkAddSubject(){
 		}
 
 		// prepare and bind
-		$stmt = $conn->prepare("SELECT id FROM timetable WHERE day_of_week=? AND ((? BETWEEN start_at AND end_at) OR (? BETWEEN start_at AND end_at) OR (start_at BETWEEN ? AND ?) OR (end_at BETWEEN ? AND ?) OR start_at=? OR start_at=? OR end_at=? OR end_at=?)");
-		$stmt->bind_param("sssssssssss", $dayOfWeek, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt);
+		$stmt = $conn->prepare("SELECT id FROM timetable WHERE user_id_fk=? AND day_of_week=? AND ((? BETWEEN start_at AND end_at) OR (? BETWEEN start_at AND end_at) OR (start_at BETWEEN ? AND ?) OR (end_at BETWEEN ? AND ?) OR start_at=? OR start_at=? OR end_at=? OR end_at=?)");
+		$stmt->bind_param("isssssssssss", $_SESSION["user"], $dayOfWeek, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt);
 		
 		$stmt->execute();
 
