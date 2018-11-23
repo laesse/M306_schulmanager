@@ -4,10 +4,9 @@
 session_start();
 
 // hide errors
-/*
 error_reporting(0);
 ini_set('display_errors', 0);
-*/
+
 switch($_GET['status'])
 {
 	case 'checkAddSubject':
@@ -239,16 +238,10 @@ function checkAddSubject(){
 
 		// fetch value
 		if ($stmt->fetch()) {
-			echo "HIER1";
-			echo $dayOfWeek;
-			echo $startAt;
-			echo $endAt;
-			echo "??".$id."??";
 			unset($_POST['dayOfWeek']);
 			unset($_POST['startAt']);
 			unset($_POST['endAt']);
 		} else {
-			echo "HIER2";
 			//SUBJECT BEREITS DA?
 			checkSubjectExists();
 		}
