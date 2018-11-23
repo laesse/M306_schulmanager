@@ -243,6 +243,7 @@ function checkAddSubject(){
 			echo $dayOfWeek;
 			echo $startAt;
 			echo $endAt;
+			echo "??".$id."??";
 			unset($_POST['dayOfWeek']);
 			unset($_POST['startAt']);
 			unset($_POST['endAt']);
