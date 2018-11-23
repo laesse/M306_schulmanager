@@ -239,10 +239,15 @@ function checkAddSubject(){
 
 		// fetch value
 		if ($stmt->fetch()) {
+			echo "HIER1";
+			echo $dayOfWeek;
+			echo $startAt;
+			echo $endAt;
 			unset($_POST['dayOfWeek']);
 			unset($_POST['startAt']);
 			unset($_POST['endAt']);
 		} else {
+			echo "HIER2";
 			//SUBJECT BEREITS DA?
 			checkSubjectExists();
 		}
