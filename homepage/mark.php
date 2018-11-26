@@ -3,11 +3,8 @@
 // start session
 session_start();
 
-// hide errors
-error_reporting(0);
-ini_set('display_errors', 0);
 
-switch($_GET['status'])
+switch(@$_GET['status'])
 {
   case 'logout':
     logout();
@@ -276,15 +273,14 @@ function showMarks() {
         }
         echo "
                         <th class='mdl-data-table__cell--non-numeric'>Avarage Mark</th>
-                        <th class='mdl-data-table__cell--non-numeric'>Edit Subject</th>
                       </tr>
                     </thead>
                     <tbody>";
+      }else{
+        echo "
+                  <h4>no marks in this semester yet...</h4>";
+        $cnt = 0;
       }
-    }else{
-      echo "
-                <h4>no marks in this semester yet...</h4>";
-      $cnt = 0;
     }
 
     $max_mark_cnt->close();
@@ -345,12 +341,7 @@ function showMarks() {
         }
         echo "
                       <td>$zw_avg_mark</td>
-                      <td class='mdl-data-table__cell--non-numeric'>
-                        <form method='post' action='?status=editMark'>
-                          <input type='hidden' value='$zw_subject_id' name='subject_id'/>
-                          <button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' type='submit'>Edit</button>
-                        </from>
-                      </td>
+
                     </tr>";
       }
       echo "
@@ -367,25 +358,64 @@ function showMarks() {
             </div>
             <div class='mdl-grid'>
               <div class='mdl-cell mdl-cell--4-col'></div>
-              <div class='mdl-cell mdl-cell--4-col'>
-                <form method='post' action='?status=addMark'>
-                  <input type='hidden' value='$id_semester' name='semester_id'/>
-                  <button class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored' type='submit'>
-                    <i class='material-icons'>add</i>
-                  </button>
-                </from>
-              </div>
-              <div class='mdl-cell mdl-cell--4-col'></div>
+              <div class='mdl-cell mdl-cell--4-col'>";
+
+
+
+
+  $conn2 = getConnection();
+  if ($conn2->connect_error){
+    die("Connection failed: ".$conn2->connect_error);
+  }
+  $subjectZeug = $conn2->prepare("SELECT id,name
+                                   FROM subject
+                                  WHERE user_id_fk = ?
+                                  ORDER BY id DESC
+                                ");
+  $subjectZeug->bind_param("i",$_SESSION["user"]);
+  if($subjectZeug->execute()){
+    //TODO write error
+  }
+  $subjectZeug->bind_result($subject_id,$subject_name);
+  echo "
+                <form action='?status=addMark' method='post'>
+                  <div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+                    <select class='mdl-textfield__input' name='subject' id='subjects'>
+                      <option value='0'>Please choose</option>";
+  while($subjectZeug->fetch()){
+    echo "
+                      <option value='$subject_id'>$subject_name</option>";
+  }
+  $subjectZeug->close();
+  $conn2->close();
+
+  echo "
+                    </select>
+                  <label class='mdl-textfield__label' for='subjects'>Subject</label>
+                </div>
+                <br>
+                <div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
+                  <input class='mdl-textfield__input' pattern='-?[0-9]*(\.[0-9]+)?' type='text' id='sample3' name='mark' value='".htmlspecialchars(@$_POST['mark'])."'>
+                  <label class='mdl-textfield__label' for='sample3'>Mark</label>
+                  <span class='mdl-textfield__error'>Input is not a number!</span>
+                </div>
+                <input type='hidden' name='semester_id' value='$id_semester'>
+                <br>
+                <button class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored' type='submit'>
+                  <i class='material-icons'>add</i>
+                </button>
+              </form>
+
+            </div>
+            <div class='mdl-cell mdl-cell--4-col'>
             </div>
           </div>
-          </section>";
-
+        </div>
+        </section>";
   }
   $semestersFromAUser->close();
   $conn->close();
-
-
-  echo "
+  echo"
         </main>
         <footer class='mdl-mini-footer'>
           <div class='mdl-mini-footer__left-section'>
@@ -401,13 +431,62 @@ function showMarks() {
   </html>
           ";
 
+
 }
 
 function addMark(){
+    if(checkAddMark()){
+        $conn = getConnection();
+        $mark = htmlspecialchars(trim(@$_POST['mark']));
+
+        if ($conn->connect_error){
+          die("Connection failed: ".$conn->connect_error);
+        }
+        $insertMark = $conn->prepare("INSERT INTO mark(mark,test_id_fk,semester_id_fk,subject_id_fk)
+                                                 VALUES(?,NULL,?,?)
+                                      ");
+        $insertMark->bind_param("dii",$mark,$_POST["semester_id"],$_POST["subject"]);
+        if($insertMark->execute()){
+          //TODO write error
+        }
+        $insertMark->close();
+        $conn->close();
+        unset($_POST['mark']);
+        unset($_POST['semester_id']);
+        unset($_POST['subject']);
+
+        showMarks();
+    }else{
+        showMarks();
+    }
+}
+
+function checkAddMark() {
+
+	$success = true;
+	$subject_id = htmlspecialchars(trim(@$_POST['subject']));
+	$new_mark = htmlspecialchars(trim(@$_POST['mark']));
+
+	/*
+  check if parameters are empty
+	*/
+  if (empty($subject_id)) {
+    $success = false;
+  }
+  if (empty($new_mark)) {
+    $success = false;
+  }
+  //default value
+  if ($subject_id == 0) {
+    $success = false;
+  }
+
+
+  return $success;
 
 }
 function editMark(){
-  
+
 }
 
 function logout() {
