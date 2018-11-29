@@ -24,12 +24,12 @@ switch($_GET['status'])
 }
 
 function getConnection(){
-		$ini = parse_ini_file('../config/db.ini');
+	$ini = parse_ini_file('../config/db.ini');
 
-		$servername = $ini["servername"];
-		$dbusername = $ini["db_name"];
-		$password = $ini["db_user"];
-		$dbname = $ini["db_password"];
+	$servername = $ini["servername"];
+	$dbusername = $ini["db_user"];
+	$password = $ini["db_password"];
+	$dbname = $ini["db_name"];
 
 	// return new mysqli connection
 	return new mysqli($servername, $dbusername, $password, $dbname);
@@ -52,7 +52,7 @@ function showNote() {
 	<body>
 
 	<!-- Simple header with scrollable tabs. -->
-<div class='mdl-layout mdl-js-layout'>
+<div class='mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs'>
   <header class='mdl-layout__header mdl-layout__header--scroll'>
     <div class='mdl-layout__header-row'>
       <!-- Title -->
@@ -69,7 +69,13 @@ function showNote() {
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>
+			<!-- Contact Chip -->
+			<span class='mdl-chip mdl-chip--contact'>
+    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
+    			<span class='mdl-chip__text'>Logout</span>
+			</span>
+		</a>
 		";
 	}
 
@@ -121,7 +127,13 @@ function showNote() {
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>Logout</a>
+		<a class='mdl-navigation__link' href='index.php?status=logout'>
+			<!-- Contact Chip -->
+			<span class='mdl-chip mdl-chip--contact'>
+    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
+    			<span class='mdl-chip__text'>Logout</span>
+			</span>
+		</a>
 		";
 	}
 
@@ -197,7 +209,7 @@ function showNote() {
 		}
 
 		// bind result variable
-    $notesInNotebook->bind_result($id, $notetext);
+		$notesInNotebook->bind_result($id, $notetext);
 
 		// fetch value
 		if ($notesInNotebook->fetch()) {
@@ -239,15 +251,6 @@ function showNote() {
 
 	echo "
   </main>
-  <footer class='mdl-mini-footer'>
-  	<div class='mdl-mini-footer__left-section'>
-   		<div class='mdl-logo'>TODO</div>
-    		<ul class='mdl-mini-footer__link-list'>
-      			<li><a href=''>Help</a></li>
-      			<li><a href=''>Privacy & Terms</a></li>
-    		</ul>
-  	</div>
-  </footer>
 </div>
 </body>
 </html>
@@ -273,15 +276,17 @@ function checkSaveNote() {
 }
 
 function updateNote(){
+	
 	$conn = getConnection();
-
-  // Check connection
+	$txtNote = htmlspecialchars(trim($_POST['txtNote']));
+	
+  	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
 	$updateNotetxt = $conn->prepare("UPDATE note SET notetext = ? WHERE id = ?");
-	$updateNotetxt->bind_param("si",htmlspecialchars(trim($_POST['txtNote'])), $_POST['note_id']);
+	$updateNotetxt->bind_param("si", $txtNote, $_POST['note']);
 
 	if(!$updateNotetxt->execute()){
 		// TODO: echo Error
@@ -290,7 +295,8 @@ function updateNote(){
 
 	$updateNotetxt->close();
 	$conn->close();
-showNote();
+	showNote();
+	
 }
 
 
@@ -420,6 +426,7 @@ function insertNotebook() {
 }
 
 function deleteNotebook(){
+	
 	$conn = getConnection();
 
 	// Check connection
@@ -427,17 +434,40 @@ function deleteNotebook(){
     	die("Connection failed: " . $conn->connect_error);
 
 	}
-	$notebook = htmlspecialchars(trim($_POST['notebook_id']));
-
-	$delNotebook = $conn->prepare("DELETE FROM notebook WHERE id=?");
-	$delNotebook->bind_param("s", $notebook);
+	
+	$note = $_POST['deleteNotebook'];
+	
+	$delNotebook = $conn->prepare("DELETE FROM note WHERE notebook_id_fk=?");
+	$delNotebook->bind_param("i", $note);
 
 	if (!$delNotebook->execute()) {
-		// TODO: echo Error
+		//ECHO FAIL
 	}
 
 	$delNotebook->close();
 	$conn->close();
+
+	
+		
+	$conn1 = getConnection();
+
+	// Check connection
+	if ($conn1->connect_error) {
+    	die("Connection failed: " . $conn1->connect_error);
+
+	}
+	
+	$notebook = $_POST['deleteNotebook'];
+	
+	$delNotebook = $conn1->prepare("DELETE FROM notebook WHERE id=?");
+	$delNotebook->bind_param("i", $notebook);
+
+	if (!$delNotebook->execute()) {
+		//ECHO FAIL
+	}
+
+	$delNotebook->close();
+	$conn1->close();
 
 	showNote();
 }

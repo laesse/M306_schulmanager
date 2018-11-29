@@ -33,9 +33,10 @@ function getConnection(){
 	$ini = parse_ini_file('../config/db.ini');
 
 	$servername = $ini["servername"];
-	$dbusername = $ini["db_name"];
-	$password = $ini["db_user"];
-	$dbname = $ini["db_password"];
+	$dbusername = $ini["db_user"];
+	$password = $ini["db_password"];
+	$dbname = $ini["db_name"];
+
 	// return new mysqli connection
 	return new mysqli($servername, $dbusername, $password, $dbname);
 }
@@ -99,15 +100,6 @@ function showLogin() {
 
 					</div>
   				</main>
-				<footer class='mdl-mini-footer'>
-  				<div class='mdl-mini-footer__left-section'>
-    				<div class='mdl-logo'>TODO</div>
-    				<ul class='mdl-mini-footer__link-list'>
-      					<li><a href=''>Help</a></li>
-      					<li><a href=''>Privacy & Terms</a></li>
-    				</ul>
-  				</div>
-			</footer>
 			</div>
 		</body>
 	</html>
@@ -248,15 +240,6 @@ function showRegistration() {
 
 					</div>
   				</main>
-				<footer class='mdl-mini-footer'>
-  				<div class='mdl-mini-footer__left-section'>
-    				<div class='mdl-logo'>TODO</div>
-    				<ul class='mdl-mini-footer__link-list'>
-      					<li><a href=''>Help</a></li>
-      					<li><a href=''>Privacy & Terms</a></li>
-    				</ul>
-  				</div>
-			</footer>
 			</div>
 		</body>
 	</html>
