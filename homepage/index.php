@@ -50,6 +50,7 @@ function showHome() {
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='mark.php'>Mark</a>
 		<a class='mdl-navigation__link' href='index.php?status=logout'>
 			<!-- Contact Chip -->
 			<span class='mdl-chip mdl-chip--contact'>
@@ -79,6 +80,7 @@ function showHome() {
         <a class='mdl-navigation__link' href='index.php'>Home</a>
         <a class='mdl-navigation__link' href='note.php'>Note</a>
 		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+		<a class='mdl-navigation__link' href='mark.php'>Mark</a>
 		<a class='mdl-navigation__link' href='index.php?status=logout'>
 			<!-- Contact Chip -->
 			<span class='mdl-chip mdl-chip--contact'>
