@@ -9,9 +9,6 @@ switch(@$_GET['status'])
   case 'logout':
     logout();
   break;
-  case 'editMark':
-    editMark();
-  break;
   case 'addMark':
     addMark();
   break;
@@ -361,13 +358,15 @@ function showMarks($parm) {
                       <td class='mdl-data-table__cell--non-numeric'>
                         <form action='?status=editMark' method='post'>
                           <input type='hidden' name='mark_id' value='$mark_id'>
-                          <div class='mdl-textfield mdl-js-textfield'>
-                            <input class='mdl-textfield__input' pattern='-?[0-9]*(\.[0-9]+)?' type='text' name='mark' value='$mark'>
-                            <span class='mdl-textfield__error'>Input is not a number!</span>
-                          <div>
-                          <!-- neue note muss noch irrgendwie aus textfeld geholt werden mit javascript :-) -->
-                          <button type='button' onclick='window.location.href = \"?status=editMark&mark_id=$mark_id&user_id="
-                          .hash("sha256", hash("sha512",$_SESSION["user"].strtolower($_SESSION["username"]).'éêèáãà,3.14159,-1/12'.($_SESSION["user"]*$_SESSION["user"]*3.14159).$_SESSION["password_hash"].hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))."\" ;' type='submit' class='mdl-button mdl-js-button mdl-button--icon'>
+
+                          <input class='mdl-textfield__input' pattern='-?[0-9]*(\.[0-9]+)?' type='text' name='mark' id='newMark$mark_id' value='$mark'>
+
+
+
+                          <button type='button' onclick='var newMark = document.getElementById(\"newMark$mark_id\").value;
+                          window.location.href = \"?status=editMark&mark_id=$mark_id&new_mark=\"+newMark+\"&user_id="
+                          .hash("sha256", hash("sha512",$_SESSION["user"].strtolower($_SESSION["username"]).'éêèáãà,3.14159,-1/12'.($_SESSION["user"]*$_SESSION["user"]*3.14159).$_SESSION["password_hash"].hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))
+                          ."\" ;' type='submit' class='mdl-button mdl-js-button mdl-button--icon'>
                             <i class='material-icons'>done</i>
                           </button>
                         </form>
@@ -559,34 +558,33 @@ function checkAddMark() {
 function updateMark(){
   if(checkUpdateMark()){
       $conn = getConnection();
-      $mark = htmlspecialchars(trim(@$_POST['mark']));
+      $mark = htmlspecialchars(trim(@$_GET['new_mark']));
 
       if ($conn->connect_error){
         die("Connection failed: ".$conn->connect_error);
       }
       $updateMark = $conn->prepare("UPDATE  MARK
-                                       SET  MARK=?
+                                       SET  MARK = ?
                                      WHERE  ID = ?
                                     ");
-      $updateMark->bind_param("di",$mark,$_POST["mark_id"]);
+      $updateMark->bind_param("di",$mark,@$_GET["mark_id"]);
       if($updateMark->execute()){
         //TODO write error
       }
       $updateMark->close();
       $conn->close();
-      unset($_POST['mark']);
-      unset($_POST['mark_id']);
-      unset($_POST['status']);
-      showMarks('show');
+
+      header("Location: mark.php");
   }else{
-      showMarks('show');
+      header("Location: mark.php");
   }
 }
 function checkUpdateMark(){
 
   	$success = true;
-  	$mark_id = htmlspecialchars(trim(@$_POST['mark_id']));
-  	$new_mark = htmlspecialchars(trim(@$_POST['mark']));
+  	$mark_id = htmlspecialchars(trim(@$_GET['mark_id']));
+  	$new_mark = htmlspecialchars(trim(@$_GET['new_mark']));
+  	$user_id = htmlspecialchars(trim(@$_GET['user_id']));
 
   	/*
     check if parameters are empty
@@ -597,6 +595,35 @@ function checkUpdateMark(){
     if (empty($new_mark)) {
       $success = false;
     }
+    if (empty($user_id)) {
+      $success = false;
+    }
+
+
+    $conn = getConnection();
+
+    if ($conn->connect_error){
+      die("Connection failed: ".$conn->connect_error);
+    }
+    $checkUserId = $conn->prepare("SELECT CONCAT(id,LOWER(username),'éêèáãà,3.14159,-1/12',id*id*3.14159,UPPER(password_hash)) user_id_soll
+                                    FROM  user
+                                   WHERE  id = ?
+                                  ");
+    $checkUserId->bind_param("i",$_SESSION["user"]);
+    if($checkUserId->execute()){
+      //TODO write error
+    }
+    $checkUserId->bind_result($user_id_soll);
+    if($checkUserId->fetch()){
+      //autencication
+        if(strtoupper(hash("sha256",hash("sha512",$user_id_soll.hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))) != strtoupper($user_id)){
+            $success = false;
+            // wrong user
+        }
+    }
+
+    $checkUserId->close();
+    $conn->close();
 
     return $success;
 }
