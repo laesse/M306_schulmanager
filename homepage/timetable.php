@@ -12,6 +12,9 @@ switch($_GET['status'])
 	case 'checkAddSubject':
 		checkAddSubject();
 	break;
+	case 'deleteTimetable':
+		deleteTimetable();
+	break;
 	case 'jumpToHome':
 		jumpToHome();
 	break;
@@ -116,61 +119,105 @@ function showTimetable() {
 		
 	</form>
 
-	<div class='mdl-tabs mdl-js-tabs mdl-js-ripple-effect'>
-  <div class='mdl-tabs__tab-bar'>
-      <a href='#monday-panel' class='mdl-tabs__tab is-active'>Monday</a>
-      <a href='#tuesday-panel' class='mdl-tabs__tab'>Tuesday</a>
-      <a href='#wednesday-panel' class='mdl-tabs__tab'>Wednesday</a>
-      <a href='#thursday-panel' class='mdl-tabs__tab'>Thursday</a>
-      <a href='#friday-panel' class='mdl-tabs__tab'>Friday</a>
-      <a href='#saturday-panel' class='mdl-tabs__tab'>Saturday</a>
-      <a href='#sunday-panel' class='mdl-tabs__tab'>Sunday</a>
-  </div>
 	
-  <div class='mdl-tabs__panel is-active' id='monday-panel'>
-  	";
-	showDay("mo");	
-	echo "
-  </div>
-  <div class='mdl-tabs__panel' id='tuesday-panel'>
-  	";
-	showDay("tu");
-	echo " 
-  </div>
-  <div class='mdl-tabs__panel' id='wednesday-panel'>
-  	";
-	showDay("we");
-	echo "
-  </div>
-  <div class='mdl-tabs__panel' id='thursday-panel'>
-    ";
-	showDay("th");
-	echo "
-  </div>
-  <div class='mdl-tabs__panel' id='friday-panel'>
-    ";
-	showDay("fr");
-	echo "
-  </div>
-  <div class='mdl-tabs__panel' id='saturday-panel'>
-    ";
-	showDay("sa");
-	echo "
-  </div>
-  <div class='mdl-tabs__panel' id='sunday-panel'>
-    ";
-	showDay("su");
-	echo "
-  </div>
-</div>	
+	
+	
+
+							<!-- Simple list -->
+						<style>
+							.demo-list-item {
+							width: 300px;
+						}
+						</style>
+
+						<ul class='demo-list-item mdl-list'>
+						
+						
+  							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Monday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("mo");	
+						
+						echo "
+							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Tuesday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("tu");	
+						
+						echo "
+							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Wednesday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("we");	
+						
+						echo "
+							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Thursday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("th");	
+						
+						echo "
+							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Friday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("fr");	
+						
+						echo "
+							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Saturday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("sa");	
+						
+						echo "
+							<li class='mdl-list__item' style='background-color: #03DAC6;'>
+    							<span class='mdl-list__item-primary-content'>
+      								Sunday
+    							</span>
+  							</li>
+      					";
+	
+						showDay("su");	
+						
+						echo "
+						</ul>
+						
+						
+						
+						
 
 
+							
 
 							</div>
     						<div class='mdl-layout-spacer'></div>
 						</div>
-
-
+							
+							
+						
 
 					</div>
   				</main>
@@ -378,6 +425,32 @@ function getSubjectId() {
 	
 }
 
+function deleteTimetable(){
+		
+	$conn = getConnection();
+
+	// Check connection
+	if ($conn->connect_error) {
+    	die("Connection failed: " . $conn->connect_error);
+
+	}
+	
+	$subjectfk = htmlspecialchars(trim($_POST['deleteButton']));
+	
+	$delTimetable = $conn->prepare("DELETE FROM timetable WHERE user_id_fk=? AND subject_id_fk=?");
+	$delTimetable->bind_param("ii", $_SESSION["user"], $subjectfk);
+
+	if (!$delTimetable->execute()) {
+		//ECHO FAIL
+	}
+
+	$delTimetable->close();
+	$conn->close();
+	
+	showTimetable();
+	
+}
+
 function showDay($day_of_week) {
 	
 	// Create connection
@@ -422,16 +495,26 @@ function showDay($day_of_week) {
 		$stmt1->close();
 		$conn1->close();
 		
+		
 		echo "<br>";
 		echo $name;
 		echo " - ";
 		echo $teacher_name;
 		echo "<br>";
 		echo substr($start_at, 0, 5);
-		echo "<br>";
+		echo "   until   ";
 		echo substr($end_at, 0, 5);
+		echo "<form action='?status=deleteTimetable' method='post'>
+				<!-- Accent-colored flat button -->
+			  	<button name='deleteButton' value='".$subject_id_fk."' class='mdl-button mdl-js-button mdl-button--accent'>
+  					Delete
+			  	</button>
+			  </form>
+		";
 		echo "<hr>";
 	}
+	
+	echo "<br>";
 	
 	$stmt->close();
 	$conn->close();

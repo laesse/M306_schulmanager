@@ -23,175 +23,167 @@ function showHome() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Schulmanager: Home</title>
-	";
-	
-	include 'head.php';
-	
-	echo "
+		<title>LeeSchoolassist: Home</title>
+		<link rel='stylesheet' type='text/css' href='index.css'>
+		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
 	</head>
 	<body>
-		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
-		<div class='mdl-layout mdl-js-layout mdl-layout--fixed-header'>
-			<header class='mdl-layout__header mdl-layout__header--scroll'>
-				<br><br><br><br><br><br><br><br><br><br><br>
-    			<div class='mdl-layout__header-row'>
-      				<!-- Title -->
-      				<span class='mdl-layout-title'>Schulmanager</span>
-      				<!-- Add spacer, to align navigation to the right -->
-      				<div class='mdl-layout-spacer'></div>
-      					<!-- Navigation -->
-      					<nav class='mdl-navigation'>
-	";
-
-
-	if (isset($_SESSION['user'])) {
-		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-        <a class='mdl-navigation__link' href='note.php'>Note</a>
-		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>
-			<!-- Contact Chip -->
-			<span class='mdl-chip mdl-chip--contact'>
-    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
-    			<span class='mdl-chip__text'>Logout</span>
-			</span>
-		</a>
-		";
-	} else {
-   		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-		<a class='mdl-navigation__link' href='user.php'>Login</a>
-		";
-	}
-
-	echo "
-	  					</nav>
-    				</div>
-  				</header>
-				<div class='mdl-layout__drawer'>
-    				<span class='mdl-layout-title'>Schulmanager</span>
-    				<nav class='mdl-navigation'>
-    ";
-
-	if (isset($_SESSION['user'])) {
-		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-        <a class='mdl-navigation__link' href='note.php'>Note</a>
-		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>
-			<!-- Contact Chip -->
-			<span class='mdl-chip mdl-chip--contact'>
-    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
-    			<span class='mdl-chip__text'>Logout</span>
-			</span>
-		</a>
-		";
-	} else {
-   		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-		<a class='mdl-navigation__link' href='user.php'>Login</a>
-		";
-	}
-
-	echo "
-					</nav>
-  				</div>		
-  				<main class='mdl-layout__content'>		
-    				<div class='page-content'>	
-						<div class='mdl-grid'>
-							<div class='mdl-layout-spacer'></div>
-    						<div class='mdl-cell mdl-cell--4-col'>
-							
-							
-							
-							
-							<h3>Welcome</h3>
-							<p>Start your schoolmanagement today.</p>		
-							
-	";
 	
-	
-	if (!isset($_SESSION['user'])) {
-	
-	echo "
-							<form action='user.php' method='post'>
-								<button class='mdl-button mdl-js-button mdl-button--raised mdl-button--colored' type='submit'>Login</button>
-							</form>
-							<form action='user.php?status=showRegistration' method='post'>
-								<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Register</button>
-							</form>
-							
-							<br>
-								
-								
-	";
-	
-	}
-	
-	
-	echo "
-								</div>
-								<div class='mdl-layout-spacer'></div>
-  							</div>
-	
-							<br>
-							
-							<!-- Square card -->
-							<style>
-							.demo-card-square.mdl-card {
-  								width: 320px;
-  								height: 320px;
-							}
-							.demo-card-square > .mdl-card__title {
-								color: #fff;
-								background-color: #3f51b5;
-								/*
-								background:
-								url('../assets/demos/dog.png') bottom right 15% no-repeat #46B6AC;
-								*/
-							}
-							</style>
-							
-							<div class='mdl-grid'>
-    						<div class='mdl-layout-spacer'></div>
-							
-  								<div class='mdl-cell mdl-cell--3-col'>
-									
-									<div class='demo-card-square mdl-card mdl-shadow--2dp'>
-										<div class='mdl-card__title mdl-card--expand'>
-											<h2 class='mdl-card__title-text'>Note</h2>
-										</div>
-  										<div class='mdl-card__supporting-text'>
-											Save your thoughts.
-  										</div>
-									</div>
-								
-								</div>
-  								<div class='mdl-cell mdl-cell--3-col'>
-								
-									<div class='demo-card-square mdl-card mdl-shadow--2dp'>
-										<div class='mdl-card__title mdl-card--expand'>
-    										<h2 class='mdl-card__title-text'>Timetable</h2>
-  										</div>
-  										<div class='mdl-card__supporting-text'>
-											Never forgett a lesson again.
-  										</div>
-									</div>
-						
-							</div>
-    						<div class='mdl-layout-spacer'></div>
-						</div>
-						
-						<br><br><br><br><br><br>
-													
-					</div>
-  				</main>
+		<div class='header'>
+		
+			<div class='menuIcon'>
+				<img src='img/menu.svg'>
 			</div>
+			Lee Schoolassist
+		
+		</div>
+		
+		<div class='content'>
+		
+		
+			<div class='contentRow'>
+			
+				<div class='left'>
+					<h1>I am Lee</h1>
+					<p>Welcome to my website.<br>
+					I would like to manage your school stuffe with you.<br>
+					Are you interessted to try it out?</p>
+	
+					";				
+					if (!isset($_SESSION['user'])) {
+	
+						echo "
+						<form action='user.php' method='post'>
+							<button type='submit' id='mainButton'>Login</button>
+						</form>
+						<form action='user.php?status=showRegistration' method='post'>
+							<button type='submit' id='registerButton'>Register</button>
+						</form>				
+						";
+	
+					} else {
+						
+						echo "
+						<form action='index.php?status=logout' method='post'>
+							<button type='submit' id='mainButton'>Logout</button>
+						</form>
+						";
+							
+					}
+					echo "
+	
+					</p>
+				</div>
+				<div class='right'>
+					<br>
+				</div>
+			
+			</div>
+			<div class ='contentRow'>
+				
+				<div class='left'>
+					<br>
+				</div>
+				<div class='right'>
+				
+					<h1>What can I do?</h1>
+					<p>At the moment I can help you with the following themes.<br>
+					Is there something for you?</p>
+					
+					<div class='themes'>
+						<div class='theme'>
+						";
+						
+						if (!isset($_SESSION['user'])) {
+							
+							echo "
+							<h2>Timetable </h2>		
+							<p>Never forgett a lesson again.</p>
+							";
+							
+						} else {
+							
+							echo "
+							<form action='timetable.php' method='post'>
+								<button type='submit' id='mainButton'>Timetable</button>
+							</form>
+							";
+							
+						}
+	
+						echo "
+						</div>
+						<hr>
+						<div class='theme'>
+						";
+						
+						if (!isset($_SESSION['user'])) {
+							
+							echo "
+							<h2>Mark </h2>
+							<p>See your marks at all time.</p>
+							";
+							
+						} else {
+							
+							echo "
+							<form action='mark.php' method='post'>
+								<button type='submit' id='mainButton'>Mark</button>
+							</form>
+							";
+							
+						}
+	
+						echo "							
+						</div>
+						<hr>
+						<div class='theme'>
+						";
+	
+						if (!isset($_SESSION['user'])) {
+							
+							echo "
+							<h2>Note </h2>
+							<p>Manage all your information.</p>
+							";
+							
+						} else {
+							
+							echo "
+							<form action='note.php' method='post'>
+								<button type='submit' id='mainButton'>Note</button>
+							</form>
+							";
+							
+						}
+	
+						echo "
+						</div>
+					</div>
+				
+				</div>
+			
+			</div>
+		
+		</div>
+		
+		<div class='footer'>
+		
+			<h2 class='footerTitle'>Lee Schoolassist</h2>
+			<br>
+			<h2 class='footerRights'>2018 all rights reserved</h2>
+		
+		</div>
+		
 		</body>
 	</html>
 	";
 	
+}
+
+function test() {
+	echo "iess";	
 }
 
 function logout() {
