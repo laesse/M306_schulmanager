@@ -44,7 +44,7 @@ function showHome() {
 		
 			<div class='contentRow'>
 			
-				<div class='left'>
+				<div class='rowContent'>
 					<h1>I am Lee</h1>
 					<p>Welcome to my website.<br>
 					I would like to manage your school stuffe with you.<br>
@@ -75,17 +75,17 @@ function showHome() {
 	
 					</p>
 				</div>
-				<div class='right'>
+				<div class='rowPicture'>
 					<br>
 				</div>
 			
 			</div>
 			<div class ='contentRow'>
 				
-				<div class='left'>
+				<div class='rowPicture'>
 					<br>
 				</div>
-				<div class='right'>
+				<div class='rowContent'>
 				
 					<h1>What can I do?</h1>
 					<p>At the moment I can help you with the following themes.<br>

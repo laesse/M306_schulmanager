@@ -64,7 +64,7 @@ img {
 	height: auto;
 }
 
-.left {
+.rowContent {
 	
 	
  	/*border: 1px solid rgba(100, 100, 100, 0.05);*/
@@ -75,7 +75,7 @@ img {
 	
 }
 
-.right {
+.rowPicture {
 	
  	/*border: 1px solid rgba(100, 100, 100, 0.05);*/
 	float: left;
@@ -131,7 +131,7 @@ p {
 }
 
 .themes hr {
-	width: 300px;
+	width: 33%;
 	float: left;
 }
 
@@ -171,6 +171,18 @@ p {
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 @media screen and (max-width:600px) {
   
+	.rowContent {
 	
+  		width: 80%;
+		margin-left: 5%;
+		margin-right: 5%;
+	
+	}
+
+	.rowPicture {
+	
+  		width: 0%;
+
+	}
 	
 }
