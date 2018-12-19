@@ -35,7 +35,7 @@ function showHome() {
 			<div class='menuIcon'>
 				<img src='img/menu.svg'>
 			</div>
-			Lee Schoolassist
+			<p>Lee Schoolassist</p>
 		
 		</div>
 		
@@ -44,7 +44,7 @@ function showHome() {
 		
 			<div class='contentRow'>
 			
-				<div class='rowContent'>
+				<div class='rowContent' id='left'>
 					<h1>I am Lee</h1>
 					<p>Welcome to my website.<br>
 					I would like to manage your school stuffe with you.<br>
@@ -75,17 +75,17 @@ function showHome() {
 	
 					</p>
 				</div>
-				<div class='rowPicture'>
+				<div class='rowPicture' id='right'>
 					<br>
 				</div>
 			
 			</div>
-			<div class ='contentRow'>
+			<div class ='contentRow1'>
 				
-				<div class='rowPicture'>
+				<div class='rowPicture' id='left'>
 					<br>
 				</div>
-				<div class='rowContent'>
+				<div class='rowContent' id='right'>
 				
 					<h1>What can I do?</h1>
 					<p>At the moment I can help you with the following themes.<br>
