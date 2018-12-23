@@ -9,8 +9,11 @@ if(!isset($_SESSION['user'])){
 
 switch(@$_GET['status'])
 {
-  case 'ding':
-    ding();
+  case 'addSemester':
+    addSemester();
+  break;
+  case 'delSemester':
+    delSemester();
   break;
 
   default:
@@ -87,8 +90,18 @@ function showSemester() {
 
                 // fetch value
                 while ($semestersFromAUser->fetch()) {
-                  echo "<p>$semester_name \t $semester_start \t $semester_end
-                  </p>";
+                  echo "
+                        <div>
+                          <span>$semester_name </span>
+                          <span>$semester_start</span>
+                          <span>$semester_end</span>
+                          <span>
+                            <form action='?status=delSemester' method='post' style='display:inline-block'>
+                              <input type='hidden' value='$id_semester' name='semester_id'/>
+                              <button type='submit'>delete</button>
+                            </form>
+                          </span>
+                        </div>";
 
                 }
 
@@ -103,7 +116,7 @@ function showSemester() {
                   </div>
                   <div class='mdl-textfield mdl-js-textfield'>
                     <input class='mdl-textfield__input' type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateFrom' name='dateFrom'>
-                    <label class='mdl-textfield__label' for='dateFrom'>From ex. 01.06.2018</label>
+                    <label class='mdl-textfield__label' for='dateFrom'>From ex. 01.08.2018</label>
                     <span class='mdl-textfield__error'>This is not a date</span>
                   </div>
                   <div class='mdl-textfield mdl-js-textfield'>
@@ -117,7 +130,7 @@ function showSemester() {
             <div class='mdl-layout-spacer'></div>
           </div>
         </div>
-        </main>
+      </main>
     </div>
   </body>
 </html>";
@@ -125,7 +138,109 @@ function showSemester() {
 }
 
 
+function addSemester(){
+  if(checkAddSemester()){
+      $conn = getConnection();
+      $semesterName = htmlspecialchars(trim(@$_POST['semesterName']));
+      $dateFrom = htmlspecialchars(trim(@$_POST['dateFrom']));
+      $dateTo = htmlspecialchars(trim(@$_POST['dateTo']));
 
+      if ($conn->connect_error){
+        die("Connection failed: ".$conn->connect_error);
+      }
+      $insertSem = $conn->prepare("INSERT INTO semester(semester_start,semester_end,semester_name,user_id_fk,definitiv)
+                                               VALUES(STR_TO_DATE(?,'%d.%m.%Y'),STR_TO_DATE(?,'%d.%m.%Y'),?,?,0)
+                                    ");
+      $insertSem->bind_param("sssi",$dateFrom,$dateTo,$semesterName,$_SESSION['user']);
+      if($insertSem->execute()){
+        //TODO write error
+      }
+      $insertSem->close();
+      $conn->close();
+      unset($_POST['semesterName']);
+      unset($_POST['dateFrom']);
+      unset($_POST['dateTo']);
+
+      showSemester();
+  }else{
+    //TODO Fehlermeldung
+    showSemester();
+  }
+}
+
+function checkAddSemester(){
+      	$success = true;
+      	$semesterName = htmlspecialchars(trim(@$_POST['semesterName']));
+      	$dateFrom = htmlspecialchars(trim(@$_POST['dateFrom']));
+      	$dateTo = htmlspecialchars(trim(@$_POST['dateTo']));
+
+      	/*
+        check if parameters are empty
+      	*/
+        if (empty($semesterName)) {
+          $success = false;
+        }
+        if (empty($dateFrom)) {
+          $success = false;
+        }
+        if (empty($dateTo)) {
+          $success = false;
+        }
+
+        $dateFrom = convertToIso($dateFrom);
+
+        $dateTo = convertToIso($dateTo);
+
+        return $success;
+
+}
+
+function convertToIso($inStrDate){
+  $day = substr($inStrDate,0,2);
+  $month = substr($inStrDate,3,2);
+  $year = substr($inStrDate,5,4);
+  return $year.'-'.$month.'-'.$day;
+}
+
+function delSemester(){
+  if(checkDelSemester()){
+      $conn = getConnection();
+      $semester_id = htmlspecialchars(trim(@$_POST['semester_id']));
+
+      if ($conn->connect_error){
+        die("Connection failed: ".$conn->connect_error);
+      }
+      $updateMark = $conn->prepare("DELETE FROM semester WHERE id = ?");
+      $updateMark->bind_param("i",$semester_id);
+      if($updateMark->execute()){
+        //TODO write error
+      }
+      $updateMark->close();
+      $conn->close();
+
+      unset($_POST['semester_id']);
+      header("Location: mark.php");
+  }else{
+      unset($_POST['semester_id']);
+      header("Location: mark.php");
+  }
+}
+
+function checkDelSemester(){
+
+    	$success = true;
+    	$semester_id = htmlspecialchars(trim(@$_POST['semester_id']));
+
+    	/*
+      check if parameters are empty
+    	*/
+      if (empty($semester_id)) {
+        $success = false;
+      }
+
+      return $success;
+
+}
 
 
 ?>
