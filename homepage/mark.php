@@ -558,6 +558,7 @@ function checkAddMark() {
   return $success;
 
 }
+
 function updateMark(){
   if(checkUpdateMark()){
       $conn = getConnection();
@@ -568,6 +569,7 @@ function updateMark(){
       }
       $updateMark = $conn->prepare("UPDATE  MARK
                                        SET  MARK = ?
+                                           ,ADDED_AT = ADDED_AT
                                      WHERE  ID = ?
                                     ");
       $updateMark->bind_param("di",$mark,@$_GET["mark_id"]);
