@@ -150,6 +150,7 @@ function checkLogin() {
 				$success = true;
 				$_SESSION["user"] = $id;
 				$_SESSION["username"] = $username;
+        $_SESSION["password_hash"] = strtoupper($password);
 			}else {
 				unset($_POST['password']);
 			}
