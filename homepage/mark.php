@@ -3,20 +3,32 @@
 // start session
 session_start();
 
+if(!isset($_SESSION['user'])){
+  header("Location: index.php");
+}
 
 switch(@$_GET['status'])
 {
   case 'logout':
     logout();
   break;
-  case 'editMark':
-    editMark();
-  break;
   case 'addMark':
     addMark();
   break;
+  case 'editMarks':
+    showMarks('edit');
+  break;
+  case 'deleteMarks':
+    showMarks('del');
+  break;
+  case 'delMark':
+    deleteMark();
+  break;
+  case 'editMark':
+    updateMark();
+  break;
   default:
-    showMarks();
+    showMarks('show');
   break;
 }
 
@@ -31,9 +43,8 @@ function getConnection(){
   return new mysqli($servername, $dbusername, $password, $dbname);
 }
 
-function showMarks() {
-  echo "
-  <!DOCTYPE html>
+function showMarks($parm) {
+  echo "<!DOCTYPE html>
   <html>
   <head>
     <title>Schulmanager: Mark</title>
@@ -62,6 +73,7 @@ function showMarks() {
               <a class='mdl-navigation__link' href='index.php'>Home</a>
               <a class='mdl-navigation__link' href='note.php'>Note</a>
               <a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+              <a class='mdl-navigation__link' href='semester.php'>Semester</a>
               <a class='mdl-navigation__link' href='index.php?status=logout'>
                 <!-- Contact Chip -->
                 <span class='mdl-chip mdl-chip--contact'>
@@ -155,6 +167,7 @@ function showMarks() {
             <a class='mdl-navigation__link' href='index.php'>Home</a>
             <a class='mdl-navigation__link' href='note.php'>Note</a>
             <a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+            <a class='mdl-navigation__link' href='semester.php'>Semester</a>
             <a class='mdl-navigation__link' href='index.php?status=logout'>
             <!-- Contact Chip -->
               <span class='mdl-chip mdl-chip--contact'>
@@ -236,7 +249,7 @@ function showMarks() {
     echo"' id='scroll-tab-$id_semester'>
             <div class='page-content'>
             <div class='mdl-grid'>
-              <div class='mdl-cell mdl-cell--2-col'></div>
+              <div class='mdl-cell mdl-cell--3-col'></div>
                 <div class='mdl-cell mdl-cell--8-col'>";
 
 
@@ -268,8 +281,14 @@ function showMarks() {
                         <th class='mdl-data-table__cell--non-numeric'>Subject</th>";
 
         for ($i = 1; $i <= intval($cnt); $i++) {
-          echo "
-                        <th>Mark $i</th>";
+          if ($parm == 'del' || $parm == 'edit'){
+            echo "
+                          <th class='mdl-data-table__cell--non-numeric'>Mark $i</th>";
+          }else{
+            echo "
+                          <th>Mark $i</th>";
+          }
+
         }
         echo "
                         <th class='mdl-data-table__cell--non-numeric'>Avarage Mark</th>
@@ -287,7 +306,8 @@ function showMarks() {
 
     // weiter machen wenn semester Noten hat sonst nichts tun
     if ($cnt > 0){
-      $marks = $conn2->prepare("SELECT  m.mark
+      $marks = $conn2->prepare("SELECT  m.id
+                                      , m.mark
                                       , sub.name
                                       , m.subject_id_fk
                                       , COALESCE(tt.date,m.added_at) AS MARK_DATE
@@ -309,27 +329,58 @@ function showMarks() {
                                         ) AS mavg
                                     ON  (m.subject_id_fk  = mavg.subject_id_fk)
                                  WHERE  m.semester_id_fk = ?
+                                 ORDER  BY m.subject_id_fk, MARK_DATE
                                            ");
       $marks->bind_param("ii", $id_semester, $id_semester);
       if($marks->execute()){
         //TODO write error
       }
-      $marks->bind_result($mark, $subject_name, $subject_id, $mark_date, $avg_mark);
+      $marks->bind_result($mark_id, $mark, $subject_name, $subject_id, $mark_date, $avg_mark);
 
       // gruppenbruch für subject_id_fk
       $noch_daten_da = $marks->fetch(); // "vorlesen"
       while($noch_daten_da){
         $current_subject_id = $subject_id;
         echo "
-                     <tr>
-                       <td class='mdl-data-table__cell--non-numeric'>$subject_name</td>";
+                      <tr>
+                        <td class='mdl-data-table__cell--non-numeric'>$subject_name</td>";
         $i = 0;
         $zw_avg_mark = $avg_mark;
         $zw_subject_id = $subject_id;
         //gruppenbruch Stufe Subject
         while ($noch_daten_da && $subject_id == $current_subject_id) {
-          echo"
-                        <td>$mark</td>";
+          if ($parm == 'del'){
+
+            echo"
+                      <td class='mdl-data-table__cell--non-numeric'>
+                      <span class='mdl-chip mdl-chip--contact mdl-chip--deletable'>
+                        <span class='mdl-chip__text'>$mark</span>
+                        <a href='?status=delMark&mark_id=$mark_id&user_id=".hash("sha256", hash("sha512",$_SESSION["user"].strtolower($_SESSION["username"]).'éêèáãà,3.14159,-1/12'.($_SESSION["user"]*$_SESSION["user"]*3.14159).$_SESSION["password_hash"].hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))."' class='mdl-chip__action'><i class='material-icons'>cancel</i></a>
+                      </span>
+                      </td>";
+          }else if($parm == 'edit'){
+            echo"
+                      <td class='mdl-data-table__cell--non-numeric'>
+                        <form action='?status=editMark' method='post'>
+                          <input type='hidden' name='mark_id' value='$mark_id'>
+
+                          <input class='mdl-textfield__input' pattern='-?[0-9]*(\.[0-9]+)?' type='text' name='mark' id='newMark$mark_id' value='$mark'>
+
+
+
+                          <button type='button' onclick='var newMark = document.getElementById(\"newMark$mark_id\").value;
+                          window.location.href = \"?status=editMark&mark_id=$mark_id&new_mark=\"+newMark+\"&user_id="
+                          .hash("sha256", hash("sha512",$_SESSION["user"].strtolower($_SESSION["username"]).'éêèáãà,3.14159,-1/12'.($_SESSION["user"]*$_SESSION["user"]*3.14159).$_SESSION["password_hash"].hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))
+                          ."\" ;' type='submit' class='mdl-button mdl-js-button mdl-button--icon'>
+                            <i class='material-icons'>done</i>
+                          </button>
+                        </form>
+                      </td>";
+          }else{
+            echo"
+                      <td>$mark</td>";
+
+          }
           $i += 1;
           $noch_daten_da = $marks->fetch(); // "nachlesen"
         }
@@ -358,7 +409,7 @@ function showMarks() {
             </div>
             <div class='mdl-grid'>
               <div class='mdl-cell mdl-cell--4-col'></div>
-              <div class='mdl-cell mdl-cell--4-col'>";
+              <div class='mdl-cell mdl-cell--2-col'>";
 
 
 
@@ -407,7 +458,31 @@ function showMarks() {
               </form>
 
             </div>
-            <div class='mdl-cell mdl-cell--4-col'>
+            <div class='mdl-cell mdl-cell--4-col'>";
+    if ($parm == 'del' || $parm == 'edit'){
+      echo"
+              <form action='mark.php' method='post'>
+                <button class='mdl-button mdl-js-button mdl-button--icon' type='submit'>
+                  <i class='material-icons'>exit_to_app</i>
+                </button>
+              </form>";
+    }else{
+      echo"
+              <form action='?status=editMarks' method='post'>
+                <button class='mdl-button mdl-js-button mdl-button--icon' type='submit'>
+                  <i class='material-icons'>edit</i>
+                </button>
+              </form>
+
+              <br>
+
+              <form action='?status=deleteMarks' method='post'>
+                <button class='mdl-button mdl-js-button mdl-button--icon' type='submit'>
+                  <i class='material-icons'>delete</i>
+                </button>
+              </form>";
+    }
+    echo"
             </div>
           </div>
         </div>
@@ -455,9 +530,9 @@ function addMark(){
         unset($_POST['semester_id']);
         unset($_POST['subject']);
 
-        showMarks();
+        showMarks('show');
     }else{
-        showMarks();
+        showMarks('show');
     }
 }
 
@@ -485,8 +560,150 @@ function checkAddMark() {
   return $success;
 
 }
-function editMark(){
 
+function updateMark(){
+  if(checkUpdateMark()){
+      $conn = getConnection();
+      $mark = htmlspecialchars(trim(@$_GET['new_mark']));
+
+      if ($conn->connect_error){
+        die("Connection failed: ".$conn->connect_error);
+      }
+      $updateMark = $conn->prepare("UPDATE  MARK
+                                       SET  MARK = ?
+                                           ,ADDED_AT = ADDED_AT
+                                     WHERE  ID = ?
+                                    ");
+      $updateMark->bind_param("di",$mark,@$_GET["mark_id"]);
+      if($updateMark->execute()){
+        //TODO write error
+      }
+      $updateMark->close();
+      $conn->close();
+
+      header("Location: mark.php");
+  }else{
+      header("Location: mark.php");
+  }
+}
+function checkUpdateMark(){
+
+  	$success = true;
+  	$mark_id = htmlspecialchars(trim(@$_GET['mark_id']));
+  	$new_mark = htmlspecialchars(trim(@$_GET['new_mark']));
+  	$user_id = htmlspecialchars(trim(@$_GET['user_id']));
+
+  	/*
+    check if parameters are empty
+  	*/
+    if (empty($mark_id)) {
+      $success = false;
+    }
+    if (empty($new_mark)) {
+      $success = false;
+    }
+    if (empty($user_id)) {
+      $success = false;
+    }
+
+
+    $conn = getConnection();
+
+    if ($conn->connect_error){
+      die("Connection failed: ".$conn->connect_error);
+    }
+    $checkUserId = $conn->prepare("SELECT CONCAT(id,LOWER(username),'éêèáãà,3.14159,-1/12',id*id*3.14159,UPPER(password_hash)) user_id_soll
+                                    FROM  user
+                                   WHERE  id = ?
+                                  ");
+    $checkUserId->bind_param("i",$_SESSION["user"]);
+    if($checkUserId->execute()){
+      //TODO write error
+    }
+    $checkUserId->bind_result($user_id_soll);
+    if($checkUserId->fetch()){
+      //autencication
+        if(strtoupper(hash("sha256",hash("sha512",$user_id_soll.hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))) != strtoupper($user_id)){
+            $success = false;
+            // wrong user
+        }
+    }
+
+    $checkUserId->close();
+    $conn->close();
+
+    return $success;
+}
+
+function checkDeleteMark(){
+
+  	$success = true;
+  	$mark_id = htmlspecialchars(trim(@$_GET['mark_id']));
+  	$user_id = htmlspecialchars(trim(@$_GET['user_id']));
+
+  	/*
+    check if parameters are empty
+  	*/
+    if (empty($mark_id)) {
+      $success = false;
+    }
+    if (empty($user_id)) {
+      $success = false;
+    }
+    $conn = getConnection();
+
+    if ($conn->connect_error){
+      die("Connection failed: ".$conn->connect_error);
+    }
+    $checkUserId = $conn->prepare("SELECT CONCAT(id,LOWER(username),'éêèáãà,3.14159,-1/12',id*id*3.14159,UPPER(password_hash)) user_id_soll
+                                    FROM  user
+                                   WHERE  id = ?
+                                  ");
+    $checkUserId->bind_param("i",$_SESSION["user"]);
+    if($checkUserId->execute()){
+      //TODO write error
+    }
+    $checkUserId->bind_result($user_id_soll);
+    if($checkUserId->fetch()){
+      //autencication
+        if(strtoupper(hash("sha256",hash("sha512",$user_id_soll.hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))) != strtoupper($user_id)){
+            $success = false;
+        }
+    }
+
+    $checkUserId->close();
+    $conn->close();
+
+
+    return $success;
+}
+
+function deleteMark(){
+  if(checkDeleteMark()){
+      $conn = getConnection();
+      $mark = htmlspecialchars(trim(@$_POST['mark']));
+
+      if ($conn->connect_error){
+        die("Connection failed: ".$conn->connect_error);
+      }
+      $updateMark = $conn->prepare("DELETE FROM mark WHERE id = ?");
+      $updateMark->bind_param("i",$_GET["mark_id"]);
+      if($updateMark->execute()){
+        //TODO write error
+      }
+      $updateMark->close();
+      $conn->close();
+
+      unset($_GET['status']);
+      unset($_GET['mark_id']);
+      unset($_GET['user_id']);
+      header("Location: mark.php");
+  }else{
+      unset($_GET['status']);
+      unset($_GET['mark_id']);
+      unset($_GET['user_id']);
+      header("Location: mark.php");
+  }
 }
 
 function logout() {
