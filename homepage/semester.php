@@ -188,9 +188,51 @@ function checkAddSemester(){
         }
 
         $dateFrom = convertToIso($dateFrom);
-
         $dateTo = convertToIso($dateTo);
 
+        if($dateFrom >= $dateTo){
+          $success = false;
+        }
+        // das alles funktioniert noch nicht so wie ich es will es ist aber auch nicht zwingend notwendeig desshab
+        // lasse ich es jetzt einfach drin und wenn man das bedürfnis verspüren sollte hier noch was zu machen dann go for it.
+/*
+        $conn = getConnection();
+        // Check connection
+        if ($conn->connect_error) {
+          die("Connection failed: ".$conn->connect_error);
+        }
+
+        // semesters from the current user
+        $semestersFromAUser = $conn->prepare(
+          "SELECT
+              id
+            , semester_name
+            , semester_start sem_start
+            , semester_end sem_end
+            FROM semester
+              WHERE user_id_fk = ?
+            order by sem_start
+          ");
+        $semestersFromAUser->bind_param("i",$_SESSION["user"]);
+
+        if(!$semestersFromAUser->execute()){
+          // TODO: echo Error
+        }
+        // bind result variable
+        $semestersFromAUser->bind_result($id_semester, $semester_name, $semester_start, $semester_end);
+
+        while($semestersFromAUser->fetch()){
+          if($semester_start < $dateFrom && $semester_end > $dateFrom){
+            $success = false;
+          }
+          if($semester_start < $dateTo && $semester_end > $dateTo){
+            $success = false;
+          }
+        }
+
+        $semestersFromAUser->close();
+        $conn->close();
+        */
         return $success;
 
 }
@@ -219,10 +261,10 @@ function delSemester(){
       $conn->close();
 
       unset($_POST['semester_id']);
-      header("Location: mark.php");
+      header("Location: semester.php");
   }else{
       unset($_POST['semester_id']);
-      header("Location: mark.php");
+      header("Location: semester.php");
   }
 }
 
