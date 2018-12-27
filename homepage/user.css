@@ -1,0 +1,187 @@
+/*----------------------------------------------------------------------------------*/
+/*           							GENERAL                                     */
+/*----------------------------------------------------------------------------------*/
+
+* {
+	font-family: Arial;
+  	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	background-color: #f1605b;
+}
+
+/*--------------------------*/
+/*           DIV            */
+/*--------------------------*/
+
+.divText {
+	overflow: hidden;
+	display: inline;
+	height: 100%;
+	width: 40%;
+	padding-left: 10%;
+	padding-top: 15%;
+	float: left;
+}
+
+.divContent {
+	display: inline;
+	height: 100%;
+	width: 60%;
+	padding-top: 15%;
+	float: left;
+}
+
+.divNavigation {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	text-align: center;
+	padding-bottom: 2%;
+	padding-top: 1%;
+}
+
+/*--------------------------*/
+/*          IMAGE           */
+/*--------------------------*/
+
+.divNavigation img {
+	background-color: #f1605b;
+	height: 20px;
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
+.divNavigation img:hover {
+	border: 1px solid white;
+}
+
+/*--------------------------*/
+/*          INLINE          */
+/*--------------------------*/
+
+button, form, h1, h2, img {
+	display: inline;
+}
+
+/*--------------------------*/
+/*           TEXT           */
+/*--------------------------*/
+
+h1 {
+	color: white;
+	font-size: 100px;
+}
+
+/*--------------------------*/
+/*           BUTTON         */
+/*--------------------------*/
+
+button {
+	margin-top: 1%;
+	padding-top: 0.5%;
+	padding-bottom: 0.5%;
+	padding-left: 1%;
+	padding-right: 1%;
+}
+
+button:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.btnRegister { 
+  	color: white; 
+  	border: 1px solid white;
+	background-color: #f1605b;
+	font-size: 15px;
+}
+
+.btnLogin {
+  	color: #f1605b;
+	border: 1px solid white;
+  	background-color: white;
+	font-size: 30px;
+}
+
+/*--------------------------*/
+/*         SCROLLBAR        */
+/*--------------------------*/
+
+::-webkit-scrollbar {
+	background: #f1605b;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  	background: white; 
+  	border-radius: 10px;
+	border: 2px solid #f1605b;
+}
+
+/*--------------------------*/
+/*         TEXTINPUT        */
+/*--------------------------*/
+
+input[type=text], input[type=password] {
+	background-color: #f1605b;
+	width: 50%;
+	height: 5%;
+  	margin: 8px 0;
+  	border: 3px solid white;
+  	outline: none;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  	border: 3px solid black;
+}
+
+/*----------------------------------------------------------------------------------*/
+/*           							Responsive                                  */
+/*----------------------------------------------------------------------------------*/
+@media screen and (max-width:600px) {
+		
+	.divText {
+		display: block;
+		height: 40%;
+		width: 100%;
+		padding-left: 10%;
+		padding-right: 10%;
+		padding-top: 15%;
+		float: none;
+	}
+
+	.divContent {
+		display: block;
+		height: 60%;
+		width: 100%;
+		padding-left: 10%;
+		padding-right: 10%;
+		padding-top: 0%;
+		float: none;
+	}
+	
+	input[type=text], input[type=password] {
+  		width: 77%;
+		height: 7%;
+	}
+	
+	h1 {
+		font-size: 22px;	
+	}
+	
+	h2 {
+		font-size: 15px;	
+	}
+	
+	button {
+		font-size: 10px;
+	}
+	
+}

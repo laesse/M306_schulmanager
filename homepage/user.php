@@ -46,61 +46,41 @@ function showLogin() {
 	echo "
 	<!DOCTYPE html>
 	<html>
-	<head>
-		<title>Schulmanager: Login</title>
-	";
-
-	include 'head.php';
-
-	echo "
+	<head>		
+		<title>LeeSchoolassist: Login</title>
+		<meta name='theme-color' content='#f1605b'>
+		<link rel='stylesheet' type='text/css' href='user.css'>
+		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	</head>
 	<body>
-		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
-		<div class='mdl-layout mdl-js-layout'>
-  	";
-
-	include 'navigation.php';
-
-	echo "
-  				<main class='mdl-layout__content'>
-    				<div class='page-content'>
-
-
-
-						<div class='mdl-grid'>
-							<div class='mdl-layout-spacer'></div>
-    						<div class='mdl-cell mdl-cell--4-col'>
-
-
-	<h3>Login</h3>
-	<p>Welcome back! Login to manage your work.</p>
-	<p>Don't have an account yet? <a href='?status=showRegistration'>Register here</a></p>
-
-	<!-- Textfield with Floating Label -->
-	<form action='?status=checkLogin' method='post'>
-  		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='text' id='sample3' name='username' value='".htmlspecialchars($_POST['username'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>Username</label>
-  		</div>
-		<br>
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='password' id='sample3' name='password' value='".htmlspecialchars($_POST['password'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>Password</label>
-  		</div>
-		<br>
-		<!-- TODO: SNACKBAR / Accent-colored raised button with ripple -->
-		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Login</button>
-	</form>
-
-							</div>
-    						<div class='mdl-layout-spacer'></div>
-						</div>
-
-
-
-					</div>
-  				</main>
-			</div>
+	
+		<div class='divText'>
+			
+			<h1>LOGIN</h1>
+			<p>Welcome back! Login to manage your work.</p>
+			<p>Don't have an account yet?</p> 
+			<form action='user.php?status=showRegistration' method='post'>
+				<button type='submit' class='btnRegister'>Register</button>
+			</form>
+			
+		</div>
+		<div class='divContent'>
+		
+			<form action='?status=checkLogin' method='post'>
+				<h2>Username</h2><br>
+    			<input type='text' name='username' value='".htmlspecialchars(@$_POST['username'])."'><br><br>
+				<h2>Password</h2><br>
+				<input type='password' name='password' value='".htmlspecialchars(@$_POST['password'])."'><br><br>
+				<button type='submit' class='btnLogin'>Login</button>
+			</form>
+		
+		</div>
+		
+		<div class='divNavigation'>
+			<a href='index.php'><img src='img/home.svg'></a>
+		</div>	
+	
 		</body>
 	</html>
 	";
