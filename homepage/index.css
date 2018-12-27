@@ -36,6 +36,7 @@ section {
 	overflow: hidden;
   	height: auto;
 }
+
 /*--------------------------*/
 /*           DIV            */
 /*--------------------------*/
@@ -157,8 +158,16 @@ button:hover {
 		font-size: 10px;
 	}
 	
-	section {
+	.sectionHome {
 		height: 30%;
+	}
+	
+	.divLanding img {
+		visibility: hidden;
+	}
+	
+	.sectionContent {
+		height: 70%;
 	}
 	
 	.divLanding {

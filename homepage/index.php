@@ -7,7 +7,8 @@ session_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
-switch($_GET['status'])
+// choose action
+switch(@$_GET['status'])
 {
 	case 'logout':
        	logout();
@@ -17,6 +18,7 @@ switch($_GET['status'])
 	break;
 }
 
+// home
 function showHome() {
 
 	echo "
@@ -59,17 +61,12 @@ function showHome() {
 					<br>
 			</div>	
 					
-					
-					
 					<div class='divNavigation'>
 						<a href='note.php'><img src='img/note.svg'></a>
 						<a href='timetable.php'><img src='img/timetable.svg'></a>
 						<a href='mark.php'><img src='img/mark.svg'></a>
 						<a href='index.php?status=logout'><img src='img/logout.svg'></a>
-					</div>
-					
-					
-					
+					</div>				
 					";
 				}
 	
@@ -80,26 +77,26 @@ function showHome() {
 	
 		if (!isset($_SESSION['user'])) {
 	
-					echo "
-					<section class='sectionContent'>
+		echo "
+		<section class='sectionContent'>
 			
-						<div class='divTheme'>
-							<h2>NOTE</h2>
-							<p>Save all your thougths.</p>
-						</div>
-						<div class='divTheme'>
-							<h2>TIMETABLE</h2>
-							<p>Never forget a lesson again.</p>
-						</div>
-						<div class='divTheme'>
-							<h2>MARK</h2>
-							<p>Manage every result.</p>
-						</div>
+			<div class='divTheme'>
+				<h2>NOTE</h2>
+				<p>Save all your thougths.</p>
+			</div>
+			<div class='divTheme'>
+				<h2>TIMETABLE</h2>
+				<p>Never forget a lesson again.</p>
+			</div>
+			<div class='divTheme'>
+				<h2>MARK</h2>
+				<p>Manage every result.</p>
+			</div>
 
-					</section>		
-					";
+		</section>		
+		";
 	
-				}
+		}
 		
 		echo "	
 		</body>
@@ -108,16 +105,11 @@ function showHome() {
 	
 }
 
-function test() {
-	echo "iess";	
-}
-
+// logout
 function logout() {
-	
 	unset($_SESSION['user']);
 	session_destroy();
 	showHome();
-	
 }
 
 ?>
