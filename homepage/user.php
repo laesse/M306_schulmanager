@@ -61,7 +61,7 @@ function showLogin() {
 			<p>Welcome back! Login to manage your work.</p>
 			<p>Don't have an account yet?</p> 
 			<form action='user.php?status=showRegistration' method='post'>
-				<button type='submit' class='btnRegister'>Register</button>
+				<button type='submit' class='btnRegister'>Register here</button>
 			</form>
 			
 		</div>
@@ -158,70 +158,44 @@ function showRegistration() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Schulmanager: Register</title>
-	";
-
-	include 'head.php';
-
-	echo "
+		<title>LeeSchoolassist: Register</title>
+		<meta name='theme-color' content='#f1605b'>
+		<link rel='stylesheet' type='text/css' href='user.css'>
+		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	</head>
 	<body>
-		<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
-		<div class='mdl-layout mdl-js-layout'>
-  	";
+		
+		<div class='divText'>
+		
+			<h1>REGISTER</h1>
+			<p>Welcome! Register to manage your work.</p>
+			<p>Already have an account?</p>
+			<form action='user.php?status=showLogin' method='post'>
+				<button type='submit' class='btnRegister'>Login here</button>
+			</form>
+			
+		</div>
+		<div class='divContent'>
+		
+			<form action='?status=checkRegistration' method='post'>
+  				<h2>Username</h2><br>
+				<input type='text' name='username' value='".htmlspecialchars(@$_POST['username'])."'><br><br>
+  				<h2>Mail</h2><br>
+				<input type='email' name='email' value='".htmlspecialchars(@$_POST['email'])."'><br><br>
+  				<h2>Password</h2><br>
+				<input type='password' name='password' value='".htmlspecialchars(@$_POST['password'])."'><br><br>
+  				<h2>Repeat Password</h2><br>
+				<input type='password' name='password-repeat' value='".htmlspecialchars(@$_POST['password-repeat'])."'><br><br>
+				<button type='submit' class='btnLogin'>Register</button>
+			</form>
+			
+		</div>
+		
+		<div class='divNavigation'>
+			<a href='index.php'><img src='img/home.svg'></a>
+		</div>	
 
-	include 'navigation.php';
-
-	echo "
-  				<main class='mdl-layout__content'>
-    				<div class='page-content'>
-
-
-
-						<div class='mdl-grid'>
-							<div class='mdl-layout-spacer'></div>
-    						<div class='mdl-cell mdl-cell--4-col'>
-
-
-	<h3>Register</h3>
-	<p>Welcome! Register to manage your work.</p>
-	<p>Already have an account? <a href='?status=showLogin'>Login here</a></p>
-
-	<!-- Textfield with Floating Label -->
-	<form action='?status=checkRegistration' method='post'>
-  		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='text' id='sample3' name='username' value='".htmlspecialchars($_POST['username'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>Username</label>
-  		</div>
-		<br>
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='email' id='sample3' name='email' value='".htmlspecialchars($_POST['email'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>Mail</label>
-  		</div>
-		<br>
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='password' id='sample3' name='password' value='".htmlspecialchars($_POST['password'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>Password</label>
-  		</div>
-		<br>
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='password' id='sample3' name='password-repeat' value='".htmlspecialchars($_POST['password-repeat'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>Repeate Password</label>
-  		</div>
-		<br>
-		<!-- TODO: SNACKBAR / Accent-colored raised button with ripple -->
-		<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Register</button>
-	</form>
-
-							</div>
-    						<div class='mdl-layout-spacer'></div>
-						</div>
-
-
-
-					</div>
-  				</main>
-			</div>
 		</body>
 	</html>
 	";
