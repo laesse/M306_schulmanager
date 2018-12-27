@@ -154,7 +154,7 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
 		width: 100%;
 		padding-left: 10%;
 		padding-right: 10%;
-		padding-top: 15%;
+		padding-top: 10%;
 		float: none;
 	}
 
