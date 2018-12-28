@@ -25,7 +25,7 @@ body {
 	overflow: hidden;
 	display: inline;
 	height: 100%;
-	width: 40%;
+	width: 50%;
 	padding-left: 10%;
 	padding-top: 15%;
 	float: left;
@@ -34,7 +34,7 @@ body {
 .divContent {
 	display: inline;
 	height: 100%;
-	width: 60%;
+	width: 50%;
 	padding-top: 15%;
 	float: left;
 }
@@ -46,6 +46,10 @@ body {
 	text-align: center;
 	padding-bottom: 2%;
 	padding-top: 1%;
+}
+
+#divRegister {
+	padding-top: 10%;
 }
 
 /*--------------------------*/
@@ -182,6 +186,10 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
 	
 	button {
 		font-size: 10px;
+	}
+	
+	#divRegister {
+		padding-top: 0%;
 	}
 	
 }

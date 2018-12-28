@@ -57,8 +57,8 @@ function showLogin() {
 	
 		<div class='divText'>
 			
-			<h1>LOGIN</h1>
-			<p>Welcome back! Login to manage your work.</p>
+			<h1>WELCOME BACK</h1>
+			<p>Login to manage your work.</p>
 			<p>Don't have an account yet?</p> 
 			<form action='user.php?status=showRegistration' method='post'>
 				<button type='submit' class='btnRegister'>Register here</button>
@@ -168,15 +168,15 @@ function showRegistration() {
 		
 		<div class='divText'>
 		
-			<h1>REGISTER</h1>
-			<p>Welcome! Register to manage your work.</p>
+			<h1>WELCOME</h1>
+			<p>Register to manage your work.</p>
 			<p>Already have an account?</p>
 			<form action='user.php?status=showLogin' method='post'>
 				<button type='submit' class='btnRegister'>Login here</button>
 			</form>
 			
 		</div>
-		<div class='divContent'>
+		<div class='divContent' id='divRegister'>
 		
 			<form action='?status=checkRegistration' method='post'>
   				<h2>Username</h2><br>

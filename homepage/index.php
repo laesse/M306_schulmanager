@@ -96,16 +96,6 @@ function showHome() {
 		</section>		
 		";
 	
-		} else {
-			
-		echo "
-		<section class='sectionContent' id='sectionRegistered'>
-			<div class='divTheme'>
-				<p>We can jump to all topics with the buttons below.</p>
-			</div>
-		</section>		
-		";
-			
 		}
 		
 		echo "	
