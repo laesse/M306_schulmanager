@@ -33,6 +33,10 @@ section {
   	height: auto;
 }
 
+#sectionRegistered {
+	height: 0%;
+}
+
 /*--------------------------*/
 /*           DIV            */
 /*--------------------------*/
@@ -171,6 +175,10 @@ button:hover {
 	
 	.divNavigation img {
 		background-color: pink;
+	}
+	
+	#sectionRegistered {
+		height: 70%;
 	}
 	
 }
