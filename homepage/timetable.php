@@ -42,6 +42,8 @@ function showTimetable() {
 	<html>
 	<head>
 		<title>Schulmanager: Timetable</title>
+		<link rel='stylesheet' type='text/css' href='timetable.css'>
+		
 	";
 	
 	include 'head.php';
@@ -52,11 +54,7 @@ function showTimetable() {
 	
 	<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
 		<div class='mdl-layout mdl-js-layout'>
-  	";
-
-	include 'navigation.php';
-
-	echo "
+		
   				<main class='mdl-layout__content'>
     				<div class='page-content'>
 
@@ -70,7 +68,7 @@ function showTimetable() {
 	
 	
 	
-	<h3>Add Subject</h3>
+	<h3>TODO: Add Subject</h3>
 	<p>Manager your week here.</p>
 	
 	<form action='?status=checkAddSubject' method='post'>
@@ -222,6 +220,13 @@ function showTimetable() {
 					</div>
   				</main>
 			</div>
+	
+		<div class='divNavigation'>
+			<a href='index.php'><img src='img/home.svg'></a>
+			<a href='note.php'><img src='img/note.svg'></a>
+			<a href='mark.php'><img src='img/mark.svg'></a>
+			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
+		</div>	
 	
 	</body>
 	</html>

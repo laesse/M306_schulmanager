@@ -43,6 +43,7 @@ function showNote() {
 	<html>
 	<head>
 		<title>Schulmanager: Note</title>
+		<link rel='stylesheet' type='text/css' href='note.css'>
 	";
 
 	include 'head.php';
@@ -56,31 +57,11 @@ function showNote() {
   <header class='mdl-layout__header mdl-layout__header--scroll'>
     <div class='mdl-layout__header-row'>
       <!-- Title -->
-      <span class='mdl-layout-title'>Schulmanager</span>
+      <span class='mdl-layout-title'></span>
 	  <!-- Add spacer, to align navigation to the right -->
       				<div class='mdl-layout-spacer'></div>
       					<!-- Navigation -->
       					<nav class='mdl-navigation'>
-	";
-
-
-	if (isset($_SESSION['user'])) {
-		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-        <a class='mdl-navigation__link' href='note.php'>Note</a>
-		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='mark.php'>Mark</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>
-			<!-- Contact Chip -->
-			<span class='mdl-chip mdl-chip--contact'>
-    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
-    			<span class='mdl-chip__text'>Logout</span>
-			</span>
-		</a>
-		";
-	}
-
-	echo "
 	  					</nav>
     				</div>
 					<!-- Tabs -->
@@ -121,25 +102,6 @@ function showNote() {
 				<div class='mdl-layout__drawer'>
     				<span class='mdl-layout-title'>Schulmanager</span>
     				<nav class='mdl-navigation'>
-    ";
-
-	if (isset($_SESSION['user'])) {
-		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-        <a class='mdl-navigation__link' href='note.php'>Note</a>
-		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='mark.php'>Mark</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>
-			<!-- Contact Chip -->
-			<span class='mdl-chip mdl-chip--contact'>
-    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
-    			<span class='mdl-chip__text'>Logout</span>
-			</span>
-		</a>
-		";
-	}
-
-	echo "
 					</nav>
   				</div>
 
@@ -152,7 +114,7 @@ function showNote() {
 			<div class='mdl-layout-spacer'></div>
     		<div class='mdl-cell mdl-cell--4-col'>
 
-		<h3>Add Notebook</h3>
+		<h3>TODO: Add Notebook</h3>
 
 		<form action='?status=checkAddNotebook' method='post'>
 
@@ -253,6 +215,14 @@ function showNote() {
 
 	echo "
   </main>
+  
+  	<div class='divNavigation'>
+		<a href='index.php'><img src='img/home.svg'></a>
+		<a href='timetable.php'><img src='img/timetable.svg'></a>
+		<a href='mark.php'><img src='img/mark.svg'></a>
+		<a href='index.php?status=logout'><img src='img/logout.svg'></a>
+	</div>
+  
 </div>
 </body>
 </html>
