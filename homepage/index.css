@@ -13,10 +13,6 @@ html, body {
 	height: 100%;
 }
 
-body {
-	background-color: #f1605b;
-}
-
 /*--------------------------*/
 /*         SECTION          */
 /*--------------------------*/
@@ -27,7 +23,7 @@ section {
 }
 
 .sectionHome {
-	background-color: #f1605b;
+	background-image: linear-gradient(to top left, turquoise, pink);
 	overflow: hidden;
 }
 
@@ -75,7 +71,6 @@ section {
 }
 
 .divNavigation img {
-	background-color: #f1605b;
 	height: 20px;
 	margin-left: 5%;
 	margin-right: 5%;
@@ -119,14 +114,14 @@ button:hover {
 }
 
 .btnRegister { 
+	border: 1px solid turquoise;
   	color: white; 
-  	border: 1px solid white;
-	background-color: #f1605b;
+	background-color: turquoise;
 }
 
 .btnLogin {
-  	color: #f1605b;
-	border: 1px solid white;
+  	border: 1px solid white;
+  	color: pink;
   	background-color: white;
 }
 
@@ -135,21 +130,21 @@ button:hover {
 /*--------------------------*/
 
 ::-webkit-scrollbar {
-	background: #f1605b;
+	background: turquoise;
 }
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
   	background: white; 
   	border-radius: 10px;
-	border: 2px solid #f1605b;
+	border: 2px solid pink;
 }
 
 /*----------------------------------------------------------------------------------*/
 /*           							Responsive                                  */
 /*----------------------------------------------------------------------------------*/
 @media screen and (max-width:600px) {
-	
+		
 	h1 {
 		font-size: 20px;	
 	}
@@ -172,6 +167,10 @@ button:hover {
 	
 	.divLanding {
 		padding-top: 10%;
+	}
+	
+	.divNavigation img {
+		background-color: pink;
 	}
 	
 }

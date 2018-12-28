@@ -26,7 +26,7 @@ function showHome() {
 	<html>
 	<head>
 		<title>LeeSchoolassist: Home</title>
-		<meta name='theme-color' content='#f1605b'>
+		<meta name='theme-color' content='pink'>
 		<link rel='stylesheet' type='text/css' href='index.css'>
 		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
 		<meta name='viewport' content='width=device-width, initial-scale=1.0' />

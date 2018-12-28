@@ -48,7 +48,7 @@ function showLogin() {
 	<html>
 	<head>		
 		<title>LeeSchoolassist: Login</title>
-		<meta name='theme-color' content='#f1605b'>
+		<meta name='theme-color' content='pink'>
 		<link rel='stylesheet' type='text/css' href='user.css'>
 		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
 		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
@@ -159,7 +159,7 @@ function showRegistration() {
 	<html>
 	<head>
 		<title>LeeSchoolassist: Register</title>
-		<meta name='theme-color' content='#f1605b'>
+		<meta name='theme-color' content='pink'>
 		<link rel='stylesheet' type='text/css' href='user.css'>
 		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
 		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
