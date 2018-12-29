@@ -41,191 +41,71 @@ function showTimetable() {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>Schulmanager: Timetable</title>
+		<title>LeeSchoolassist: Timetable</title>
+		<meta name='theme-color' content='pink'>
 		<link rel='stylesheet' type='text/css' href='timetable.css'>
-		
-	";
-	
-	include 'head.php';
-	
-	echo "
+		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	</head>
 	<body>
 	
-	<!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
-		<div class='mdl-layout mdl-js-layout'>
+		<div class='divEdit'>
 		
-  				<main class='mdl-layout__content'>
-    				<div class='page-content'>
+			<h1>ADD SUBJECT</h1><br>
+			<p>Let's manager your week.</p><br>
 
+			<form action='?status=checkAddSubject' method='post'>
 
+				<h2>Subject</h2><br>
+				<input type='text' name='name' value='".htmlspecialchars($_POST['name'])."'><br>
+				<h2>Teacher</h2><br>
+				<input type='text' name='teacherName' value='".htmlspecialchars($_POST['teacherName'])."'><br>
+				<h2>Weekday</h2><br>
+				<select name='dayOfWeek' id='addSubjectDayOfWeek'>
+					<option></option>
+					<option value='mo'>Monday</option>
+					<option value='tu'>Tuesday</option>
+					<option value='we'>Wednesday</option>
+					<option value='th'>Thursday</option>
+					<option value='fr'>Friday</option>
+					<option value='sa'>Saturday</option>
+					<option value='su'>Sunday</option>
+				</select><br>
+				<h2>Start</h2><br>
+				<input type='time' name='startAt' id='addSubjectStartAt' value='".htmlspecialchars($_POST['startAt'])."'><br>
+				<h2>End</h2><br>
+				<input type='time' name='endAt' id='addSubjectEndAt' value='".htmlspecialchars($_POST['endAt'])."'><br>
+				<button type='submit' class='btnLogin'>Add</button>
 
-						<div class='mdl-grid'>
-							<div class='mdl-layout-spacer'></div>
-    						<div class='mdl-cell mdl-cell--4-col'>
-	
-	
-	
-	
-	
-	<h3>TODO: Add Subject</h3>
-	<p>Manager your week here.</p>
-	
-	<form action='?status=checkAddSubject' method='post'>
+			</form>
 		
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='text' id='sample3' name='name' value='".htmlspecialchars($_POST['name'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>SubjectName</label>
-  		</div>
-		<br>
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    		<input class='mdl-textfield__input' type='text' id='sample3' name='teacherName' value='".htmlspecialchars($_POST['teacherName'])."'>
-    		<label class='mdl-textfield__label' for='sample3'>TeacherName</label>
-  		</div>
-		
-		<br><br>
-		
-		<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-			<select class='mdl-textfield__input' name='dayOfWeek' id='addSubjectDayOfWeek'>
-				<option></option>
-				<option value='mo'>Monday</option>
-    			<option value='tu'>Tuesday</option>
-    			<option value='we'>Wednesday</option>
-    			<option value='th'>Thursday</option>
-    			<option value='fr'>Friday</option>
-    			<option value='sa'>Saturday</option>
-    			<option value='su'>Sunday</option>
-  			</select>	
-			<label class='mdl-textfield__label' for='addSubjectDayOfWeek'>DayOfWeek</label>
 		</div>
+		<div class='divContent'>
+		";
 		
-		<div class='mdl-grid'>
-  			<div class='mdl-cell mdl-cell--3-col'>
-				<label for='addSubjectStartAt'>StartAt</label><br>
-				<input type='time' name='startAt' id='addSubjectStartAt' value='".htmlspecialchars($_POST['startAt'])."'>
-			</div>
-  			<div class='mdl-cell mdl-cell--3-col'>
-				<label for='addSubjectEndAt'>EndAt</label><br>
-				<input type='time' name='endAt' id='addSubjectEndAt' value='".htmlspecialchars($_POST['endAt'])."'>
-			</div>
-			<div class='mdl-cell mdl-cell--3-col'>
-				<button class='mdl-button mdl-js-button mdl-button--raised' type='submit'>Add</button>
-			</div>
-  		</div>
-		
-		<br>
-		
-	</form>
+			showDay("mo", "<h2>MONDAY</h2><br>");	
 
-	
-	
-	
+			showDay("tu", "<br><h2>TUESDAY</h2><br>");	
 
-							<!-- Simple list -->
-						<style>
-							.demo-list-item {
-							width: 300px;
-						}
-						</style>
+			showDay("we", "<br><h2>WEDNESDAY</h2><br>");	
 
-						<ul class='demo-list-item mdl-list'>
-						
-						
-  							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Monday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("mo");	
-						
-						echo "
-							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Tuesday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("tu");	
-						
-						echo "
-							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Wednesday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("we");	
-						
-						echo "
-							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Thursday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("th");	
-						
-						echo "
-							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Friday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("fr");	
-						
-						echo "
-							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Saturday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("sa");	
-						
-						echo "
-							<li class='mdl-list__item' style='background-color: #03DAC6;'>
-    							<span class='mdl-list__item-primary-content'>
-      								Sunday
-    							</span>
-  							</li>
-      					";
-	
-						showDay("su");	
-						
-						echo "
-						</ul>
-						
-						
-						
-						
+			showDay("th", "<br><h2>THURSDAY</h2><br>");	
 
+			showDay("fr", "<br><h2>FRIDAY</h2><br>");	
 
-							
+			showDay("sa", "<br><h2>SATURDAY</h2><br>");	
 
-							</div>
-    						<div class='mdl-layout-spacer'></div>
-						</div>
-							
-							
-						
+			showDay("su", "<br><h2>SUNDAY</h2><br>");	
 
-					</div>
-  				</main>
-			</div>
-	
+		echo "
+		</div>	
 		<div class='divNavigation'>
-			<a href='index.php'><img src='img/home.svg'></a>
-			<a href='note.php'><img src='img/note.svg'></a>
-			<a href='mark.php'><img src='img/mark.svg'></a>
+		
+			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
+			<a href='note.php'><img src='img/noteOnWhite.svg'></a>
+			<a href='mark.php'><img src='img/markOnWhite.svg'></a>
 			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
+			
 		</div>	
 	
 	</body>
@@ -456,7 +336,10 @@ function deleteTimetable(){
 	
 }
 
-function showDay($day_of_week) {
+function showDay($day_of_week, $output) {
+
+	$div = false;
+	$count = 0;
 	
 	// Create connection
 	$conn = getConnection();
@@ -477,6 +360,11 @@ function showDay($day_of_week) {
 
 	// fetch value
 	while ($stmt->fetch()) {
+		
+		if ($count == 0) {
+			echo $output;
+			$count = 99;
+		}
 		
 		// Create connection
 		$conn1 = getConnection();
@@ -500,26 +388,59 @@ function showDay($day_of_week) {
 		$stmt1->close();
 		$conn1->close();
 		
+		if ($div) {
+			echo "<div class='divBlueElement'>";
+			
+				echo "<div class='left'>";
+				echo substr($start_at, 0, 5);
+				echo " - ";
+				echo substr($end_at, 0, 5);
+				echo " | ";
+				echo $name;
+				echo " - ";
+				echo $teacher_name;
+				
+				echo "</div>";
+				echo "<div class='right'>";
+				echo "<form action='?status=deleteTimetable' method='post'>
+						<button name='deleteButton' value='".$subject_id_fk."' class='btnRegister'>
+							Delete
+						</button>
+					  </form>
+					  </div>
+				";
+			
+			echo "</div>";
+			$div = false;
 		
-		echo "<br>";
-		echo $name;
-		echo " - ";
-		echo $teacher_name;
-		echo "<br>";
-		echo substr($start_at, 0, 5);
-		echo "   until   ";
-		echo substr($end_at, 0, 5);
-		echo "<form action='?status=deleteTimetable' method='post'>
-				<!-- Accent-colored flat button -->
-			  	<button name='deleteButton' value='".$subject_id_fk."' class='mdl-button mdl-js-button mdl-button--accent'>
-  					Delete
-			  	</button>
-			  </form>
-		";
-		echo "<hr>";
+		} else {
+			
+			echo "<div class='divWhiteElement'>";
+				
+				echo "<div class='left'>";
+				echo substr($start_at, 0, 5);
+				echo " - ";
+				echo substr($end_at, 0, 5);
+				echo " | ";
+				echo $name;
+				echo " - ";
+				echo $teacher_name;
+				
+				echo "</div>";
+				echo "<div class='right'>";
+				echo "<form action='?status=deleteTimetable' method='post'>
+						<button name='deleteButton' value='".$subject_id_fk."' class='btnRegister'>
+							Delete
+						</button>
+					  </form>
+					  </div>
+				";
+			
+			echo "</div>";			
+			$div = true;
+		}
+		
 	}
-	
-	echo "<br>";
 	
 	$stmt->close();
 	$conn->close();
