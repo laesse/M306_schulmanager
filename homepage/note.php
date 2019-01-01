@@ -224,8 +224,8 @@ function insertNote(){
 
 
 	// prepare and bind
-	$stmt = $conn->prepare("SELECT id FROM notebook WHERE name=?");
-	$stmt->bind_param("s",$notebook);
+	$stmt = $conn->prepare("SELECT id FROM notebook WHERE name=? AND user_id_fk=?");
+	$stmt->bind_param("si",$notebook, $_SESSION["user"]);
 
 	if(!$stmt->execute()){
 		// TODO: echo Error
@@ -306,6 +306,9 @@ function checkAddNotebook() {
 	if ($success) {
 		insertNotebook();
 		insertNote();
+		unset($_SESSION['noteText']);
+		unset($_SESSION['saveNote']);
+		unset($_SESSION['deleteNotebook']);
 		showNote();
 	}else {
 		// TODO: echo Error
