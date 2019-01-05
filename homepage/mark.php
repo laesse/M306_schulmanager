@@ -48,6 +48,7 @@ function showMarks($parm) {
   <html>
   <head>
     <title>Schulmanager: Mark</title>
+	<link rel='stylesheet' type='text/css' href='mark.css'>
   ";
 
   include 'head.php';
@@ -502,6 +503,15 @@ function showMarks($parm) {
           </div>
         </footer>
       </div>
+	  
+	  
+	  	<div class='divNavigation'>
+			<a href='index.php'><img src='img/home.svg'></a>
+			<a href='note.php'><img src='img/note.svg'></a>
+			<a href='timetable.php'><img src='img/timetable.svg'></a>
+			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
+		</div>
+	  
     </body>
   </html>
           ";

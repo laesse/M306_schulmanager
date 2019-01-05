@@ -9,6 +9,9 @@ ini_set('display_errors', 0);
 
 switch($_GET['status'])
 {
+	case 'viewNotebook':
+		viewNotebook();
+	break;
 	case 'checkSaveNote':
        	checkSaveNote();
 	break;
@@ -41,139 +44,63 @@ function showNote() {
 	echo "
 	<!DOCTYPE html>
 	<html>
-	<head>
-		<title>Schulmanager: Note</title>
-	";
-
-	include 'head.php';
-
-	echo "
+	<head>		
+		<title>LeeSchoolassist: Note</title>
+		<meta name='theme-color' content='pink'>
+		<link rel='stylesheet' type='text/css' href='note.css'>
+		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	</head>
 	<body>
-
-	<!-- Simple header with scrollable tabs. -->
-<div class='mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs'>
-  <header class='mdl-layout__header mdl-layout__header--scroll'>
-    <div class='mdl-layout__header-row'>
-      <!-- Title -->
-      <span class='mdl-layout-title'>Schulmanager</span>
-	  <!-- Add spacer, to align navigation to the right -->
-      				<div class='mdl-layout-spacer'></div>
-      					<!-- Navigation -->
-      					<nav class='mdl-navigation'>
-	";
-
-
-	if (isset($_SESSION['user'])) {
-		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-        <a class='mdl-navigation__link' href='note.php'>Note</a>
-		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='mark.php'>Mark</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>
-			<!-- Contact Chip -->
-			<span class='mdl-chip mdl-chip--contact'>
-    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
-    			<span class='mdl-chip__text'>Logout</span>
-			</span>
-		</a>
-		";
-	}
-
-	echo "
-	  					</nav>
-    				</div>
-					<!-- Tabs -->
-    				<div class='mdl-layout__tab-bar mdl-js-ripple-effect'>
-	";
-
-	$conn = getConnection();
-
-	// Check connection
-	if ($conn->connect_error) {
-		die("Connection failed: ".$conn->connect_error);
-	}
-
-	// prepare and bind
-	$notebooksFromAUser = $conn->prepare("SELECT id, name FROM notebook WHERE user_id_fk=?");
-	$notebooksFromAUser->bind_param("i",$_SESSION["user"]);
-
-	if(!$notebooksFromAUser->execute()){
-		// TODO: echo Error
-	}
-	// bind result variable
-  $notebooksFromAUser->bind_result($id_notebook, $name);
-
-	echo "<a href='#scroll-tab-0' class='mdl-layout__tab is-active'>Add Notebook</a>";
-	// fetch value
-	while ($notebooksFromAUser->fetch()) {
-
-		echo "<a href='#scroll-tab-".$id_notebook."' class='mdl-layout__tab'>".$name."</a>";
-
-	}
-
-	$notebooksFromAUser->close();
-	$conn->close();
-
-	echo "
-    				</div>
-  				</header>
-				<div class='mdl-layout__drawer'>
-    				<span class='mdl-layout-title'>Schulmanager</span>
-    				<nav class='mdl-navigation'>
-    ";
-
-	if (isset($_SESSION['user'])) {
-		echo "
-        <a class='mdl-navigation__link' href='index.php'>Home</a>
-        <a class='mdl-navigation__link' href='note.php'>Note</a>
-		<a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
-		<a class='mdl-navigation__link' href='mark.php'>Mark</a>
-		<a class='mdl-navigation__link' href='index.php?status=logout'>
-			<!-- Contact Chip -->
-			<span class='mdl-chip mdl-chip--contact'>
-    			<span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
-    			<span class='mdl-chip__text'>Logout</span>
-			</span>
-		</a>
-		";
-	}
-
-	echo "
-					</nav>
-  				</div>
-
-  <main class='mdl-layout__content'>
-
-    <section class='mdl-layout__tab-panel is-active' id='scroll-tab-0'>
-      <div class='page-content'>
-
-	  	<div class='mdl-grid'>
-			<div class='mdl-layout-spacer'></div>
-    		<div class='mdl-cell mdl-cell--4-col'>
-
-		<h3>Add Notebook</h3>
-
-		<form action='?status=checkAddNotebook' method='post'>
-
-			<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>
-    			<input class='mdl-textfield__input' type='text' id='sample3' name='addNotebook' >
-    			<label class='mdl-textfield__label' for='sample3'>Name</label>
-  			</div>
-			<!-- FAB button with ripple -->
-			<button class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect' type='submit'>
-  				<i class='material-icons'>add</i>
-			</button>
-		</form>
-
-			</div>
-			<div class='mdl-layout-spacer'></div>
+	
+		<div class='divEdit'>
+			
+			<h1>ADD NOTEBOOK</h1>
+			<p>Save all your thoughts.</p><br>
+			<form action='?status=checkAddNotebook' method='post'>
+				<input type='text' name='addNotebook'><br>
+  				<button type='submit' class='btnLogin'>ADD</button>
+			</form><br><br><br>
+			";
+			readNotebooks();
+			echo "
+		
 		</div>
+  		<div class='divContent'>
+		";
+	
+		if (isset($_SESSION["noteText"])) {
+			
+			echo "
+			<form action='?status=checkSaveNote' method='post'>
+				<textarea type='text' name='txtNote'>".@$_SESSION["noteText"]."</textarea>
+				<button class='btnLogin' type='submit'>Save</button>
+    		</form>
+			<form action='?status=deleteNotebook' method='post'>
+				<button class='btnRegister' type='submit'>Delete</button>
+			</form>
+			";
+			
+		}
+			
+		echo "	
+		</div>
+		<div class='divNavigation'>
+			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
+			<a href='timetable.php'><img src='img/timetableOnWhite.svg'></a>
+			<!--<a href='mark.php'><img src='img/markOnWhite.svg'></a>-->
+			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
+		</div>
+  
+</div>
+</body>
+</html>
+	";
 
-	  </div>
-    </section>
-    ";
 
+}
+
+function readNotebooks() {
 	// Create connection
 	$conn1 = getConnection();
 
@@ -193,16 +120,12 @@ function showNote() {
 
 	// fetch value
 	while ($notebooksFromAUser->fetch()) {
-  echo "
-	<section class='mdl-layout__tab-panel' id='scroll-tab-".$id_notebook."'>
-      <div class='page-content'>
+  
+		echo "
+		<form action='?status=viewNotebook' method='post'>
+		";
 
-	  <div class='mdl-grid'>
-			<div class='mdl-layout-spacer'></div>
-    		<div class='mdl-cell mdl-cell--4-col'>
-	";
-
-    $conn2 = getConnection();
+    	$conn2 = getConnection();
 		//get the notes out of the notebook
 		$notesInNotebook = $conn2->prepare("SELECT id, notetext FROM note WHERE notebook_id_fk=?");
 		$notesInNotebook->bind_param("i",$id_notebook);
@@ -216,49 +139,35 @@ function showNote() {
 		// fetch value
 		if ($notesInNotebook->fetch()) {
 				echo "
-				<br>
-				<form action='?status=checkSaveNote' method='post'>
-				<div class='mdl-textfield mdl-js-textfield'>
-					<textarea class='mdl-textfield__input' type='text' rows= '18' id='sample5' name='txtNote'>".$notetext."</textarea>
-    				<label class='mdl-textfield__label' for='sample5'>Your Note...</label>
-				</div>
-				<br>
-				<input type='hidden' name='note' value='".$id."'>
-				<button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect' type='submit'>Save</button>
-    			</form>
-				<br>
-				<form action='?status=deleteNotebook' method='post'>
+				<input type='hidden' name='noteText' value='".$notetext."'>
+				<input type='hidden' name='saveNote' value='".$id."'>
 				<input type='hidden' name='deleteNotebook' value='".$id_notebook."'>
-				<button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent' type='submit'>Delete</button>
-				</form>
-				<br><br>
 				";
 			}
 
-			$notesInNotebook->close();
-			$conn2->close();
-	echo "
-			</div>
-			<div class='mdl-layout-spacer'></div>
-		</div>
-	  </div>
-    </section>
-    ";
+		$notesInNotebook->close();
+		$conn2->close();
+		
+		echo "
+    		<button class='notebooks' type='submit'>".$name."</button>
+		</form><br>
+		";
 
 	}
 
 	$notebooksFromAUser->close();
 	$conn1->close();
+}
 
 
-	echo "
-  </main>
-</div>
-</body>
-</html>
-	";
 
-
+function viewNotebook(){
+	
+	$_SESSION["noteText"] = htmlspecialchars(trim(@$_POST['noteText']));
+	$_SESSION["saveNote"] = htmlspecialchars(trim(@$_POST['saveNote']));
+	$_SESSION["deleteNotebook"] = htmlspecialchars(trim(@$_POST['deleteNotebook']));
+	showNote();
+	
 }
 
 function checkSaveNote() {
@@ -281,14 +190,15 @@ function updateNote(){
 	
 	$conn = getConnection();
 	$txtNote = htmlspecialchars(trim($_POST['txtNote']));
-	
-  	// Check connection
+	$_SESSION["noteText"] = $txtNote;
+  	
+	// Check connection
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
 
 	$updateNotetxt = $conn->prepare("UPDATE note SET notetext = ? WHERE id = ?");
-	$updateNotetxt->bind_param("si", $txtNote, $_POST['note']);
+	$updateNotetxt->bind_param("si", $txtNote, $_SESSION['saveNote']);
 
 	if(!$updateNotetxt->execute()){
 		// TODO: echo Error
@@ -314,8 +224,8 @@ function insertNote(){
 
 
 	// prepare and bind
-	$stmt = $conn->prepare("SELECT id FROM notebook WHERE name=?");
-	$stmt->bind_param("s",$notebook);
+	$stmt = $conn->prepare("SELECT id FROM notebook WHERE name=? AND user_id_fk=?");
+	$stmt->bind_param("si",$notebook, $_SESSION["user"]);
 
 	if(!$stmt->execute()){
 		// TODO: echo Error
@@ -351,6 +261,7 @@ function insertNote(){
 
 	$stmt->close();
 	$conn->close();
+	
 }
 
 function checkAddNotebook() {
@@ -395,6 +306,9 @@ function checkAddNotebook() {
 	if ($success) {
 		insertNotebook();
 		insertNote();
+		unset($_SESSION['noteText']);
+		unset($_SESSION['saveNote']);
+		unset($_SESSION['deleteNotebook']);
 		showNote();
 	}else {
 		// TODO: echo Error
@@ -437,10 +351,8 @@ function deleteNotebook(){
 
 	}
 	
-	$note = $_POST['deleteNotebook'];
-	
 	$delNotebook = $conn->prepare("DELETE FROM note WHERE notebook_id_fk=?");
-	$delNotebook->bind_param("i", $note);
+	$delNotebook->bind_param("i", $_SESSION['deleteNotebook']);
 
 	if (!$delNotebook->execute()) {
 		//ECHO FAIL
@@ -459,10 +371,8 @@ function deleteNotebook(){
 
 	}
 	
-	$notebook = $_POST['deleteNotebook'];
-	
 	$delNotebook = $conn1->prepare("DELETE FROM notebook WHERE id=?");
-	$delNotebook->bind_param("i", $notebook);
+	$delNotebook->bind_param("i", $_SESSION['deleteNotebook']);
 
 	if (!$delNotebook->execute()) {
 		//ECHO FAIL
@@ -471,6 +381,9 @@ function deleteNotebook(){
 	$delNotebook->close();
 	$conn1->close();
 
+	unset($_SESSION['noteText']);
+	unset($_SESSION['saveNote']);
+	unset($_SESSION['deleteNotebook']);
 	showNote();
 }
 

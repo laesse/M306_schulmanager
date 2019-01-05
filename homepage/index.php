@@ -7,7 +7,8 @@ session_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
-switch($_GET['status'])
+// choose action
+switch(@$_GET['status'])
 {
 	case 'logout':
        	logout();
@@ -17,6 +18,7 @@ switch($_GET['status'])
 	break;
 }
 
+// home
 function showHome() {
 
 	echo "
@@ -24,174 +26,90 @@ function showHome() {
 	<html>
 	<head>
 		<title>LeeSchoolassist: Home</title>
+		<meta name='theme-color' content='pink'>
 		<link rel='stylesheet' type='text/css' href='index.css'>
 		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
-		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	</head>
 	<body>
 	
-		<div class='header'>
-		
-			<div class='menuIcon'>
-				<img src='img/menu.svg'>
-			</div>
-			Lee Schoolassist
-		
-		</div>
-		
-		<div class='content'>
-		
-		
-			<div class='contentRow'>
+		<section class='sectionHome'>
 			
-				<div class='left'>
-					<h1>I am Lee</h1>
-					<p>Welcome to my website.<br>
-					I would like to manage your school stuffe with you.<br>
-					Are you interessted to try it out?</p>
+			<div class='divLanding'>
+				";				
+				if (!isset($_SESSION['user'])) {
 	
-					";				
-					if (!isset($_SESSION['user'])) {
-	
-						echo "
-						<form action='user.php' method='post'>
-							<button type='submit' id='mainButton'>Login</button>
-						</form>
-						<form action='user.php?status=showRegistration' method='post'>
-							<button type='submit' id='registerButton'>Register</button>
-						</form>				
-						";
-	
-					} else {
-						
-						echo "
-						<form action='index.php?status=logout' method='post'>
-							<button type='submit' id='mainButton'>Logout</button>
-						</form>
-						";
-							
-					}
 					echo "
+					<h1>WELCOME</h1><br>
+					<h1>I AM LEE.</h1><br>
+					<form action='user.php' method='post'>
+						<button type='submit' class='btnLogin'>Login</button>
+					</form>
+					<form action='user.php?status=showRegistration' method='post'>
+						<button type='submit' class='btnRegister'>Register</button>
+					</form>		
+					<br>
+					<img src='img/down.svg'>
+			</div>			
+					";
 	
-					</p>
-				</div>
-				<div class='right'>
+				} else {
+					echo "
+					<h1>Hi</h1><br>
+					<h1>".strtoupper($_SESSION['username'])."</h1><br>
+					<p>How are you?</p>
 					<br>
-				</div>
-			
-			</div>
-			<div class ='contentRow'>
-				
-				<div class='left'>
-					<br>
-				</div>
-				<div class='right'>
-				
-					<h1>What can I do?</h1>
-					<p>At the moment I can help you with the following themes.<br>
-					Is there something for you?</p>
+			</div>	
 					
-					<div class='themes'>
-						<div class='theme'>
-						";
-						
-						if (!isset($_SESSION['user'])) {
-							
-							echo "
-							<h2>Timetable </h2>		
-							<p>Never forgett a lesson again.</p>
-							";
-							
-						} else {
-							
-							echo "
-							<form action='timetable.php' method='post'>
-								<button type='submit' id='mainButton'>Timetable</button>
-							</form>
-							";
-							
-						}
+					<div class='divNavigation'>
+						<a href='note.php'><img src='img/note.svg'></a>
+						<a href='timetable.php'><img src='img/timetable.svg'></a>
+						<!--<a href='mark.php'><img src='img/mark.svg'></a>-->
+						<a href='index.php?status=logout'><img src='img/logout.svg'></a>
+					</div>				
+					";
+				}
 	
-						echo "
-						</div>
-						<hr>
-						<div class='theme'>
-						";
-						
-						if (!isset($_SESSION['user'])) {
-							
-							echo "
-							<h2>Mark </h2>
-							<p>See your marks at all time.</p>
-							";
-							
-						} else {
-							
-							echo "
-							<form action='mark.php' method='post'>
-								<button type='submit' id='mainButton'>Mark</button>
-							</form>
-							";
-							
-						}
+				echo "
+		
+		</section>
+		";
 	
-						echo "							
-						</div>
-						<hr>
-						<div class='theme'>
-						";
+		if (!isset($_SESSION['user'])) {
 	
-						if (!isset($_SESSION['user'])) {
-							
-							echo "
-							<h2>Note </h2>
-							<p>Manage all your information.</p>
-							";
-							
-						} else {
-							
-							echo "
-							<form action='note.php' method='post'>
-								<button type='submit' id='mainButton'>Note</button>
-							</form>
-							";
-							
-						}
-	
-						echo "
-						</div>
-					</div>
-				
-				</div>
+		echo "
+		<section class='sectionContent'>
 			
+			<div class='divTheme'>
+				<h2>NOTE</h2>
+				<p>Save all your thougths.</p>
 			</div>
+			<div class='divTheme'>
+				<h2>TIMETABLE</h2>
+				<p>Never forget a lesson again.</p>
+			</div>
+			<div class='divTheme'>
+				<h2>MARK</h2>
+				<p>Manage every result.</p>
+			</div>
+
+		</section>		
+		";
+	
+		}
 		
-		</div>
-		
-		<div class='footer'>
-		
-			<h2 class='footerTitle'>Lee Schoolassist</h2>
-			<br>
-			<h2 class='footerRights'>2018 all rights reserved</h2>
-		
-		</div>
-		
+		echo "	
 		</body>
 	</html>
 	";
 	
 }
 
-function test() {
-	echo "iess";	
-}
-
+// logout
 function logout() {
-	
 	unset($_SESSION['user']);
 	session_destroy();
 	showHome();
-	
 }
 
 ?>
