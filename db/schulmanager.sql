@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 05. Nov 2018 um 20:46
--- Server-Version: 10.1.36-MariaDB
--- PHP-Version: 7.2.10
+-- Generation Time: Jan 05, 2019 at 11:46 AM
+-- Server version: 10.1.36-MariaDB
+-- PHP Version: 7.2.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `schulmanager`
+-- Database: `schulmanager`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `homework`
+-- Table structure for table `homework`
 --
 
 CREATE TABLE IF NOT EXISTS `homework` (
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `homework` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `learning_goal`
+-- Table structure for table `learning_goal`
 --
 
 CREATE TABLE IF NOT EXISTS `learning_goal` (
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `learning_goal` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `mark`
+-- Table structure for table `mark`
 --
 
 CREATE TABLE IF NOT EXISTS `mark` (
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `mark` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `note`
+-- Table structure for table `note`
 --
 
 CREATE TABLE IF NOT EXISTS `note` (
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `note` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `notebook`
+-- Table structure for table `notebook`
 --
 
 CREATE TABLE IF NOT EXISTS `notebook` (
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `notebook` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `semester`
+-- Table structure for table `semester`
 --
 
 CREATE TABLE IF NOT EXISTS `semester` (
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `semester` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `subject`
+-- Table structure for table `subject`
 --
 
 CREATE TABLE IF NOT EXISTS `subject` (
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `subject` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `test`
+-- Table structure for table `test`
 --
 
 CREATE TABLE IF NOT EXISTS `test` (
@@ -145,31 +145,20 @@ CREATE TABLE IF NOT EXISTS `test` (
   `subject_id_fk` int(11) NOT NULL,
   `user_id_fk` int(11) NOT NULL,
   `topic` varchar(255) NOT NULL,
+  `test_date` date NOT NULL,
+  `homework_id_fk` int(11) NOT NULL,
+  `timetable_id_fk` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `subject_id_fk` (`subject_id_fk`),
-  KEY `user_id_fk` (`user_id_fk`)
+  KEY `user_id_fk` (`user_id_fk`),
+  KEY `test_homework_fk` (`homework_id_fk`),
+  KEY `test_timetable_fk` (`timetable_id_fk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `test_time`
---
-
-CREATE TABLE IF NOT EXISTS `test_time` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `test_id_fk` int(11) NOT NULL,
-  `timetable_id_fk` int(11) NOT NULL,
-  `date` date NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `test_id_fk` (`test_id_fk`),
-  KEY `timetable_id_fk` (`timetable_id_fk`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `timetable`
+-- Table structure for table `timetable`
 --
 
 CREATE TABLE IF NOT EXISTS `timetable` (
@@ -188,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `timetable` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `user`
+-- Table structure for table `user`
 --
 
 CREATE TABLE IF NOT EXISTS `user` (
@@ -200,23 +189,23 @@ CREATE TABLE IF NOT EXISTS `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Constraints der exportierten Tabellen
+-- Constraints for dumped tables
 --
 
 --
--- Constraints der Tabelle `homework`
+-- Constraints for table `homework`
 --
 ALTER TABLE `homework`
   ADD CONSTRAINT `fk_timetable` FOREIGN KEY (`timetable_id_fk`) REFERENCES `timetable` (`id`);
 
 --
--- Constraints der Tabelle `learning_goal`
+-- Constraints for table `learning_goal`
 --
 ALTER TABLE `learning_goal`
   ADD CONSTRAINT `learning_goal_test_fk` FOREIGN KEY (`test_id_fk`) REFERENCES `test` (`id`);
 
 --
--- Constraints der Tabelle `mark`
+-- Constraints for table `mark`
 --
 ALTER TABLE `mark`
   ADD CONSTRAINT `mark_test_fk` FOREIGN KEY (`test_id_fk`) REFERENCES `test` (`id`),
@@ -224,45 +213,40 @@ ALTER TABLE `mark`
   ADD CONSTRAINT `subject_id_fk` FOREIGN KEY (`subject_id_fk`) REFERENCES `subject` (`id`);
 
 --
--- Constraints der Tabelle `note`
+-- Constraints for table `note`
 --
 ALTER TABLE `note`
   ADD CONSTRAINT `notebook_fk` FOREIGN KEY (`notebook_id_fk`) REFERENCES `notebook` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints der Tabelle `notebook`
+-- Constraints for table `notebook`
 --
 ALTER TABLE `notebook`
   ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id_fk`) REFERENCES `user` (`id`);
 
 --
--- Constraints der Tabelle `semester`
+-- Constraints for table `semester`
 --
 ALTER TABLE `semester`
   ADD CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id_fk`) REFERENCES `user` (`id`);
 
 --
--- Constraints der Tabelle `subject`
+-- Constraints for table `subject`
 --
 ALTER TABLE `subject`
   ADD CONSTRAINT `subject_user_fk` FOREIGN KEY (`user_id_fk`) REFERENCES `user` (`id`);
 
 --
--- Constraints der Tabelle `test`
+-- Constraints for table `test`
 --
 ALTER TABLE `test`
+  ADD CONSTRAINT `test_homework_fk` FOREIGN KEY (`homework_id_fk`) REFERENCES `homework` (`id`),
   ADD CONSTRAINT `test_subject_fk` FOREIGN KEY (`subject_id_fk`) REFERENCES `subject` (`id`),
+  ADD CONSTRAINT `test_timetable_fk` FOREIGN KEY (`timetable_id_fk`) REFERENCES `timetable` (`id`),
   ADD CONSTRAINT `test_user_fk` FOREIGN KEY (`user_id_fk`) REFERENCES `user` (`id`);
 
 --
--- Constraints der Tabelle `test_time`
---
-ALTER TABLE `test_time`
-  ADD CONSTRAINT `test_fk` FOREIGN KEY (`test_id_fk`) REFERENCES `test` (`id`),
-  ADD CONSTRAINT `timetable_fk` FOREIGN KEY (`timetable_id_fk`) REFERENCES `timetable` (`id`);
-
---
--- Constraints der Tabelle `timetable`
+-- Constraints for table `timetable`
 --
 ALTER TABLE `timetable`
   ADD CONSTRAINT `timetable_subject_fk` FOREIGN KEY (`subject_id_fk`) REFERENCES `subject` (`id`),
