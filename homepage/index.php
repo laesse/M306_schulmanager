@@ -64,7 +64,7 @@ function showHome() {
 					<div class='divNavigation'>
 						<a href='note.php'><img src='img/note.svg'></a>
 						<a href='timetable.php'><img src='img/timetable.svg'></a>
-						<!--<a href='mark.php'><img src='img/mark.svg'></a>-->
+						<a href='mark.php'><img src='img/mark.svg'></a>
 						<a href='index.php?status=logout'><img src='img/logout.svg'></a>
 					</div>				
 					";

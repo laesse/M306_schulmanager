@@ -3,22 +3,12 @@
 // start session
 session_start();
 
-// hide errors
-error_reporting(0);
-ini_set('display_errors', 0);
-
 if(!isset($_SESSION['user'])){
   header("Location: index.php");
 }
 
 switch(@$_GET['status'])
 {
-  case 'addSemester':
-    addSemester();
-  break;
-  case 'delSemester':
-    delSemester();
-  break;
   case 'logout':
     logout();
   break;
@@ -54,63 +44,155 @@ function getConnection(){
 }
 
 function showMarks($parm) {
-  	
-	echo "<!DOCTYPE html>
-  	<html>
-  	<head>
-		<title>LeeSchoolassist: Mark</title>
-		<meta name='theme-color' content='pink'>
-		<link rel='stylesheet' type='text/css' href='mark.css'>
-		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
-		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-  	";
+  echo "<!DOCTYPE html>
+  <html>
+  <head>
+    <title>Schulmanager: Mark</title>
+	<link rel='stylesheet' type='text/css' href='mark.css'>
+  ";
 
-  	include 'head.php';
+  include 'head.php';
 
-  	echo "
-  	</head>
-  	<body>
-	
-		<div class='divEdit'>
-		
-			<h1>ADD SEMESTER</h1>
-			<p>Helps us to also remeber old marks.</p><br>
-			
-			<form action='?status=addSemester' method='post'>
-				  
-				  <h2>Semestername</h2><br>
-                  <input type='text' id='semesterName' name='semesterName'><br>
-				   <h2>Start</h2><br>
-                  <input type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateFrom' name='dateFrom'><br>
-                  <h2>End</h2><br>
-				  <input type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateTo' name='dateTo'><br>
-                  <button class='btnLogin' type='submit'>Add</button><br><br><br>
-            </form>
-			
-		";
-		
-		readSemester();
-	
-		echo "
-		</div>
-		<div class='divContent'>
-		";	
-			
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+  echo "
+  </head>
+  <body>
+    <!-- Uses a header that scrolls with the text, rather than staying locked at the top -->
+    <div class='mdl-layout mdl-js-layout'>
+    ";
+
+    echo "
+    <header class='mdl-layout__header mdl-layout__header--scroll'>
+      <div class='mdl-layout__header-row'>
+        <!-- Title -->
+        <span class='mdl-layout-title'>Schulmanager</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class='mdl-layout-spacer'></div>
+            <!-- Navigation -->
+            <nav class='mdl-navigation'>";
+    if (isset($_SESSION['user'])) {
+      echo "
+              <a class='mdl-navigation__link' href='index.php'>Home</a>
+              <a class='mdl-navigation__link' href='note.php'>Note</a>
+              <a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+              <a class='mdl-navigation__link' href='semester.php'>Semester</a>
+              <a class='mdl-navigation__link' href='index.php?status=logout'>
+                <!-- Contact Chip -->
+                <span class='mdl-chip mdl-chip--contact'>
+                  <span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
+                  <span class='mdl-chip__text'>Logout</span>
+                </span>
+              </a>";
+    } else {
+        echo "
+              <a class='mdl-navigation__link' href='index.php'>Home</a>
+              <a class='mdl-navigation__link' href='user.php'>Login</a>";
+    }
+    echo "
+            </nav>
+          </div>
+          <!-- Tabs -->
+          <div class='mdl-layout__tab-bar mdl-js-ripple-effect'>
+            ";
+
+  $conn = getConnection();
+  // Check connection
+  if ($conn->connect_error) {
+    die("Connection failed: ".$conn->connect_error);
+  }
+
+  // semesters from the current user for the Tab name
+  $semestersFromAUser = $conn->prepare(
+    "SELECT
+        id
+      , semester_start
+      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
+          AS semester_name
+      , CASE
+          WHEN semester_start < SYSDATE()
+           AND semester_end  >= SYSDATE()
+              THEN 1
+              ELSE 0
+        END
+          AS is_current_semester
+        FROM semester
+        WHERE user_id_fk = ?
+          AND definitiv = 0
+        UNION ALL
+		 SELECT
+        id
+      , semester_start
+      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
+          AS semester_name
+      , CASE
+          WHEN semester_start < SYSDATE()
+           AND semester_end  >= SYSDATE()
+              THEN 1
+              ELSE 0
+        END
+          AS is_current_semester
+        FROM semester
+        WHERE user_id_fk = ?
+          AND definitiv = 1
+		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1)
+        ORDER BY semester_start
+        ");
+  $semestersFromAUser->bind_param("ii",$_SESSION["user"], $_SESSION["user"]);
+
+  if(!$semestersFromAUser->execute()){
+    // TODO: echo Error
+  }
+  // bind result variable
+  $semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester);
+
+  // fetch value
+  while ($semestersFromAUser->fetch()) {
+    echo "<a href='#scroll-tab-".$id_semester."' class='mdl-layout__tab ";
+    //activate current semester
+    if ($is_current_semester == 1){
+      echo "is-active";
+    }
+    echo "'>".$semester_name."</a>
+            ";
+
+  }
+
+  $semestersFromAUser->close();
+  $conn->close();
+  echo "</div>
+        </header>
+        <div class='mdl-layout__drawer'>
+          <span class='mdl-layout-title'>Schulmanager</span>
+          <nav class='mdl-navigation'>";
+  if (isset($_SESSION['user'])) {
+    echo "
+            <a class='mdl-navigation__link' href='index.php'>Home</a>
+            <a class='mdl-navigation__link' href='note.php'>Note</a>
+            <a class='mdl-navigation__link' href='timetable.php'>Timetable</a>
+            <a class='mdl-navigation__link' href='semester.php'>Semester</a>
+            <a class='mdl-navigation__link' href='index.php?status=logout'>
+            <!-- Contact Chip -->
+              <span class='mdl-chip mdl-chip--contact'>
+                <span class='mdl-chip__contact mdl-color--teal mdl-color-text--white'>".$_SESSION['username'][0]."</span>
+                <span class='mdl-chip__text'>Logout</span>
+              </span>
+            </a>";
+  } else {
+      echo "
+             <a class='mdl-navigation__link' href='index.php'>Home</a>
+             <a class='mdl-navigation__link' href='user.php'>Login</a>";
+  }
+
+  echo "
+          </nav>
+        </div>
+        <main class='mdl-layout__content'>";
+
   $conn = getConnection();
 
   if ($conn->connect_error){
       die("Connection failed: ".$conn->connect_error);
   }
+
 
   $semestersFromAUser = $conn->prepare(
     "SELECT
@@ -160,34 +242,19 @@ function showMarks($parm) {
   $semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester, $definitiv,$semester_name_orig);
 
   while($semestersFromAUser->fetch()){
-    
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  /*
-	 echo "
-          <section class='mdl-layout__tab-panel ";*/
+    echo "
+          <section class='mdl-layout__tab-panel ";
     if ($is_current_semester == 1){
       echo "is-active";
     }
-	  /*
     echo"' id='scroll-tab-$id_semester'>
             <div class='page-content'>
             <div class='mdl-grid'>
               <div class='mdl-cell mdl-cell--3-col'></div>
                 <div class='mdl-cell mdl-cell--8-col'>";
 
-*/
 
-	  
-	  
-	  
-	  
+
     $conn2 = getConnection();
     if ($conn2->connect_error){
       die("Connection failed: ".$conn2->connect_error);
@@ -207,45 +274,37 @@ function showMarks($parm) {
     $max_mark_cnt->bind_result($cnt);
     if($max_mark_cnt->fetch()){
       if($cnt > 0){
-        
-		  /*  echo "
+        echo "
+                  <h3>Your Marks in Semester: \"$semester_name_orig\"</h3>
                   <table class='mdl-data-table mdl-js-data-table'>
                     <thead>
                       <tr>
                         <th class='mdl-data-table__cell--non-numeric'>Subject</th>";
-*/
+
         for ($i = 1; $i <= intval($cnt); $i++) {
           if ($parm == 'del' || $parm == 'edit'){
-            /*  echo "
-                         <th class='mdl-data-table__cell--non-numeric'>Mark $i</th>";
-						 */
+            echo "
+                          <th class='mdl-data-table__cell--non-numeric'>Mark $i</th>";
           }else{
-			  /*
             echo "
                           <th>Mark $i</th>";
-          	*/
-		  }
+          }
 
         }
-		  /*
         echo "
                         <th class='mdl-data-table__cell--non-numeric'>Avarage Mark</th>
                       </tr>
                     </thead>
-                    <tbody>";*/
+                    <tbody>";
       }else{
         echo "
-                  <h2>No marks added yet.</h2>";
+                  <h4>no marks in this semester yet...</h4>";
         $cnt = 0;
       }
     }
 
     $max_mark_cnt->close();
 
-	  
-	  
-	  
-	  
     // weiter machen wenn semester Noten hat sonst nichts tun
     if ($cnt > 0){
       $marks = $conn2->prepare("SELECT  m.id
@@ -284,25 +343,15 @@ function showMarks($parm) {
       while($noch_daten_da){
         $current_subject_id = $subject_id;
         echo "
-		
-		
-		
-                        <h2>$subject_name</h2><br>";
-        				//XXXSUBJECT
-		  
-		  
-		  
-		  
-		  $i = 0;
+                      <tr>
+                        <td class='mdl-data-table__cell--non-numeric'>$subject_name</td>";
+        $i = 0;
         $zw_avg_mark = $avg_mark;
         $zw_subject_id = $subject_id;
-		
         //gruppenbruch Stufe Subject
-		$color = true;
         while ($noch_daten_da && $subject_id == $current_subject_id) {
           if ($parm == 'del'){
-			  	
-		/*
+
             echo"
                       <td class='mdl-data-table__cell--non-numeric'>
                       <span class='mdl-chip mdl-chip--contact mdl-chip--deletable'>
@@ -310,10 +359,7 @@ function showMarks($parm) {
                         <a href='?status=delMark&mark_id=$mark_id&user_id=".hash("sha256", hash("sha512",$_SESSION["user"].strtolower($_SESSION["username"]).'éêèáãà,3.14159,-1/12'.($_SESSION["user"]*$_SESSION["user"]*3.14159).$_SESSION["password_hash"].hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))."' class='mdl-chip__action'><i class='material-icons'>cancel</i></a>
                       </span>
                       </td>";
-			*/  
           }else if($parm == 'edit'){
-			  
-			  /*
             echo"
                       <td class='mdl-data-table__cell--non-numeric'>
                         <form action='?status=editMark' method='post'>
@@ -331,59 +377,33 @@ function showMarks($parm) {
                           </button>
                         </form>
                       </td>";
-			  
-			  */
           }else{
-            
-			  if ($color) {
-				  
-				  echo "
-				  <div class='divWhiteElement'>
-				  	<p>".$mark."</p>
-				  </div>
-				  ";
-				  
-				  $color = false;
-			  } else {
-				  
-				  echo "
-				  <div class='divBlueElement'>
-				  	<p>".$mark."</p>
-				  </div>
-				  ";
-				  
-				  $color = true;
-			  }
-			  
-		  }
+            echo"
+                      <td>$mark</td>";
+
+          }
           $i += 1;
           $noch_daten_da = $marks->fetch(); // "nachlesen"
         }
-		
-		  
-		  /*
         while ($i < intval($cnt)){
           // Restliche Tabellenfelder ausgeben für Fächer die weniger Noten haben als welches mit den meisten noten im Semester
           echo"
                       <td></td>";
           $i += 1;
-        }*/
+        }
         echo "
-        <p>AVERAGE: ".$zw_avg_mark."</p><br><br>
-		";
-		//XXXAVRG
+                      <td>$zw_avg_mark</td>
+
+                    </tr>";
       }
-		/*
       echo "
                   </tbody>
                 </table>";
-      */
-	  $marks->close();
+      $marks->close();
     }
 
     $conn2->close();
-    
-	  /*echo"
+    echo"
 
               </div>
               <div class='mdl-cell mdl-cell--2-col'></div>
@@ -391,16 +411,8 @@ function showMarks($parm) {
             <div class='mdl-grid'>
               <div class='mdl-cell mdl-cell--4-col'></div>
               <div class='mdl-cell mdl-cell--2-col'>";
-*/
 
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
+
 
 
   $conn2 = getConnection();
@@ -471,149 +483,41 @@ function showMarks($parm) {
                 </button>
               </form>";
     }
-	  /*
     echo"
             </div>
           </div>
         </div>
         </section>";
-		*/
   }
   $semestersFromAUser->close();
   $conn->close();
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		echo "
-		</div>
-       	<div class='divNavigation'>
-			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
-			<a href='note.php'><img src='img/noteOnWhite.svg'></a>
-			<a href='timetable.php'><img src='img/timetableOnWhite.svg'></a>
+  echo"
+        </main>
+        <footer class='mdl-mini-footer'>
+          <div class='mdl-mini-footer__left-section'>
+            <div class='mdl-logo'>TODO</div>
+            <ul class='mdl-mini-footer__link-list'>
+                <li><a href=''>Help</a></li>
+                <li><a href=''>Privacy & Terms</a></li>
+            </ul>
+          </div>
+        </footer>
+      </div>
+	  
+	  
+	  	<div class='divNavigation'>
+			<a href='index.php'><img src='img/home.svg'></a>
+			<a href='note.php'><img src='img/note.svg'></a>
+			<a href='timetable.php'><img src='img/timetable.svg'></a>
 			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
 		</div>
 	  
     </body>
   </html>
-  ";
+          ";
 
 
 }
-
-
-
-
-
-
-
-
-function readSemester() {
-	
-	$conn = getConnection();
-  	// Check connection
-  	if ($conn->connect_error) {
-		die("Connection failed: ".$conn->connect_error);
-	}
-
-  	// semesters from the current user for the Tab name
-  	$semestersFromAUser = $conn->prepare(
-    "SELECT
-        id
-      , semester_start
-      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
-          AS semester_name
-      , CASE
-          WHEN semester_start < SYSDATE()
-           AND semester_end  >= SYSDATE()
-              THEN 1
-              ELSE 0
-        END
-          AS is_current_semester
-        FROM semester
-        WHERE user_id_fk = ?
-          AND definitiv = 0
-        UNION ALL
-		 SELECT
-        id
-      , semester_start
-      , COALESCE(CONCAT(semester_name,': ',DATE_FORMAT(semester_start,'%d.%m.%Y'),' - ',DATE_FORMAT(semester_end,'%d.%m.%Y')),semester_name)
-          AS semester_name
-      , CASE
-          WHEN semester_start < SYSDATE()
-           AND semester_end  >= SYSDATE()
-              THEN 1
-              ELSE 0
-        END
-          AS is_current_semester
-        FROM semester
-        WHERE user_id_fk = ?
-          AND definitiv = 1
-		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1)
-        ORDER BY semester_start DESC
-        ");
-  	
-	$semestersFromAUser->bind_param("ii", @$_SESSION["user"], @$_SESSION["user"]);
-
-  	if(!$semestersFromAUser->execute()){
-		// TODO: echo Error
-  	}
-  	
-	// bind result variable
-  	$semestersFromAUser->bind_result($id_semester,$semester_start, $semester_name, $is_current_semester);
-
-  	// fetch value
-  	while ($semestersFromAUser->fetch()) {
-		
-		echo "
-		<form action='?status=viewMarks' method='post'>
-			<input type='hidden' value='$id_semester' name='semester_id'/>
-		";
-		
-    	//activate current semester
-    	if ($is_current_semester == 1){
-			echo "
-			<button class='activeSemester' type='submit'>".$semester_name."</button>
-			";
-			$_SESSION["semester"] = $id_semester;
-    	} else {
-			echo "
-			<button class='semesters' type='submit'>".$semester_name."</button>
-			";
-		}
-		
-		echo "
-		
-		</form><br>
-		
-		";
-		
-		/* TODO: MAYBE IN CONTENT
-		<form action='?status=delSemester' method='post' style='display:inline-block'>
-			<input type='hidden' value='$id_semester' name='semester_id'/>
-			<button type='submit'>Delete</button>
-		</form>
-		*/
-  	}
-
-	$semestersFromAUser->close();
-	$conn->close();
-	
-}
-
-
-
 
 function addMark(){
     if(checkAddMark()){
@@ -810,155 +714,6 @@ function deleteMark(){
       unset($_GET['user_id']);
       header("Location: mark.php");
   }
-}
-
-function addSemester(){
-	
-	//TODO KEINE DOPPELEINTRÄGE
-	
-  if(checkAddSemester()){
-      $conn = getConnection();
-      $semesterName = htmlspecialchars(trim(@$_POST['semesterName']));
-      $dateFrom = htmlspecialchars(trim(@$_POST['dateFrom']));
-      $dateTo = htmlspecialchars(trim(@$_POST['dateTo']));
-
-      if ($conn->connect_error){
-        die("Connection failed: ".$conn->connect_error);
-      }
-      $insertSem = $conn->prepare("INSERT INTO semester(semester_start,semester_end,semester_name,user_id_fk,definitiv)
-                                               VALUES(STR_TO_DATE(?,'%d.%m.%Y'),STR_TO_DATE(?,'%d.%m.%Y'),?,?,0)
-                                    ");
-      $insertSem->bind_param("sssi",$dateFrom,$dateTo,$semesterName,$_SESSION['user']);
-      if($insertSem->execute()){
-        //TODO write error
-      }
-      $insertSem->close();
-      $conn->close();
-      unset($_POST['semesterName']);
-      unset($_POST['dateFrom']);
-      unset($_POST['dateTo']);
-
-	  showMarks('show');
-  }else{
-    //TODO Fehlermeldung
-	  showMarks('show');
-  }
-}
-
-function checkAddSemester(){
-      	$success = true;
-      	$semesterName = htmlspecialchars(trim(@$_POST['semesterName']));
-      	$dateFrom = htmlspecialchars(trim(@$_POST['dateFrom']));
-      	$dateTo = htmlspecialchars(trim(@$_POST['dateTo']));
-
-      	/*
-        check if parameters are empty
-      	*/
-        if (empty($semesterName)) {
-          $success = false;
-        }
-        if (empty($dateFrom)) {
-          $success = false;
-        }
-        if (empty($dateTo)) {
-          $success = false;
-        }
-
-        $dateFrom = convertToIso($dateFrom);
-        $dateTo = convertToIso($dateTo);
-
-        if($dateFrom >= $dateTo){
-          $success = false;
-        }
-        // das alles funktioniert noch nicht so wie ich es will es ist aber auch nicht zwingend notwendeig desshab
-        // lasse ich es jetzt einfach drin und wenn man das bedürfnis verspüren sollte hier noch was zu machen dann go for it.
-/*
-        $conn = getConnection();
-        // Check connection
-        if ($conn->connect_error) {
-          die("Connection failed: ".$conn->connect_error);
-        }
-
-        // semesters from the current user
-        $semestersFromAUser = $conn->prepare(
-          "SELECT
-              id
-            , semester_name
-            , semester_start sem_start
-            , semester_end sem_end
-            FROM semester
-              WHERE user_id_fk = ?
-            order by sem_start
-          ");
-        $semestersFromAUser->bind_param("i",$_SESSION["user"]);
-
-        if(!$semestersFromAUser->execute()){
-          // TODO: echo Error
-        }
-        // bind result variable
-        $semestersFromAUser->bind_result($id_semester, $semester_name, $semester_start, $semester_end);
-
-        while($semestersFromAUser->fetch()){
-          if($semester_start < $dateFrom && $semester_end > $dateFrom){
-            $success = false;
-          }
-          if($semester_start < $dateTo && $semester_end > $dateTo){
-            $success = false;
-          }
-        }
-
-        $semestersFromAUser->close();
-        $conn->close();
-        */
-        return $success;
-
-}
-
-function convertToIso($inStrDate){
-  $day = substr($inStrDate,0,2);
-  $month = substr($inStrDate,3,2);
-  $year = substr($inStrDate,5,4);
-  return $year.'-'.$month.'-'.$day;
-}
-
-function delSemester(){
-  if(checkDelSemester()){
-      $conn = getConnection();
-      $semester_id = htmlspecialchars(trim(@$_POST['semester_id']));
-
-      if ($conn->connect_error){
-        die("Connection failed: ".$conn->connect_error);
-      }
-      $updateMark = $conn->prepare("DELETE FROM semester WHERE id = ?");
-      $updateMark->bind_param("i",$semester_id);
-      if($updateMark->execute()){
-        //TODO write error
-      }
-      $updateMark->close();
-      $conn->close();
-
-      unset($_POST['semester_id']);
-      header("Location: mark.php");
-  }else{
-      unset($_POST['semester_id']);
-      header("Location: mark.php");
-  }
-}
-
-function checkDelSemester(){
-
-    	$success = true;
-    	$semester_id = htmlspecialchars(trim(@$_POST['semester_id']));
-
-    	/*
-      check if parameters are empty
-    	*/
-      if (empty($semester_id)) {
-        $success = false;
-      }
-
-      return $success;
-
 }
 
 function logout() {

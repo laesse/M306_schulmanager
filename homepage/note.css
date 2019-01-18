@@ -103,9 +103,9 @@ button:hover {
 
 .btnLogin {
   	color: black;
-	border: 1px solid black;
+	border: 1px solid white;
   	background-color: white;
-	font-size: 15px;
+	font-size: 30px;
 }
 
 .notebooks {

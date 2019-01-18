@@ -103,7 +103,7 @@ function showTimetable() {
 		
 			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
 			<a href='note.php'><img src='img/noteOnWhite.svg'></a>
-			<!--<a href='mark.php'><img src='img/markOnWhite.svg'></a>-->
+			<a href='mark.php'><img src='img/markOnWhite.svg'></a>
 			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
 			
 		</div>	

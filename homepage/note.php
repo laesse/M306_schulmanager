@@ -59,7 +59,7 @@ function showNote() {
 			<p>Save all your thoughts.</p><br>
 			<form action='?status=checkAddNotebook' method='post'>
 				<input type='text' name='addNotebook'><br>
-  				<button type='submit' class='btnLogin'>ADD</button>
+  				<button type='submit' class='btnLogin'>Add</button>
 			</form><br><br><br>
 			";
 			readNotebooks();
@@ -88,13 +88,12 @@ function showNote() {
 		<div class='divNavigation'>
 			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
 			<a href='timetable.php'><img src='img/timetableOnWhite.svg'></a>
-			<!--<a href='mark.php'><img src='img/markOnWhite.svg'></a>-->
+			<a href='mark.php'><img src='img/markOnWhite.svg'></a>
 			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
 		</div>
   
-</div>
-</body>
-</html>
+  	</body>
+	</html>
 	";
 
 
