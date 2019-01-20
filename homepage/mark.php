@@ -25,13 +25,7 @@ switch(@$_GET['status'])
   case 'addMark':
     addMark();
   break;
-  case 'editMarks':
-    showMarks('edit');
-  break;
-  case 'deleteMarks':
-    showMarks('del');
-  break;
-  case 'delMark':
+  case 'deleteMark':
     deleteMark();
   break;
   case 'editMark':
@@ -39,10 +33,10 @@ switch(@$_GET['status'])
   break;
   case 'viewMarks':
     viewMark();
-    showMarks('show');
+    showMarks();
   break;
   default:
-    showMarks('show');
+    showMarks();
   break;
 }
 
@@ -57,7 +51,7 @@ function getConnection(){
   return new mysqli($servername, $dbusername, $password, $dbname);
 }
 
-function showMarks($parm) {
+function showMarks() {
 
 	echo "<!DOCTYPE html>
   	<html>
@@ -204,7 +198,6 @@ function showMarks($parm) {
 				          echo "
 				  <div class='divWhiteElement'>
 				  	<p>".$mark."</p>
-				  </div>
 				  ";
 
           $color = false;
@@ -213,13 +206,18 @@ function showMarks($parm) {
 				  echo "
 				  <div class='divBlueElement'>
 				  	<p>".$mark."</p>
-				  </div>
 				  ";
-
 	        $color = true;
          }
+         echo "
+         <form action='?status=deleteMark' method='post'>
+         <input type='hidden' value='".$mark_id."' name='mark_id'/>
+           <button name='btnDelete' class='btnRegister'>
+             Delete
+           </button>
+         </form>
+       </div>";
 
-		     
           $i += 1;
           $noch_daten_da = $marks->fetch(); // "nachlesen"
         }
@@ -279,7 +277,6 @@ function showMarks($parm) {
                   <input class='' pattern='-?[0-9]*(\.[0-9]+)?' type='text' id='newMark' name='mark' value='".htmlspecialchars(@$_POST['mark'])."'>
                   <label class='' for='newMark'>Mark</label>
 
-                <input type='hidden' name='semester_id' value='$id_semester'>
                 <br>
                 <button class='' type='submit'>
                   Submit
@@ -431,7 +428,7 @@ function addMark(){
         $insertMark = $conn->prepare("INSERT INTO mark(mark,test_id_fk,semester_id_fk,subject_id_fk)
                                                  VALUES(?,NULL,?,?)
                                       ");
-        $insertMark->bind_param("dii",$mark,$_POST["semester_id"],$_POST["subject"]);
+        $insertMark->bind_param("dii",$mark,$_SESSION["semester"],$_POST["subject"]);
         if($insertMark->execute()){
           //TODO write error
         }
@@ -441,9 +438,9 @@ function addMark(){
         unset($_POST['semester_id']);
         unset($_POST['subject']);
 
-        showMarks('show');
+        showMarks();
     }else{
-        showMarks('show');
+        showMarks();
     }
 }
 
@@ -466,7 +463,6 @@ function checkAddMark() {
   if ($subject_id == 0) {
     $success = false;
   }
-
 
   return $success;
 
@@ -549,8 +545,7 @@ function checkUpdateMark(){
 function checkDeleteMark(){
 
   	$success = true;
-  	$mark_id = htmlspecialchars(trim(@$_GET['mark_id']));
-  	$user_id = htmlspecialchars(trim(@$_GET['user_id']));
+  	$mark_id = htmlspecialchars(trim(@$_POST['mark_id']));
 
   	/*
     check if parameters are empty
@@ -558,62 +553,26 @@ function checkDeleteMark(){
     if (empty($mark_id)) {
       $success = false;
     }
-    if (empty($user_id)) {
-      $success = false;
-    }
-    $conn = getConnection();
-
-    if ($conn->connect_error){
-      die("Connection failed: ".$conn->connect_error);
-    }
-    $checkUserId = $conn->prepare("SELECT CONCAT(id,LOWER(username),'éêèáãà,3.14159,-1/12',id*id*3.14159,UPPER(password_hash)) user_id_soll
-                                    FROM  user
-                                   WHERE  id = ?
-                                  ");
-    $checkUserId->bind_param("i",$_SESSION["user"]);
-    if($checkUserId->execute()){
-      //TODO write error
-    }
-    $checkUserId->bind_result($user_id_soll);
-    if($checkUserId->fetch()){
-      //autencication
-        if(strtoupper(hash("sha256",hash("sha512",$user_id_soll.hash("sha512","ifYouGetThisYouMustAreAVeryGoodHacker</>")))) != strtoupper($user_id)){
-            $success = false;
-        }
-    }
-
-    $checkUserId->close();
-    $conn->close();
-
-
     return $success;
 }
 
 function deleteMark(){
   if(checkDeleteMark()){
       $conn = getConnection();
-      $mark = htmlspecialchars(trim(@$_POST['mark']));
+      $mark = htmlspecialchars(trim(@$_POST['mark_id']));
 
       if ($conn->connect_error){
         die("Connection failed: ".$conn->connect_error);
       }
-      $updateMark = $conn->prepare("DELETE FROM mark WHERE id = ?");
-      $updateMark->bind_param("i",$_GET["mark_id"]);
-      if($updateMark->execute()){
-        //TODO write error
+      $deleteMark = $conn->prepare("DELETE FROM mark WHERE id = ?");
+      $deleteMark->bind_param("i",$mark);
+      if($deleteMark->execute()){
       }
-      $updateMark->close();
+      $deleteMark->close();
       $conn->close();
-
-      unset($_GET['status']);
-      unset($_GET['mark_id']);
-      unset($_GET['user_id']);
-      header("Location: mark.php");
+      showMarks();
   }else{
-      unset($_GET['status']);
-      unset($_GET['mark_id']);
-      unset($_GET['user_id']);
-      header("Location: mark.php");
+      showMarks();
   }
 }
 
@@ -643,10 +602,10 @@ function addSemester(){
       unset($_POST['dateFrom']);
       unset($_POST['dateTo']);
 
-	  showMarks('show');
+	  showMarks();
   }else{
     //TODO Fehlermeldung
-	  showMarks('show');
+	  showMarks();
   }
 }
 
@@ -677,44 +636,7 @@ function checkAddSemester(){
         }
         // das alles funktioniert noch nicht so wie ich es will es ist aber auch nicht zwingend notwendeig desshab
         // lasse ich es jetzt einfach drin und wenn man das bedürfnis verspüren sollte hier noch was zu machen dann go for it.
-/*
-        $conn = getConnection();
-        // Check connection
-        if ($conn->connect_error) {
-          die("Connection failed: ".$conn->connect_error);
-        }
 
-        // semesters from the current user
-        $semestersFromAUser = $conn->prepare(
-          "SELECT
-              id
-            , semester_name
-            , semester_start sem_start
-            , semester_end sem_end
-            FROM semester
-              WHERE user_id_fk = ?
-            order by sem_start
-          ");
-        $semestersFromAUser->bind_param("i",$_SESSION["user"]);
-
-        if(!$semestersFromAUser->execute()){
-          // TODO: echo Error
-        }
-        // bind result variable
-        $semestersFromAUser->bind_result($id_semester, $semester_name, $semester_start, $semester_end);
-
-        while($semestersFromAUser->fetch()){
-          if($semester_start < $dateFrom && $semester_end > $dateFrom){
-            $success = false;
-          }
-          if($semester_start < $dateTo && $semester_end > $dateTo){
-            $success = false;
-          }
-        }
-
-        $semestersFromAUser->close();
-        $conn->close();
-        */
         return $success;
 
 }
