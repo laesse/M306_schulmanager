@@ -4,8 +4,8 @@
 session_start();
 
 // hide errors
-error_reporting(0);
-ini_set('display_errors', 0);
+//error_reporting(0);
+//ini_set('display_errors', 0);
 
 if(!isset($_SESSION['user'])){
   header("Location: index.php");
@@ -61,27 +61,22 @@ function showMarks() {
 		<link rel='stylesheet' type='text/css' href='mark.css'>
 		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
-  	";
-
-  	include 'head.php';
-
-  	echo "
   	</head>
   	<body>
 
 		<div class='divEdit'>
 
-			<h1>ADD SEMESTER</h1>
-			<p>Helps us to also remeber old marks.</p><br>
+			<h1>ADD SEMESTER</h1><br>
+			<p>Helps us to also remeber old marks.</p><br><br>
 
 			<form action='?status=addSemester' method='post'>
 
 				  <h2>Semestername</h2><br>
-                  <input type='text' id='semesterName' name='semesterName'><br>
+                  <input class='inputSemester' type='text' id='semesterName' name='semesterName'><br>
 				   <h2>Start</h2><br>
-                  <input type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateFrom' name='dateFrom'><br>
+                  <input class='inputSemester' type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateFrom' name='dateFrom'><br>
                   <h2>End</h2><br>
-				  <input type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateTo' name='dateTo'><br>
+				  <input class='inputSemester' type='text' pattern= '^\s*(3[01]|[12][0-9]|0?[1-9])\.(1[012]|0?[1-9])\.((?:19|20)\d{2})\s*$' id='dateTo' name='dateTo'><br>
                   <button class='btnLogin' type='submit'>Add</button><br><br><br>
             </form>
 
@@ -93,16 +88,6 @@ function showMarks() {
 		</div>
 		<div class='divContent'>
 		";
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -134,7 +119,7 @@ function showMarks() {
     		  }
         }
       }else{
-        echo "<h2>No marks added yet.</h2>";
+        echo "<h2>NO MARKS ADDED YET.</h2>";
         $cnt = 0;
       }
     }
@@ -171,6 +156,7 @@ function showMarks() {
                                  WHERE  m.semester_id_fk = ?
                                  ORDER  BY m.subject_id_fk, MARK_DATE
                                            ");
+		
       $marks->bind_param("ii", $_SESSION["semester"], $_SESSION["semester"]);
       if($marks->execute()){
         //TODO write error
@@ -231,15 +217,6 @@ function showMarks() {
     }
 
 
-	  /*echo"
-
-              </div>
-              <div class='mdl-cell mdl-cell--2-col'></div>
-            </div>
-            <div class='mdl-grid'>
-              <div class='mdl-cell mdl-cell--4-col'></div>
-              <div class='mdl-cell mdl-cell--2-col'>";
-*/
 
 
 
@@ -258,9 +235,10 @@ function showMarks() {
   }
   $subjectZeug->bind_result($subject_id,$subject_name);
   echo "
-                <form action='?status=addMark' method='post'>
-                  <div class=''>
-                    <select class='' name='subject' id='subjects'>
+				<br><br>
+				<form action='?status=addMark' method='post'>
+				  	<h3>Subject</h3><br>
+                    <select name='subject' id='subjects'>
                       <option value='0'>Please choose</option>";
   while($subjectZeug->fetch()){
     echo "
@@ -271,24 +249,14 @@ function showMarks() {
 
   echo "
                     </select>
-                  <label class='' for='subjects'>Subject</label>
-                </div>
                 <br>
-                  <input class='' pattern='-?[0-9]*(\.[0-9]+)?' type='text' id='newMark' name='mark' value='".htmlspecialchars(@$_POST['mark'])."'>
-                  <label class='' for='newMark'>Mark</label>
-
-                <br>
-                <button class='' type='submit'>
-                  Submit
-                </button>
+				<h3>Mark</h3><br>
+				<input pattern='-?[0-9]*(\.[0-9]+)?' type='text' id='newMark' name='mark' value='".htmlspecialchars(@$_POST['mark'])."'><br>
+                <button class='btnSave' type='submit'>Add</button>
               </form>
-
+			  
             </div>
-            <div class='mdl-cell mdl-cell--4-col'>";
-
-
-		echo "
-		</div>
+            
        	<div class='divNavigation'>
 			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
 			<a href='note.php'><img src='img/noteOnWhite.svg'></a>
@@ -383,7 +351,8 @@ function readSemester($semester) {
     	  }
     }else{
       //activate current semester
-      if ($semester == $semester_id){
+      
+	if ($semester == $semester_id){
         echo "
         <button class='activeSemester' type='submit'>".$semester_name."</button>
         ";

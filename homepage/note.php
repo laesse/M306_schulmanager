@@ -55,7 +55,7 @@ function showNote() {
 	
 		<div class='divEdit'>
 			
-			<h1>ADD NOTEBOOK</h1>
+			<h1>ADD NOTE</h1>
 			<p>Save all your thoughts.</p><br>
 			<form action='?status=checkAddNotebook' method='post'>
 				<input type='text' name='addNotebook'><br>
@@ -74,7 +74,7 @@ function showNote() {
 			echo "
 			<form action='?status=checkSaveNote' method='post'>
 				<textarea type='text' name='txtNote'>".@$_SESSION["noteText"]."</textarea>
-				<button class='btnLogin' type='submit'>Save</button>
+				<button class='btnSave' type='submit'>Save</button>
     		</form>
 			<form action='?status=deleteNotebook' method='post'>
 				<button class='btnRegister' type='submit'>Delete</button>
