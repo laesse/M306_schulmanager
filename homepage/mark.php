@@ -112,11 +112,7 @@ function showMarks() {
     if($max_mark_cnt->fetch()){
       if($cnt > 0){
         for ($i = 1; $i <= intval($cnt); $i++) {
-          if ($parm == 'del' || $parm == 'edit'){
 
-          }else{
-
-    		  }
         }
       }else{
         echo "<h2>NO MARKS ADDED YET.</h2>";
@@ -156,7 +152,7 @@ function showMarks() {
                                  WHERE  m.semester_id_fk = ?
                                  ORDER  BY m.subject_id_fk, MARK_DATE
                                            ");
-		
+
       $marks->bind_param("ii", $_SESSION["semester"], $_SESSION["semester"]);
       if($marks->execute()){
         //TODO write error
@@ -254,9 +250,9 @@ function showMarks() {
 				<input pattern='-?[0-9]*(\.[0-9]+)?' type='text' id='newMark' name='mark' value='".htmlspecialchars(@$_POST['mark'])."'><br>
                 <button class='btnSave' type='submit'>Add</button>
               </form>
-			  
+
             </div>
-            
+
        	<div class='divNavigation'>
 			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
 			<a href='note.php'><img src='img/noteOnWhite.svg'></a>
@@ -320,8 +316,8 @@ function readSemester($semester) {
 		      AND semester_start = (SELECT MAX(semester_start) FROM semester WHERE definitiv = 1)
         ORDER BY semester_start DESC
         ");
-
-	$semestersFromAUser->bind_param("ii", @$_SESSION["user"], @$_SESSION["user"]);
+  $user_id = @$_SESSION["user"];
+	$semestersFromAUser->bind_param("ii", $user_id, $user_id);
 
   	if(!$semestersFromAUser->execute()){
 		// TODO: echo Error
@@ -351,8 +347,8 @@ function readSemester($semester) {
     	  }
     }else{
       //activate current semester
-      
-	if ($semester == $semester_id){
+
+	if ($semester == $id_semester){
         echo "
         <button class='activeSemester' type='submit'>".$semester_name."</button>
         ";
