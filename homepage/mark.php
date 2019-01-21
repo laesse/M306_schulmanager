@@ -87,6 +87,7 @@ function showMarks() {
 		echo "
 		</div>
 		<div class='divContent'>
+		<br />
 		";
 
 
@@ -169,7 +170,7 @@ function showMarks() {
       while($noch_daten_da){
         $current_subject_id = $subject_id;
         echo "
-        <h2>$subject_name</h2><br>";
+        <h2>".strtoupper($subject_name)."</h2><br>";
 
 		    $i = 0;
         $zw_avg_mark = $avg_mark;
@@ -184,7 +185,9 @@ function showMarks() {
 
 				          echo "
 				  <div class='divWhiteElement'>
-				  	<p>".$mark."</p>
+				  	<div class='left'>
+						<p>".$mark."</p>
+					</div>
 				  ";
 
           $color = false;
@@ -192,25 +195,29 @@ function showMarks() {
 
 				  echo "
 				  <div class='divBlueElement'>
-				  	<p>".$mark."</p>
+				  	<div class='left'>
+						<p>".$mark."</p>
+					</div>
 				  ";
 	        $color = true;
          }
          echo "
-         <form action='?status=deleteMark' method='post'>
-         <input type='hidden' value='".$mark_id."' name='mark_id'/>
-           <button name='btnDelete' class='btnRegister'>
-             Delete
-           </button>
-         </form>
-       </div>";
+		 			<div class='right'>
+					 <form action='?status=deleteMark' method='post'>
+					 <input type='hidden' value='".$mark_id."' name='mark_id'/>
+					   <button name='btnDelete' class='btnRegister'>
+						 Delete
+					   </button>
+					 </form>
+		 			</div>
+       			</div>";
 
           $i += 1;
           $noch_daten_da = $marks->fetch(); // "nachlesen"
         }
 
         echo "
-        <p>AVERAGE: ".$zw_avg_mark."</p><br><br>
+        <hr /><strong><h3>Ø ".$zw_avg_mark."</h3></strong><br><br>
 		        ";
       }
 
@@ -239,7 +246,7 @@ function showMarks() {
   
 		  
 	echo "
-				<br><br>
+				<br><br><br>
 				<form action='?status=addMark' method='post'>
 				  	<h3>Subject</h3><br>
                     <select name='subject' id='subjects'>
@@ -260,6 +267,7 @@ function showMarks() {
               </form> ";
 	}
 			echo "
+			<br><br><br>
             </div>
 
        	<div class='divNavigation'>
