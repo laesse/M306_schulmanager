@@ -82,7 +82,7 @@ function showMarks() {
 
 		";
 
-		readSemester($_SESSION["semester"]);
+		readSemester(@$_SESSION["semester"]);
 
 		echo "
 		</div>
@@ -115,7 +115,11 @@ function showMarks() {
 
         }
       }else{
-        echo "<h2>NO MARKS ADDED YET.</h2>";
+		  
+		  if(isset($_SESSION['semester'])){
+  		  	echo "<h2>NO MARKS ADDED YET.</h2>";
+		  }
+		  
         $cnt = 0;
       }
     }
@@ -152,9 +156,10 @@ function showMarks() {
                                  WHERE  m.semester_id_fk = ?
                                  ORDER  BY m.subject_id_fk, MARK_DATE
                                            ");
-
+		
       $marks->bind_param("ii", $_SESSION["semester"], $_SESSION["semester"]);
-      if($marks->execute()){
+      
+	  if($marks->execute()){
         //TODO write error
       }
       $marks->bind_result($mark_id, $mark, $subject_name, $subject_id, $mark_date, $avg_mark);
@@ -214,7 +219,8 @@ function showMarks() {
 
 
 
-
+	if(isset($_SESSION['semester'])){
+  	
 
   $conn2 = getConnection();
   if ($conn2->connect_error){
@@ -230,7 +236,9 @@ function showMarks() {
     //TODO write error
   }
   $subjectZeug->bind_result($subject_id,$subject_name);
-  echo "
+  
+		  
+	echo "
 				<br><br>
 				<form action='?status=addMark' method='post'>
 				  	<h3>Subject</h3><br>
@@ -249,8 +257,9 @@ function showMarks() {
 				<h3>Mark</h3><br>
 				<input pattern='-?[0-9]*(\.[0-9]+)?' type='text' id='newMark' name='mark' value='".htmlspecialchars(@$_POST['mark'])."'><br>
                 <button class='btnSave' type='submit'>Add</button>
-              </form>
-
+              </form> ";
+	}
+			echo "
             </div>
 
        	<div class='divNavigation'>
