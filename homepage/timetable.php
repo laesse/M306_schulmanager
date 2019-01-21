@@ -30,13 +30,13 @@ function getConnection(){
 	$dbusername = $ini["db_user"];
 	$password = $ini["db_password"];
 	$dbname = $ini["db_name"];
-	
+
 	// return new mysqli connection
 	return new mysqli($servername, $dbusername, $password, $dbname);
 }
 
 function showTimetable() {
-	
+
 	echo "
 	<!DOCTYPE html>
 	<html>
@@ -44,13 +44,13 @@ function showTimetable() {
 		<title>LeeSchoolassist: Timetable</title>
 		<meta name='theme-color' content='pink'>
 		<link rel='stylesheet' type='text/css' href='timetable.css'>
-		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>	
+		<link rel='shortcut icon' href='favicon.png' type='image/x-icon'/>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	</head>
 	<body>
-	
+
 		<div class='divEdit'>
-		
+
 			<h1>ADD SUBJECT</h1><br>
 			<p>Let's manager your week.</p><br>
 
@@ -78,79 +78,79 @@ function showTimetable() {
 				<button type='submit' class='btnLogin'>Add</button>
 
 			</form>
-		
+
 		</div>
 		<div class='divContent'>
 		";
-		
-			showDay("mo", "<h2>MONDAY</h2><br>");	
 
-			showDay("tu", "<br><h2>TUESDAY</h2><br>");	
+			showDay("mo", "<h2>MONDAY</h2><br>");
 
-			showDay("we", "<br><h2>WEDNESDAY</h2><br>");	
+			showDay("tu", "<br><h2>TUESDAY</h2><br>");
 
-			showDay("th", "<br><h2>THURSDAY</h2><br>");	
+			showDay("we", "<br><h2>WEDNESDAY</h2><br>");
 
-			showDay("fr", "<br><h2>FRIDAY</h2><br>");	
+			showDay("th", "<br><h2>THURSDAY</h2><br>");
 
-			showDay("sa", "<br><h2>SATURDAY</h2><br>");	
+			showDay("fr", "<br><h2>FRIDAY</h2><br>");
 
-			showDay("su", "<br><h2>SUNDAY</h2><br>");	
+			showDay("sa", "<br><h2>SATURDAY</h2><br>");
+
+			showDay("su", "<br><h2>SUNDAY</h2><br>");
 
 		echo "
-		</div>	
+		</div>
 		<div class='divNavigation'>
-		
+
 			<a href='index.php'><img src='img/homeOnWhite.svg'></a>
 			<a href='note.php'><img src='img/noteOnWhite.svg'></a>
 			<a href='mark.php'><img src='img/markOnWhite.svg'></a>
 			<a href='index.php?status=logout'><img src='img/logout.svg'></a>
-			
-		</div>	
-	
+
+		</div>
+
 	</body>
 	</html>
 	";
-	
+
 }
 
 function checkAddSubject(){
-	
+
 	$success = true;
-	
+
 	$name = htmlspecialchars(trim($_POST['name']));
-	
+
 	$teacherName = htmlspecialchars(trim($_POST['teacherName']));
 	$dayOfWeek = htmlspecialchars(trim($_POST['dayOfWeek']));
 	$startAt = htmlspecialchars(trim($_POST['startAt']));
 	$endAt = htmlspecialchars(trim($_POST['endAt']));
-			
+
 	if (empty($name)) {
-        $success = false; 
+        $success = false;
     }
-	
+
 	if (empty($teacherName)) {
-        $success = false; 
+        $success = false;
     }
-	
+
 	if (empty($dayOfWeek)) {
-        $success = false; 
+        $success = false;
     }
-	
+
 	if (empty($startAt)) {
-        $success = false; 
+        $success = false;
     }
-	
+
 	if (empty($endAt)) {
         $success = false;
     }
-	
+
 	if ($startAt > $endAt) {
         $success = false;
 	}
-	
+
 	if ($success) {
-		
+
 		// Create connection
 		$conn = getConnection();
 
@@ -162,7 +162,7 @@ function checkAddSubject(){
 		// prepare and bind
 		$stmt = $conn->prepare("SELECT id FROM timetable WHERE user_id_fk=? AND day_of_week=? AND ((? BETWEEN start_at AND end_at) OR (? BETWEEN start_at AND end_at) OR (start_at BETWEEN ? AND ?) OR (end_at BETWEEN ? AND ?) OR start_at=? OR start_at=? OR end_at=? OR end_at=?)");
 		$stmt->bind_param("isssssssssss", $_SESSION["user"], $dayOfWeek, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt, $startAt, $endAt);
-		
+
 		$stmt->execute();
 
 		// bind result variable
@@ -180,18 +180,18 @@ function checkAddSubject(){
 
 		$stmt->close();
 		$conn->close();
-		
+
 	}
-	
+
 	showTimetable();
-		
+
 }
 
 function checkSubjectExists() {
 
-		
+
 		$subjectName = htmlspecialchars(trim($_POST['name']));
-	
+
 		// Create connection
 		$conn = getConnection();
 
@@ -201,9 +201,9 @@ function checkSubjectExists() {
 		}
 
 		// prepare and bind
-		$stmt = $conn->prepare("SELECT id FROM subject WHERE name=?");
-		$stmt->bind_param("s", $subjectName);
-		
+		$stmt = $conn->prepare("SELECT id FROM subject WHERE name=? AND user_id_fk = ?");
+		$stmt->bind_param("s", $subjectName,@$_SESSION['user']);
+
 		$stmt->execute();
 
 		// bind result variable
@@ -221,7 +221,7 @@ function checkSubjectExists() {
 }
 
 function insertSubject(){
-	
+
 	// Create connection
 	$conn = getConnection();
 
@@ -241,12 +241,12 @@ function insertSubject(){
 
 	$stmt->close();
 	$conn->close();
-	
+
 	insertTimetable();
 }
-	
+
 function insertTimetable() {
-	
+
 	// Create connection
 	$conn = getConnection();
 
@@ -254,7 +254,7 @@ function insertTimetable() {
 	if ($conn->connect_error) {
 		die("Connection failed: ".$conn->connect_error);
 	}
-	
+
 	// prepare and bind
 	$stmt = $conn->prepare("INSERT INTO timetable (user_id_fk, subject_id_fk, day_of_week, start_at, end_at, teacher_name) VALUES (?, ?, ?, ?, ?, ?)");
 	$stmt->bind_param("iissss", $_SESSION["user"], $subjectId , $dayOfWeek, $startAt, $endAt, $teacherName);
@@ -265,24 +265,24 @@ function insertTimetable() {
 	$startAt = htmlspecialchars(trim($_POST['startAt'])).':00';
 	$endAt = htmlspecialchars(trim($_POST['endAt'])).':00';
 	$teacherName = htmlspecialchars(trim($_POST['teacherName']));
-	
+
 	$stmt->execute();
 
 	$stmt->close();
 	$conn->close();
-	
+
 	unset($_POST['name']);
 	unset($_POST['teacherName']);
 	unset($_POST['dayOfWeek']);
 	unset($_POST['startAt']);
 	unset($_POST['endAt']);
-	
+
 }
 
 function getSubjectId() {
-	
+
 	$subjectName = htmlspecialchars(trim($_POST['name']));
-	
+
 	// Create connection
 	$conn = getConnection();
 
@@ -305,13 +305,13 @@ function getSubjectId() {
 
 	$stmt->close();
 	$conn->close();
-	
+
 	return $id;
-	
+
 }
 
 function deleteTimetable(){
-		
+
 	$conn = getConnection();
 
 	// Check connection
@@ -319,9 +319,9 @@ function deleteTimetable(){
     	die("Connection failed: " . $conn->connect_error);
 
 	}
-	
+
 	$subjectfk = htmlspecialchars(trim($_POST['deleteButton']));
-	
+
 	$delTimetable = $conn->prepare("DELETE FROM timetable WHERE user_id_fk=? AND subject_id_fk=?");
 	$delTimetable->bind_param("ii", $_SESSION["user"], $subjectfk);
 
@@ -331,16 +331,16 @@ function deleteTimetable(){
 
 	$delTimetable->close();
 	$conn->close();
-	
+
 	showTimetable();
-	
+
 }
 
 function showDay($day_of_week, $output) {
 
 	$div = false;
 	$count = 0;
-	
+
 	// Create connection
 	$conn = getConnection();
 
@@ -360,12 +360,12 @@ function showDay($day_of_week, $output) {
 
 	// fetch value
 	while ($stmt->fetch()) {
-		
+
 		if ($count == 0) {
 			echo $output;
 			$count = 99;
 		}
-		
+
 		// Create connection
 		$conn1 = getConnection();
 
@@ -382,15 +382,15 @@ function showDay($day_of_week, $output) {
 
 		// bind result variable
     	$stmt1->bind_result($name);
-		
+
 		$stmt1->fetch();
-		
+
 		$stmt1->close();
 		$conn1->close();
-		
+
 		if ($div) {
 			echo "<div class='divBlueElement'>";
-			
+
 				echo "<div class='left'>";
 				echo substr($start_at, 0, 5);
 				echo " - ";
@@ -399,7 +399,7 @@ function showDay($day_of_week, $output) {
 				echo $name;
 				echo " - ";
 				echo $teacher_name;
-				
+
 				echo "</div>";
 				echo "<div class='right'>";
 				echo "<form action='?status=deleteTimetable' method='post'>
@@ -409,14 +409,14 @@ function showDay($day_of_week, $output) {
 					  </form>
 					  </div>
 				";
-			
+
 			echo "</div>";
 			$div = false;
-		
+
 		} else {
-			
+
 			echo "<div class='divWhiteElement'>";
-				
+
 				echo "<div class='left'>";
 				echo substr($start_at, 0, 5);
 				echo " - ";
@@ -425,7 +425,7 @@ function showDay($day_of_week, $output) {
 				echo $name;
 				echo " - ";
 				echo $teacher_name;
-				
+
 				echo "</div>";
 				echo "<div class='right'>";
 				echo "<form action='?status=deleteTimetable' method='post'>
@@ -435,22 +435,22 @@ function showDay($day_of_week, $output) {
 					  </form>
 					  </div>
 				";
-			
-			echo "</div>";			
+
+			echo "</div>";
 			$div = true;
 		}
-		
+
 	}
-	
+
 	$stmt->close();
 	$conn->close();
-	
+
 }
 
 function jumpToHome() {
-	
-	header('Location: index.php'); 
-	
+
+	header('Location: index.php');
+
 }
 
 ?>
