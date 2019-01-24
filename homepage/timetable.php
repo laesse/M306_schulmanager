@@ -60,6 +60,8 @@ function showTimetable() {
 				<input type='text' name='name' value='".htmlspecialchars($_POST['name'])."'><br>
 				<h2>Teacher</h2><br>
 				<input type='text' name='teacherName' value='".htmlspecialchars($_POST['teacherName'])."'><br>
+				<h2>Classroom</h2><br>
+				<input type='text' name='room' value='".htmlspecialchars($_POST['room'])."'><br>
 				<h2>Weekday</h2><br>
 				<select name='dayOfWeek' id='addSubjectDayOfWeek'>
 					<option></option>
@@ -121,6 +123,7 @@ function checkAddSubject(){
 	$name = htmlspecialchars(trim($_POST['name']));
 
 	$teacherName = htmlspecialchars(trim($_POST['teacherName']));
+	$room= htmlspecialchars(trim($_POST['room']));
 	$dayOfWeek = htmlspecialchars(trim($_POST['dayOfWeek']));
 	$startAt = htmlspecialchars(trim($_POST['startAt']));
 	$endAt = htmlspecialchars(trim($_POST['endAt']));
@@ -129,9 +132,12 @@ function checkAddSubject(){
         $success = false;
     }
 
-	if (empty($teacherName)) {
-        $success = false;
-    }
+		if (empty($teacherName)) {
+	        $success = false;
+	  }
+		if (empty($room)) {
+			$success = false;
+		}
 
 	if (empty($dayOfWeek)) {
         $success = false;
@@ -202,12 +208,12 @@ function checkSubjectExists() {
 
 		// prepare and bind
 		$stmt = $conn->prepare("SELECT id FROM subject WHERE name=? AND user_id_fk = ?");
-		$stmt->bind_param("s", $subjectName,@$_SESSION['user']);
+		$stmt->bind_param("si", $subjectName, @$_SESSION['user']);
 
 		$stmt->execute();
 
 		// bind result variable
-    	$stmt->bind_result($id);
+    $stmt->bind_result($id);
 
 		// fetch value
 		if ($stmt->fetch()) {
@@ -256,8 +262,8 @@ function insertTimetable() {
 	}
 
 	// prepare and bind
-	$stmt = $conn->prepare("INSERT INTO timetable (user_id_fk, subject_id_fk, day_of_week, start_at, end_at, teacher_name) VALUES (?, ?, ?, ?, ?, ?)");
-	$stmt->bind_param("iissss", $_SESSION["user"], $subjectId , $dayOfWeek, $startAt, $endAt, $teacherName);
+	$stmt = $conn->prepare("INSERT INTO timetable (user_id_fk, subject_id_fk, day_of_week, start_at, end_at, teacher_name, Room) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	$stmt->bind_param("iisssss", $_SESSION["user"], $subjectId , $dayOfWeek, $startAt, $endAt, $teacherName,$room);
 
 	// set parameters and execute
 	$subjectId = getSubjectId();
@@ -265,6 +271,7 @@ function insertTimetable() {
 	$startAt = htmlspecialchars(trim($_POST['startAt'])).':00';
 	$endAt = htmlspecialchars(trim($_POST['endAt'])).':00';
 	$teacherName = htmlspecialchars(trim($_POST['teacherName']));
+	$room = htmlspecialchars(trim($_POST['room']));
 
 	$stmt->execute();
 
@@ -273,6 +280,7 @@ function insertTimetable() {
 
 	unset($_POST['name']);
 	unset($_POST['teacherName']);
+	unset($_POST['room']);
 	unset($_POST['dayOfWeek']);
 	unset($_POST['startAt']);
 	unset($_POST['endAt']);
@@ -292,8 +300,8 @@ function getSubjectId() {
 	}
 
 	// prepare and bind
-	$stmt = $conn->prepare("SELECT id FROM subject WHERE name=?");
-	$stmt->bind_param("s",$subjectName);
+	$stmt = $conn->prepare("SELECT id FROM subject WHERE name=? AND user_id_fk = ?");
+	$stmt->bind_param("si", $subjectName,@$_SESSION['user']);
 
 	$stmt->execute();
 
@@ -350,13 +358,13 @@ function showDay($day_of_week, $output) {
 	}
 
 	// prepare and bind
-	$stmt = $conn->prepare("SELECT subject_id_fk, teacher_name, start_at, end_at FROM timetable WHERE user_id_fk=? AND day_of_week=? ORDER BY start_at ASC");
+	$stmt = $conn->prepare("SELECT subject_id_fk, teacher_name, start_at, end_at, Room FROM timetable WHERE user_id_fk=? AND day_of_week=? ORDER BY start_at ASC");
 	$stmt->bind_param("is",$_SESSION["user"], $day_of_week);
 
 	$stmt->execute();
 
-	// bind result variable
-    $stmt->bind_result($subject_id_fk, $teacher_name, $start_at, $end_at);
+	// bind result variables
+  $stmt->bind_result($subject_id_fk, $teacher_name, $start_at, $end_at, $room);
 
 	// fetch value
 	while ($stmt->fetch()) {
@@ -396,6 +404,8 @@ function showDay($day_of_week, $output) {
 				echo " - ";
 				echo substr($end_at, 0, 5);
 				echo " | ";
+				echo $room;
+				echo " | ";
 				echo $name;
 				echo " - ";
 				echo $teacher_name;
@@ -421,6 +431,8 @@ function showDay($day_of_week, $output) {
 				echo substr($start_at, 0, 5);
 				echo " - ";
 				echo substr($end_at, 0, 5);
+				echo " | ";
+				echo $room;
 				echo " | ";
 				echo $name;
 				echo " - ";
